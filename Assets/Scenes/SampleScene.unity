@@ -485,8 +485,8 @@ MonoBehaviour:
   fieldSize:
     m_Position: {x: 0, y: 0, z: 0}
     m_Size: {x: 100, y: 100, z: 0}
-  fillPercentage: 0.3
-  currentNeighbour: 0
+  fillPercentage: 0.55
+  currentNeighbour: 1
   showWalls: 0
   currentMooreRuleset: {fileID: 11400000, guid: 136f65f78c32b6a478bfbb36b5188aa0, type: 2}
   currentNeumannRuleset: {fileID: 11400000, guid: 5248f4f36cef3f549b54c0e8773584da, type: 2}
