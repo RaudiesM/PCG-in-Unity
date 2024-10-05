@@ -24,13 +24,13 @@ public class CellulaAutomataAlgorithm : MonoBehaviour
     {
         cellDistribution.Clear();
         DistributeCells();
-        foreach(var item in cellDistribution)
+        /*foreach(var item in cellDistribution)
         {
             if(item.Value.IsFloor)
             {
                 Debug.Log("Cell at "+item.Key+" has "+CheckNeighbourCells(item.Key)+" neighbours");
             }
-        }
+        }*/
         //ApplyCellulaAutomata();
         
         HashSet<Vector2Int> tiles = new HashSet<Vector2Int>();
@@ -78,7 +78,7 @@ public class CellulaAutomataAlgorithm : MonoBehaviour
 
     private void DistributeCells()
     {
-        //SurroundFieldWithWall();
+        SurroundFieldWithWall();
         int numMaxCells = fieldSize.yMax * fieldSize.xMax;
         int cellPercent = Mathf.FloorToInt(numMaxCells * fillPercentage);
         int convertedCells = 0;
@@ -133,14 +133,15 @@ public class CellulaAutomataAlgorithm : MonoBehaviour
 
     private void ApplyCellulaAutomata()
     {
-        for (int i = 0; i <= fieldSize.xMax; i++)
+        Dictionary<Vector2Int, bool> newCellStates = new Dictionary<Vector2Int, bool>();
+        for (int i = fieldSize.xMin; i <= fieldSize.xMax; i++)
         {
-            for (int j = 0; j <= fieldSize.yMax; j++)
+            for (int j = fieldSize.yMin; j <= fieldSize.yMax; j++)
             {
                 Vector2Int newPosition = new Vector2Int(i, j);
                 bool isFloor = cellDistribution.ContainsKey(newPosition);
                 int numNeighbours = CheckNeighbourCells(newPosition);
-                Debug.Log("Cell Stats: NumN: " + numNeighbours + "; State: " + isFloor + "; Pos: " + newPosition);
+                
                 bool newStateIsFloor = false;
                 if (currentNeighbour == NeighbourType.Moore)
                 {
@@ -150,28 +151,26 @@ public class CellulaAutomataAlgorithm : MonoBehaviour
                 {
                     newStateIsFloor = currentNeumannRuleset.ApplyRulesToCell(isFloor, numNeighbours);
                 }
-                if (newStateIsFloor == true)
-                {
-                    if(isFloor == false)
-                    {
-                        cellDistribution.Add(newPosition, new CellState(true));
-                    }
-                }
-                else
-                {
-                    if (isFloor)
-                    {
-                        cellDistribution.Remove(newPosition);
-                    }
+                
+                //nur hinzufügen, wenn sich was ändert
+                if (newStateIsFloor != isFloor) 
+                { 
+                    newCellStates.Add(newPosition, newStateIsFloor);
                 }
             }
         }
-    }
 
-    private void AdjustCell(Vector2Int currentCell)
-    {
-        //changes cell according to set Rules
-        cellDistribution[currentCell].SwitchState();
+        foreach(var cell in newCellStates)
+        {
+            if (cell.Value && cellDistribution.ContainsKey(cell.Key) == false)
+            {
+                cellDistribution.Add(cell.Key, new CellState(true));
+            }
+            else if(cell.Value == false && cellDistribution.ContainsKey(cell.Key))
+            {
+                cellDistribution.Remove(cell.Key);
+            }
+        }
     }
 
     private int CheckNeighbourCells(Vector2Int currentCell)
@@ -184,7 +183,6 @@ public class CellulaAutomataAlgorithm : MonoBehaviour
             {
                 for(int j = -neighbourDistance; j<=neighbourDistance; j++)
                 {
-                    //add to vector & check
                     cellToCheck = new Vector2Int(currentCell.x+i, currentCell.y+j);
                     if(currentCell != cellToCheck && cellDistribution.ContainsKey(cellToCheck))
                     {

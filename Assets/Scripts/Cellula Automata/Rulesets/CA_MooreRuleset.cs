@@ -12,7 +12,7 @@ public class CA_MooreRuleset : CellRulesetBase
         bool newState = false;
         if (isFloor)
         {
-            if (numNeighbours <= 3)
+            if (numNeighbours <= 2)
             {
                 newState = false;
             }
