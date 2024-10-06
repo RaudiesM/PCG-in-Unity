@@ -21,6 +21,7 @@ public class TilePlacer : MonoBehaviour
 
     public void PlaceRooms(HashSet<BoundsInt> roomPosition)
     {
+        RemoveTiles();
         foreach (var room in roomPosition) { 
             
             GameObject newRoomTile = Instantiate(floorTile);

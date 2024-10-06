@@ -24,8 +24,11 @@ public class DungeonSpawner : MonoBehaviour
         if (currentAlgorithm == AlgorithmType.CellulaAutomata)
         {
             dungeonTiles = CA_Algorithm.ContinueIterating();
+            tilePlacer.PlaceFloorTiles(dungeonTiles);
+        }else if(currentAlgorithm == AlgorithmType.BinarySpacepartitioning)
+        {
+            tilePlacer.PlaceRooms(BSP_Algorithm.GetRooms());
         }
-        tilePlacer.PlaceFloorTiles(dungeonTiles);
     }
 
     public void GenerateDungeon()
@@ -39,10 +42,12 @@ public class DungeonSpawner : MonoBehaviour
             {
                 tilePlacer.PlaceBoundryTiles(boundryTiles);
             }
+            tilePlacer.PlaceFloorTiles(dungeonTiles);
+
         }else if(currentAlgorithm == AlgorithmType.BinarySpacepartitioning)
         {
-            dungeonTiles = BinarySpacePartitioning_Algorithm.GetDungeonTiles();
+            //dungeonTiles = BSP_Algorithm.GetDungeonTiles();
+            tilePlacer.PlaceRooms(BSP_Algorithm.NewRooms());
         }
-        tilePlacer.PlaceFloorTiles(dungeonTiles);
     }
 }
