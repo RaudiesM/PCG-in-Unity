@@ -8,6 +8,8 @@ public class DungeonSpawner : MonoBehaviour
 {
     [SerializeField] private AlgorithmType currentAlgorithm = AlgorithmType.CellulaAutomata;
     [SerializeField] private CellulaAutomataAlgorithm CA_Algorithm;
+    [SerializeField] private BinarySpacePartitioning_Algorithm BSP_Algorithm;
+
     [SerializeField] private TilePlacer tilePlacer;
 
     private void Start()
@@ -37,6 +39,9 @@ public class DungeonSpawner : MonoBehaviour
             {
                 tilePlacer.PlaceBoundryTiles(boundryTiles);
             }
+        }else if(currentAlgorithm == AlgorithmType.BinarySpacepartitioning)
+        {
+            dungeonTiles = BinarySpacePartitioning_Algorithm.GetDungeonTiles();
         }
         tilePlacer.PlaceFloorTiles(dungeonTiles);
     }

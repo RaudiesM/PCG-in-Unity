@@ -7,6 +7,8 @@ public class TilePlacer : MonoBehaviour
     [SerializeField] private GameObject floorTile;
     [SerializeField] private GameObject boundryTile;
     [SerializeField] private GameObject tileParent;
+
+
     public void PlaceFloorTiles(HashSet<Vector2Int> tilePosition)
     {
         PlaceTiles(tilePosition, floorTile);
@@ -15,6 +17,21 @@ public class TilePlacer : MonoBehaviour
     public void PlaceBoundryTiles(HashSet<Vector2Int> tilePosition)
     {
         PlaceTiles(tilePosition, boundryTile);
+    }
+
+    public void PlaceRooms(HashSet<BoundsInt> roomPosition)
+    {
+        foreach (var room in roomPosition) { 
+            
+            GameObject newRoomTile = Instantiate(floorTile);
+            newRoomTile.transform.parent = tileParent.transform;
+            newRoomTile.transform.position = new Vector3(room.x, room.y, -0.01f);
+            newRoomTile.transform.localScale = room.size;
+            if(newRoomTile.TryGetComponent<SpriteRenderer>(out SpriteRenderer thisRenderer))
+            {
+                thisRenderer.color = new Color(Random.value, Random.value, Random.value);
+            }
+        }
     }
 
     private void PlaceTiles(HashSet<Vector2Int> tilePosition, GameObject placeableObject)
