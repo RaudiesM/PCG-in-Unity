@@ -8,10 +8,41 @@ using UnityEngine;
 
 public class BinarySpacePartitioning_Algorithm : MonoBehaviour
 {
-    [SerializeField] private BoundsInt DungeonSize = new BoundsInt();
+    [SerializeField] private BoundsInt dungeonSize = new BoundsInt();
+    [SerializeField] private int maxNumRooms;
+
     [SerializeField] private int minSize;
     [SerializeField] private int minYSize;
     [SerializeField] private int minXSize;
+
+    [SerializeField] private int offset;
+
+    private void Start()
+    {
+        CheckGivenValues();
+        minXSize +=offset;
+        minYSize +=offset;
+        minSize += (int) Mathf.Sqrt(offset);
+
+    }
+
+    private void CheckGivenValues()
+    {
+        int dungeonSizeInt = dungeonSize.size.x * dungeonSize.size.y;
+        if (maxNumRooms > dungeonSizeInt || maxNumRooms == 0)
+        {
+            maxNumRooms = 10;
+        }
+        if (maxNumRooms * minSize > dungeonSizeInt)
+        {
+            minSize = dungeonSizeInt / maxNumRooms;
+        }
+        if (minSize < minXSize * minYSize)
+        {
+            minXSize = Mathf.FloorToInt((float)(Math.Sqrt(minSize)));
+            minYSize = minXSize;
+        }
+    }
 
     private HashSet<BoundsInt> dungeonRooms =new HashSet<BoundsInt>();
     public HashSet<Vector2Int> GetDungeonTiles()
@@ -63,30 +94,50 @@ public class BinarySpacePartitioning_Algorithm : MonoBehaviour
         return dungeonTiles;
     }
 
+    #region RoomVariance
     private BoundsInt CreateRoomVariance(BoundsInt rooms)
+    {
+        Vector3Int newSize = VariantSize(rooms);
+        Vector3Int newPosition = VariantPosition(rooms, newSize);
+        rooms = new BoundsInt(newPosition, newSize);
+        return rooms;
+    }
+
+    private Vector3Int VariantPosition(BoundsInt rooms, Vector3Int newSize)
+    {
+        int xDiff = rooms.size.x - newSize.x;
+        int yDiff = rooms.size.y - newSize.y;
+
+        int xRandom = Random.Range(-xDiff/2, xDiff/2);
+        int yRandom = Random.Range(-yDiff/2, yDiff/2);
+
+        return new Vector3Int(rooms.position.x + xRandom, rooms.position.y + yRandom);
+    }
+
+    private Vector3Int VariantSize(BoundsInt rooms)
     {
         int xRandom = rooms.size.x;
         int yRandom = rooms.size.y;
         if (rooms.size.x > rooms.size.y)
         {
-            yRandom = Random.Range(minYSize, rooms.size.y - 1);
-            xRandom = Random.Range(minSize/yRandom, rooms.size.x - 1);
+            yRandom = Random.Range(minYSize, rooms.size.y - offset);
+            xRandom = Random.Range(minSize / yRandom, rooms.size.x - offset);
         }
-        else if(rooms.size.y >= rooms.size.x) { 
-            xRandom = Random.Range(minXSize, rooms.size.x - 1);
-            yRandom = Random.Range(minSize/xRandom, rooms.size.y - 1);        
+        else if (rooms.size.y >= rooms.size.x)
+        {
+            xRandom = Random.Range(minXSize, rooms.size.x - offset);
+            yRandom = Random.Range(minSize / xRandom, rooms.size.y - offset);
         }
         Debug.Log($"x: {xRandom} / y: {yRandom}");
-        Vector3Int newSize = new Vector3Int(xRandom, yRandom, 0);
-        rooms = new BoundsInt(rooms.position, newSize);
-        return rooms;
+        return new Vector3Int(xRandom, yRandom);
     }
+    #endregion
 
     private bool IterateOverRooms()
     {
         int numSplitRooms = 0;
         Queue<BoundsInt> roomQueue = FillQueue();
-        while (roomQueue.Count > 0)
+        while (roomQueue.Count > 0 && dungeonRooms.Count < maxNumRooms)
         {
             BoundsInt room = roomQueue.Dequeue();
             HashSet<BoundsInt> newRooms = SplitSpace(room);
@@ -114,7 +165,7 @@ public class BinarySpacePartitioning_Algorithm : MonoBehaviour
         }
         else
         {
-            newQueue.Enqueue(DungeonSize);
+            newQueue.Enqueue(dungeonSize);
         }
         return newQueue;
     }

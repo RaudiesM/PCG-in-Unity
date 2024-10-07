@@ -570,9 +570,11 @@ MonoBehaviour:
   DungeonSize:
     m_Position: {x: 0, y: 0, z: 0}
     m_Size: {x: 100, y: 100, z: 0}
+  NumRooms: 0
   minSize: 200
   minYSize: 12
   minXSize: 12
+  offset: 2
 --- !u!1 &1563801907
 GameObject:
   m_ObjectHideFlags: 0
