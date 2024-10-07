@@ -388,7 +388,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!212 &653697646
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -431,7 +431,7 @@ SpriteRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_Sprite: {fileID: 7482667652216324306, guid: 311925a002f4447b3a28927169b83ea6, type: 3}
-  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_Color: {r: 0, g: 0, b: 0, a: 1}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
@@ -519,7 +519,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f85abe2f572432f4a9dfd0145d4036d1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  currentAlgorithm: 0
+  currentAlgorithm: 2
   CA_Algorithm: {fileID: 1563801909}
   BSP_Algorithm: {fileID: 1277086792}
   tilePlacer: {fileID: 883259474}
@@ -569,10 +569,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   DungeonSize:
     m_Position: {x: 0, y: 0, z: 0}
-    m_Size: {x: 10, y: 10, z: 0}
-  minSize: 10
-  minYSize: 2
-  minXSize: 2
+    m_Size: {x: 100, y: 100, z: 0}
+  minSize: 200
+  minYSize: 12
+  minXSize: 12
 --- !u!1 &1563801907
 GameObject:
   m_ObjectHideFlags: 0

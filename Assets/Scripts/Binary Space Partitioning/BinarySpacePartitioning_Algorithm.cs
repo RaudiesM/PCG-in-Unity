@@ -13,7 +13,7 @@ public class BinarySpacePartitioning_Algorithm : MonoBehaviour
     [SerializeField] private int minYSize;
     [SerializeField] private int minXSize;
 
-        private HashSet<BoundsInt> dungeonRooms =new HashSet<BoundsInt>();
+    private HashSet<BoundsInt> dungeonRooms =new HashSet<BoundsInt>();
     public HashSet<Vector2Int> GetDungeonTiles()
     {
         throw new NotImplementedException();
@@ -32,9 +32,22 @@ public class BinarySpacePartitioning_Algorithm : MonoBehaviour
         if (isDoneSplitting)
         {
             Debug.Log("I am done");
-            roomTiles = PlaceRooms();
+            //roomTiles = PlaceRooms();
+            dungeonRooms = PlaceRoomsTest();
+            
         }
         return dungeonRooms;
+    }
+
+    private HashSet<BoundsInt> PlaceRoomsTest()
+    {
+        HashSet<BoundsInt> dungeonTiles = new HashSet<BoundsInt>();
+        foreach (var rooms in dungeonRooms)
+        {
+            BoundsInt newRoom = CreateRoomVariance(rooms);
+            dungeonTiles.Add(newRoom);
+        }
+        return dungeonTiles;
     }
 
     private HashSet<Vector2Int> PlaceRooms()
@@ -52,6 +65,20 @@ public class BinarySpacePartitioning_Algorithm : MonoBehaviour
 
     private BoundsInt CreateRoomVariance(BoundsInt rooms)
     {
+        int xRandom = rooms.size.x;
+        int yRandom = rooms.size.y;
+        if (rooms.size.x > rooms.size.y)
+        {
+            yRandom = Random.Range(minYSize, rooms.size.y - 1);
+            xRandom = Random.Range(minSize/yRandom, rooms.size.x - 1);
+        }
+        else if(rooms.size.y >= rooms.size.x) { 
+            xRandom = Random.Range(minXSize, rooms.size.x - 1);
+            yRandom = Random.Range(minSize/xRandom, rooms.size.y - 1);        
+        }
+        Debug.Log($"x: {xRandom} / y: {yRandom}");
+        Vector3Int newSize = new Vector3Int(xRandom, yRandom, 0);
+        rooms = new BoundsInt(rooms.position, newSize);
         return rooms;
     }
 
@@ -125,6 +152,7 @@ public class BinarySpacePartitioning_Algorithm : MonoBehaviour
             BoundsInt newRoomB = new BoundsInt(room.xMin+randomValueA/2, room.yMin, 0, randomValueB, room.size.y, 0);
 
             Debug.Log("New Room Size: A(" + newRoomA.size + ") / B(" + newRoomB.size + ")");
+            Debug.Log("New Room Position: A(" + newRoomA.position + ") / B(" + newRoomB.position + ")");
             result.Add(newRoomA);
             result.Add(newRoomB);
 
@@ -153,6 +181,7 @@ public class BinarySpacePartitioning_Algorithm : MonoBehaviour
             BoundsInt newRoomB = new BoundsInt(room.xMin, room.yMin+randomValueA/2, 0, room.size.x, randomValueB, 0);
 
             Debug.Log("New Room Size: A("+newRoomA.size+") / B("+newRoomB.size+")");
+            Debug.Log("New Room Position: A(" + newRoomA.position + ") / B(" + newRoomB.position + ")");
             result.Add(newRoomA);
             result.Add(newRoomB);
         }
