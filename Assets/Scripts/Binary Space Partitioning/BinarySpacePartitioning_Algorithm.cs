@@ -25,28 +25,55 @@ public class BinarySpacePartitioning_Algorithm : MonoBehaviour
         IterateOverRooms();
         return dungeonRooms;
     }
-    public HashSet<BoundsInt> GetRooms()
+    public HashSet<BoundsInt> GetRooms(out HashSet<Vector2Int> roomTiles)
     {
-        IterateOverRooms();
+        roomTiles = new HashSet<Vector2Int>();
+        bool isDoneSplitting = IterateOverRooms();
+        if (isDoneSplitting)
+        {
+            Debug.Log("I am done");
+            roomTiles = PlaceRooms();
+        }
         return dungeonRooms;
     }
 
-    private void IterateOverRooms()
+    private HashSet<Vector2Int> PlaceRooms()
     {
+        HashSet<Vector2Int> dungeonTiles = new HashSet<Vector2Int>();
+        foreach (var rooms in dungeonRooms) { 
+            BoundsInt newRoom = CreateRoomVariance(rooms);
+            foreach(var boundInt in newRoom.allPositionsWithin)
+            {
+                Debug.Log("Pos: " + boundInt.x + " / " + boundInt.y);
+            }
+        }
+        return dungeonTiles;
+    }
+
+    private BoundsInt CreateRoomVariance(BoundsInt rooms)
+    {
+        return rooms;
+    }
+
+    private bool IterateOverRooms()
+    {
+        int numSplitRooms = 0;
         Queue<BoundsInt> roomQueue = FillQueue();
         while (roomQueue.Count > 0)
         {
             BoundsInt room = roomQueue.Dequeue();
-            HashSet<BoundsInt> newRooms = SplitRoom(room);
+            HashSet<BoundsInt> newRooms = SplitSpace(room);
             if(newRooms.Count > 0)
             {
                 dungeonRooms.Remove(room);
                 foreach(BoundsInt newRoom in newRooms)
                 {
                     dungeonRooms.Add(newRoom);
+                    numSplitRooms++;
                 }
             }
         }
+        return numSplitRooms == 0;
     }
 
     private Queue<BoundsInt> FillQueue()
@@ -64,7 +91,7 @@ public class BinarySpacePartitioning_Algorithm : MonoBehaviour
         }
         return newQueue;
     }
-    private HashSet<BoundsInt> SplitRoom(BoundsInt room)
+    private HashSet<BoundsInt> SplitSpace(BoundsInt room)
     {
         HashSet<BoundsInt> result = new HashSet<BoundsInt>();
 

@@ -27,7 +27,11 @@ public class DungeonSpawner : MonoBehaviour
             tilePlacer.PlaceFloorTiles(dungeonTiles);
         }else if(currentAlgorithm == AlgorithmType.BinarySpacepartitioning)
         {
-            tilePlacer.PlaceRooms(BSP_Algorithm.GetRooms());
+            tilePlacer.PlaceRooms(BSP_Algorithm.GetRooms(out HashSet<Vector2Int> dungeonRooms));
+            if(dungeonRooms.Count > 0)
+            {
+                tilePlacer.PlaceFloorTiles(dungeonRooms);
+            }
         }
     }
 
