@@ -17,13 +17,13 @@ public class BinarySpacePartitioning_Algorithm : MonoBehaviour
 
     [SerializeField] private int offset;
 
+    private Dictionary<string, BoundsInt> dungeonRooms = new Dictionary<string, BoundsInt>();
+    private Dictionary<string, RoomPoints> roomsToConnect = new Dictionary<string, RoomPoints>();
+    private int currentIndexNum = 0;
+
     private void Start()
     {
         CheckGivenValues();
-        minXSize +=offset;
-        minYSize +=offset;
-        minSize += (int) Mathf.Sqrt(offset);
-
     }
 
     private void CheckGivenValues()
@@ -42,9 +42,12 @@ public class BinarySpacePartitioning_Algorithm : MonoBehaviour
             minXSize = Mathf.FloorToInt((float)(Math.Sqrt(minSize)));
             minYSize = minXSize;
         }
+
+        minXSize += offset;
+        minYSize += offset;
+        minSize += offset*offset;
     }
 
-    private HashSet<BoundsInt> dungeonRooms =new HashSet<BoundsInt>();
     public HashSet<Vector2Int> GetDungeonTiles()
     {
         throw new NotImplementedException();
@@ -53,44 +56,105 @@ public class BinarySpacePartitioning_Algorithm : MonoBehaviour
     public HashSet<BoundsInt> NewRooms()
     {
         dungeonRooms.Clear();
+        HashSet<BoundsInt> newDungeonRooms = new HashSet<BoundsInt>();
         IterateOverRooms();
-        return dungeonRooms;
+        foreach (var room in dungeonRooms)
+        {
+            newDungeonRooms.Add(room.Value);
+            Debug.Log($"Room [Pos.: {room.Value.position}] [ID: {room.Key}] ");
+        }
+        return newDungeonRooms;
     }
     public HashSet<BoundsInt> GetRooms(out HashSet<Vector2Int> roomTiles)
     {
+        HashSet<BoundsInt> newDungeonRooms = new HashSet<BoundsInt>();
         roomTiles = new HashSet<Vector2Int>();
         bool isDoneSplitting = IterateOverRooms();
+
         if (isDoneSplitting)
         {
             Debug.Log("I am done");
             //roomTiles = PlaceRooms();
-            dungeonRooms = PlaceRoomsTest();
-            
+            newDungeonRooms = PlaceRooms();
+            ConnectRooms();
         }
-        return dungeonRooms;
-    }
-
-    private HashSet<BoundsInt> PlaceRoomsTest()
-    {
-        HashSet<BoundsInt> dungeonTiles = new HashSet<BoundsInt>();
-        foreach (var rooms in dungeonRooms)
+        else
         {
-            BoundsInt newRoom = CreateRoomVariance(rooms);
-            dungeonTiles.Add(newRoom);
-        }
-        return dungeonTiles;
-    }
-
-    private HashSet<Vector2Int> PlaceRooms()
-    {
-        HashSet<Vector2Int> dungeonTiles = new HashSet<Vector2Int>();
-        foreach (var rooms in dungeonRooms) { 
-            BoundsInt newRoom = CreateRoomVariance(rooms);
-            foreach(var boundInt in newRoom.allPositionsWithin)
+            foreach(var room in dungeonRooms)
             {
-                Debug.Log("Pos: " + boundInt.x + " / " + boundInt.y);
+
+                newDungeonRooms.Add(room.Value);
+                Debug.Log($"Room [Pos.: {room.Value.position}] [ID: {room.Key}] ");
             }
         }
+        return newDungeonRooms;
+    }
+
+    private void ConnectRooms()
+    {
+        Queue<string> roomIndex = new Queue<string>();
+        Queue<string> doneIDs = new Queue<string>();
+        foreach(string index in dungeonRooms.Keys)
+        {
+            roomIndex.Enqueue(index);
+        }
+        Debug.Log("<color=black> Room IDs:</color>");
+        while (roomIndex.Count > 1)
+        {
+            string currentID = roomIndex.Dequeue();
+            string parentID = currentID.Substring(0, currentID.Length - 1);
+            string endIsAorB = currentID.Substring(currentID.Length - 1);
+            string siblingID = GetSiblingIndex(parentID, endIsAorB);
+            
+            if (roomIndex.Contains(siblingID))
+            {
+                Debug.Log($"<color=cyan>Connecting Rooms</color> {currentID} & {siblingID} ");
+                if (dungeonRooms.ContainsKey(currentID))
+                {
+                    Debug.Log($"Room Positions: {dungeonRooms[currentID]}");
+                }
+                if (dungeonRooms.ContainsKey(siblingID))
+                {
+                    Debug.Log($"Sibling Room Positions: {dungeonRooms[siblingID]}");
+                }
+                Debug.Log($"<color=magenta> newParent: </color> {parentID}");
+                roomIndex.Enqueue(parentID);
+                doneIDs.Enqueue(currentID);
+            }
+            else if(doneIDs.Contains(siblingID) == false)
+            {
+                roomIndex.Enqueue(currentID);
+            }
+        }
+        Debug.Log("<color=black> End Room IDs.</color>");
+    }
+
+    private string GetSiblingIndex(string parentString, string ownID)
+    {
+        string siblingIndex = parentString;
+        if (ownID == "A")
+        {
+            siblingIndex += "B";
+
+        }
+        else if (ownID == "B")
+        {
+            siblingIndex += "A";
+        }
+        return siblingIndex;
+    }
+
+    private HashSet<BoundsInt> PlaceRooms()
+    {
+        HashSet<BoundsInt> dungeonTiles = new HashSet<BoundsInt>();
+        Dictionary<string, BoundsInt> newDungeonRooms = new Dictionary<string, BoundsInt>();
+        foreach (var rooms in dungeonRooms)
+        {
+            BoundsInt newRoom = CreateRoomVariance(rooms.Value);
+            dungeonTiles.Add(newRoom);
+            newDungeonRooms.Add(rooms.Key, newRoom);
+        }
+        dungeonRooms = newDungeonRooms;
         return dungeonTiles;
     }
 
@@ -128,7 +192,7 @@ public class BinarySpacePartitioning_Algorithm : MonoBehaviour
             xRandom = Random.Range(minXSize, rooms.size.x - offset);
             yRandom = Random.Range(minSize / xRandom, rooms.size.y - offset);
         }
-        Debug.Log($"x: {xRandom} / y: {yRandom}");
+        //Debug.Log($"x: {xRandom} / y: {yRandom}");
         return new Vector3Int(xRandom, yRandom);
     }
     #endregion
@@ -136,17 +200,19 @@ public class BinarySpacePartitioning_Algorithm : MonoBehaviour
     private bool IterateOverRooms()
     {
         int numSplitRooms = 0;
-        Queue<BoundsInt> roomQueue = FillQueue();
+        Queue<string> roomQueue = FillQueue();
         while (roomQueue.Count > 0 && dungeonRooms.Count < maxNumRooms)
         {
-            BoundsInt room = roomQueue.Dequeue();
-            HashSet<BoundsInt> newRooms = SplitSpace(room);
+            string roomIndex = roomQueue.Dequeue();
+            HashSet<BoundsInt> newRooms = SplitSpace(dungeonRooms[roomIndex]);
             if(newRooms.Count > 0)
             {
-                dungeonRooms.Remove(room);
+                dungeonRooms.Remove(roomIndex);
+                ResetIndexNumber();
                 foreach(BoundsInt newRoom in newRooms)
                 {
-                    dungeonRooms.Add(newRoom);
+                    string newRoomIndex = GetNewIndex(roomIndex);
+                    dungeonRooms.Add(newRoomIndex, newRoom);
                     numSplitRooms++;
                 }
             }
@@ -154,18 +220,19 @@ public class BinarySpacePartitioning_Algorithm : MonoBehaviour
         return numSplitRooms == 0;
     }
 
-    private Queue<BoundsInt> FillQueue()
+    private Queue<string> FillQueue()
     {
-        Queue<BoundsInt> newQueue = new Queue<BoundsInt>();
+        Queue<string> newQueue = new Queue<string>();
         if(dungeonRooms.Count > 0) { 
-            foreach(BoundsInt room in dungeonRooms)
+            foreach(var room in dungeonRooms.Keys)
             {
                 newQueue.Enqueue(room);
             }
         }
         else
         {
-            newQueue.Enqueue(dungeonSize);
+            newQueue.Enqueue("A");
+            dungeonRooms.Add("A", dungeonSize);
         }
         return newQueue;
     }
@@ -238,5 +305,27 @@ public class BinarySpacePartitioning_Algorithm : MonoBehaviour
         }
         #endregion
         return result;
+    }
+
+
+    private void ResetIndexNumber()
+    {
+        currentIndexNum = 0;
+    }
+    private string GetNewIndex(string index)
+    {
+        string returnString = index;
+        if(currentIndexNum == 0)
+        {
+            returnString += "A";
+        }else if(currentIndexNum == 1)
+        {
+            returnString += "B";
+        }else if( currentIndexNum == 2)
+        {
+            returnString += "C";
+        }
+        currentIndexNum++;
+        return returnString;
     }
 }
