@@ -192,13 +192,13 @@ public class BinarySpacePartitioning_Algorithm : MonoBehaviour
             corridorList = Random.value <= 0.5f ? pathA : pathB;
             if(corridorList == pathA)
             {
-                Debug.DrawLine(new Vector3(pointA.x, pointA.y), new Vector3(pointAB.x, pointAB.y), Color.red, 15);
-                Debug.DrawLine(new Vector3(pointAB.x, pointAB.y), new Vector3(pointB.x, pointB.y), Color.red, 15);
+                Debug.DrawLine(new Vector3(pointA.x, pointA.y), new Vector3(pointAB.x, pointAB.y), Color.blue, 15);
+                Debug.DrawLine(new Vector3(pointAB.x, pointAB.y), new Vector3(pointB.x, pointB.y), Color.blue, 15);
             }
             else
             {
-                Debug.DrawLine(new Vector3(pointA.x, pointA.y), new Vector3(pointBA.x, pointBA.y), Color.green, 15);
-                Debug.DrawLine(new Vector3(pointBA.x, pointBA.y), new Vector3(pointB.x, pointB.y), Color.green, 15);
+                Debug.DrawLine(new Vector3(pointA.x, pointA.y), new Vector3(pointBA.x, pointBA.y), Color.blue, 15);
+                Debug.DrawLine(new Vector3(pointBA.x, pointBA.y), new Vector3(pointB.x, pointB.y), Color.blue, 15);
             }
         }
 
@@ -217,6 +217,7 @@ public class BinarySpacePartitioning_Algorithm : MonoBehaviour
 
         Vector2Int startPoint = new Vector2Int();
         Vector2Int goalPoint = new Vector2Int();
+
 
         if(pointA.x == middlePoint.x)
         {
@@ -276,20 +277,6 @@ public class BinarySpacePartitioning_Algorithm : MonoBehaviour
         return result;
     }
 
-    private string GetSiblingIndex(string parentString, string ownID)
-    {
-        string siblingIndex = parentString;
-        if (ownID == "A")
-        {
-            siblingIndex += "B";
-
-        }
-        else if (ownID == "B")
-        {
-            siblingIndex += "A";
-        }
-        return siblingIndex;
-    }
 
     private HashSet<BoundsInt> PlaceRooms()
     {
@@ -456,6 +443,20 @@ public class BinarySpacePartitioning_Algorithm : MonoBehaviour
     }
 
 
+    private string GetSiblingIndex(string parentString, string ownID)
+    {
+        string siblingIndex = parentString;
+        if (ownID == "A")
+        {
+            siblingIndex += "B";
+
+        }
+        else if (ownID == "B")
+        {
+            siblingIndex += "A";
+        }
+        return siblingIndex;
+    }
     private void ResetIndexNumber()
     {
         currentIndexNum = 0;
