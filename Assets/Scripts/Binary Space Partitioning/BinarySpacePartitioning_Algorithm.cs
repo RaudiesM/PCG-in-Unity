@@ -12,6 +12,8 @@ public class BinarySpacePartitioning_Algorithm : MonoBehaviour
     [SerializeField] private int maxNumRooms;
 
     [SerializeField] private int minSize;
+    [Range(0, 1)]
+    [SerializeField] private float roomPercentage;
     [SerializeField] private int minYSize;
     [SerializeField] private int minXSize;
 
@@ -73,7 +75,7 @@ public class BinarySpacePartitioning_Algorithm : MonoBehaviour
         foreach (var room in dungeonRooms)
         {
             newDungeonRooms.Add(room.Value);
-            Debug.Log($"Room [Pos.: {room.Value.position}] [ID: {room.Key}] ");
+            //Debug.Log($"Room [Pos.: {room.Value.position}] [ID: {room.Key}] ");
         }
         return newDungeonRooms;
     }
@@ -100,7 +102,7 @@ public class BinarySpacePartitioning_Algorithm : MonoBehaviour
             {
 
                 newDungeonRooms.Add(room.Value);
-                Debug.Log($"Room [Pos.: {room.Value.position}] [ID: {room.Key}] ");
+                //Debug.Log($"Room [Pos.: {room.Value.position}] [ID: {room.Key}] ");
             }
         }
         return newDungeonRooms;
@@ -114,7 +116,7 @@ public class BinarySpacePartitioning_Algorithm : MonoBehaviour
         {
             roomIndex.Enqueue(index);
         }
-        Debug.Log("<color=black> Room IDs:</color>");
+        //Debug.Log("<color=black> Room IDs:</color>");
         while (roomIndex.Count > 1)
         {
             string currentID = roomIndex.Dequeue();
@@ -147,8 +149,8 @@ public class BinarySpacePartitioning_Algorithm : MonoBehaviour
                 roomsToConnect.Remove(currentID);
                 roomsToConnect.Remove(siblingID);
 
-                Debug.Log($"<color=cyan>Connecting Rooms</color> {currentID} & {siblingID} ");
-                Debug.Log($"<color=magenta> newParent: </color> {parentID}");
+                //Debug.Log($"<color=cyan>Connecting Rooms</color> {currentID} & {siblingID} ");
+                //Debug.Log($"<color=magenta> newParent: </color> {parentID}");
                 roomIndex.Enqueue(parentID);
                 doneIDs.Enqueue(currentID);
             }
@@ -157,12 +159,12 @@ public class BinarySpacePartitioning_Algorithm : MonoBehaviour
                 roomIndex.Enqueue(currentID);
             }
         }
-        Debug.Log("<color=black> End Room IDs.</color>");
+        //Debug.Log("<color=black> End Room IDs.</color>");
     }
 
     private void SetCorridor(Vector2Int pointA, Vector2Int pointB)
     {
-        Debug.Log("Connecting!");
+        //Debug.Log("Connecting!");
         Vector2Int pointAB = new Vector2Int(pointA.x, pointB.y);
         Vector2Int pointBA = new Vector2Int(pointB.x, pointA.y);
 
@@ -173,36 +175,41 @@ public class BinarySpacePartitioning_Algorithm : MonoBehaviour
 
         pathA = GetCorridorPath(pointA, pointB, pointAB);
         pathB = GetCorridorPath(pointA, pointB, pointBA);
+        Debug.Log("PathA: " + pathA.Count + " Tiles");
+        Debug.Log("PathB: " + pathB.Count + " Tiles");
 
-        if (pathA.Count < pathB.Count)
+        if(pathA.Count == 0)
         {
-            corridorList = pathA;
-            Debug.DrawLine(new Vector3(pointA.x, pointA.y), new Vector3(pointAB.x, pointAB.y), Color.red, 15);
-            Debug.DrawLine(new Vector3(pointAB.x, pointAB.y), new Vector3(pointB.x, pointB.y), Color.red, 15);
-
+            pathA = pathB;
         }
-        else if(pathB.Count < pathA.Count)
+        else if(pathB.Count == 0)
         {
-            corridorList = pathB;
-            Debug.DrawLine(new Vector3(pointA.x, pointA.y), new Vector3(pointBA.x, pointBA.y), Color.green, 15);
-            Debug.DrawLine(new Vector3(pointBA.x, pointBA.y), new Vector3(pointB.x, pointB.y), Color.green, 15);
-        }else if(pathA.Count == pathB.Count)
-        {
+            pathB = pathA;
+        }
 
+        if (pathA.Count == pathB.Count)
+        {
             corridorList = Random.value <= 0.5f ? pathA : pathB;
-            if(corridorList == pathA)
-            {
-                Debug.DrawLine(new Vector3(pointA.x, pointA.y), new Vector3(pointAB.x, pointAB.y), Color.blue, 15);
-                Debug.DrawLine(new Vector3(pointAB.x, pointAB.y), new Vector3(pointB.x, pointB.y), Color.blue, 15);
-            }
-            else
-            {
-                Debug.DrawLine(new Vector3(pointA.x, pointA.y), new Vector3(pointBA.x, pointBA.y), Color.blue, 15);
-                Debug.DrawLine(new Vector3(pointBA.x, pointBA.y), new Vector3(pointB.x, pointB.y), Color.blue, 15);
-            }
+        }
+        else
+        {
+            corridorList = pathA.Count < pathB.Count ? pathA : pathB;
+            
         }
 
-        foreach(var  corridor in corridorList)
+        if (corridorList == pathA)
+        {
+
+            Debug.DrawLine(new Vector3(pointA.x, pointA.y), new Vector3(pointAB.x, pointAB.y), Color.blue, 3);
+            Debug.DrawLine(new Vector3(pointAB.x, pointAB.y), new Vector3(pointB.x, pointB.y), Color.blue, 3);
+        }
+        else
+        {
+            Debug.DrawLine(new Vector3(pointA.x, pointA.y), new Vector3(pointBA.x, pointBA.y), Color.blue, 3);
+            Debug.DrawLine(new Vector3(pointBA.x, pointBA.y), new Vector3(pointB.x, pointB.y), Color.blue, 3);
+        }
+
+        foreach (var  corridor in corridorList)
         {
             dungeonTiles.Add(corridor);
         }
@@ -230,7 +237,6 @@ public class BinarySpacePartitioning_Algorithm : MonoBehaviour
             goalPoint = pointA;
         }
 
-
         #region GoAlongXAxis
         if (startPoint.y < middlePoint.y)
         {
@@ -252,7 +258,6 @@ public class BinarySpacePartitioning_Algorithm : MonoBehaviour
             }
         }
         #endregion
-
         #region GoAlongYAxis
         if (goalPoint.x < middlePoint.x)
         {
@@ -304,8 +309,8 @@ public class BinarySpacePartitioning_Algorithm : MonoBehaviour
 
     private Vector3Int VariantPosition(BoundsInt rooms, Vector3Int newSize)
     {
-        int xDiff = rooms.size.x - newSize.x;
-        int yDiff = rooms.size.y - newSize.y;
+        int xDiff = rooms.size.x - newSize.x-offset;
+        int yDiff = rooms.size.y - newSize.y-offset;
 
         int xRandom = Random.Range(-xDiff/2, xDiff/2);
         int yRandom = Random.Range(-yDiff/2, yDiff/2);
@@ -317,14 +322,22 @@ public class BinarySpacePartitioning_Algorithm : MonoBehaviour
     {
         int xRandom = rooms.size.x;
         int yRandom = rooms.size.y;
+        
+        
         if (rooms.size.x > rooms.size.y)
         {
-            yRandom = Random.Range(minYSize, rooms.size.y - offset);
+            int potYMin = Mathf.FloorToInt(rooms.size.y * roomPercentage);
+            int yMin = potYMin > minYSize ? potYMin : minYSize;
+
+            yRandom = Random.Range(yMin, rooms.size.y - offset);
             xRandom = Random.Range(minSize / yRandom, rooms.size.x - offset);
         }
         else if (rooms.size.y >= rooms.size.x)
         {
-            xRandom = Random.Range(minXSize, rooms.size.x - offset);
+            int potXMin = Mathf.FloorToInt(rooms.size.x * roomPercentage);
+            int xMin = potXMin > minXSize ? potXMin : minXSize;
+
+            xRandom = Random.Range(xMin, rooms.size.x - offset);
             yRandom = Random.Range(minSize / xRandom, rooms.size.y - offset);
         }
         //Debug.Log($"x: {xRandom} / y: {yRandom}");
@@ -383,7 +396,7 @@ public class BinarySpacePartitioning_Algorithm : MonoBehaviour
         #region SplitVertical
         if (canSplitBoth && Random.value <= 0.5f || canSplitHorizontal == false && canSplitVertical)
         {
-            Debug.Log("<color=red>Vertical Slice</color>");
+            //Debug.Log("<color=red>Vertical Slice</color>");
             
             int randomValueA = Random.Range(minXSize, room.size.x-minXSize);
             if(randomValueA%2 > 0)
@@ -404,8 +417,8 @@ public class BinarySpacePartitioning_Algorithm : MonoBehaviour
             BoundsInt newRoomA = new BoundsInt(room.xMin-randomValueB/2, room.yMin, 0, randomValueA, room.size.y, 0);
             BoundsInt newRoomB = new BoundsInt(room.xMin+randomValueA/2, room.yMin, 0, randomValueB, room.size.y, 0);
 
-            Debug.Log("New Room Size: A(" + newRoomA.size + ") / B(" + newRoomB.size + ")");
-            Debug.Log("New Room Position: A(" + newRoomA.position + ") / B(" + newRoomB.position + ")");
+            //Debug.Log("New Room Size: A(" + newRoomA.size + ") / B(" + newRoomB.size + ")");
+            //Debug.Log("New Room Position: A(" + newRoomA.position + ") / B(" + newRoomB.position + ")");
             result.Add(newRoomA);
             result.Add(newRoomB);
 
@@ -414,7 +427,7 @@ public class BinarySpacePartitioning_Algorithm : MonoBehaviour
         #region SplitHorizontal
         else if (canSplitHorizontal)
         {
-            Debug.Log("<color=red>Horizontal Slice</color>");
+            //Debug.Log("<color=red>Horizontal Slice</color>");
            
             int randomValueA = Random.Range(minYSize, room.size.y - minYSize);
             if (randomValueA % 2 > 0)
@@ -433,8 +446,8 @@ public class BinarySpacePartitioning_Algorithm : MonoBehaviour
             BoundsInt newRoomA = new BoundsInt(room.xMin, room.yMin-randomValueB/2, 0, room.size.x, randomValueA, 0);
             BoundsInt newRoomB = new BoundsInt(room.xMin, room.yMin+randomValueA/2, 0, room.size.x, randomValueB, 0);
 
-            Debug.Log("New Room Size: A("+newRoomA.size+") / B("+newRoomB.size+")");
-            Debug.Log("New Room Position: A(" + newRoomA.position + ") / B(" + newRoomB.position + ")");
+            //Debug.Log("New Room Size: A("+newRoomA.size+") / B("+newRoomB.size+")");
+            //Debug.Log("New Room Position: A(" + newRoomA.position + ") / B(" + newRoomB.position + ")");
             result.Add(newRoomA);
             result.Add(newRoomB);
         }

@@ -573,6 +573,7 @@ MonoBehaviour:
     m_Size: {x: 100, y: 100, z: 0}
   maxNumRooms: 10
   minSize: 250
+  roomPercentage: 0.653
   minYSize: 12
   minXSize: 12
   offset: 3

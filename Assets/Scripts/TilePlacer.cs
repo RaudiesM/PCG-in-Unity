@@ -23,7 +23,6 @@ public class TilePlacer : MonoBehaviour
     public void PlaceRooms(HashSet<BoundsInt> roomPosition)
     {
         RemoveTiles();
-        Debug.Log("Placing room");
         foreach (var room in roomPosition) { 
             
             GameObject newRoomTile = Instantiate(roomTile);

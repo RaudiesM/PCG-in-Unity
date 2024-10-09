@@ -19,11 +19,6 @@ public class CellulaAutomataAlgorithm : MonoBehaviour
     private int neighbourDistance = 1;
     private Dictionary<Vector2Int, CellState> cellDistribution = new Dictionary<Vector2Int, CellState>();
 
-    private void Start()
-    {
-        Debug.Log($"fieldSize: Position[{fieldSize.position}], Zentrum[{fieldSize.center}], Min[{fieldSize.min}], Max[{fieldSize.max}]");
-    }
-
     public HashSet<Vector2Int> GetDungeonTiles()
     {
         cellDistribution.Clear();
