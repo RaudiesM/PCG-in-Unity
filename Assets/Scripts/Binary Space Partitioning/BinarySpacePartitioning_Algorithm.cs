@@ -19,6 +19,7 @@ public class BinarySpacePartitioning_Algorithm : MonoBehaviour
 
     private Dictionary<string, BoundsInt> dungeonRooms = new Dictionary<string, BoundsInt>();
     private Dictionary<string, RoomPoints> roomsToConnect = new Dictionary<string, RoomPoints>();
+    private HashSet<Vector2Int> dungeonTiles = new HashSet<Vector2Int>();
     private int currentIndexNum = 0;
 
     private void Start()
@@ -48,14 +49,25 @@ public class BinarySpacePartitioning_Algorithm : MonoBehaviour
         minSize += offset*offset;
     }
 
-    public HashSet<Vector2Int> GetDungeonTiles()
+    public HashSet<Vector2Int> GetDungeonTiles(HashSet<BoundsInt> rooms)
     {
-        throw new NotImplementedException();
+        dungeonTiles.Clear();
+        foreach(var room in rooms)
+        {
+            for (int i = room.xMin - room.size.x / 2; i < room.xMax - room.size.x / 2; i++)
+            {
+                for (int j = room.yMin - room.size.y / 2; j < room.yMax - room.size.y / 2; j++)
+                {
+                    dungeonTiles.Add(new Vector2Int(i, j));
+                }
+            }
+        }
+        return dungeonTiles;
     }
 
     public HashSet<BoundsInt> NewRooms()
     {
-        dungeonRooms.Clear();
+        ClearDictionaries();
         HashSet<BoundsInt> newDungeonRooms = new HashSet<BoundsInt>();
         IterateOverRooms();
         foreach (var room in dungeonRooms)
@@ -65,6 +77,9 @@ public class BinarySpacePartitioning_Algorithm : MonoBehaviour
         }
         return newDungeonRooms;
     }
+
+    
+
     public HashSet<BoundsInt> GetRooms(out HashSet<Vector2Int> roomTiles)
     {
         HashSet<BoundsInt> newDungeonRooms = new HashSet<BoundsInt>();
@@ -74,9 +89,10 @@ public class BinarySpacePartitioning_Algorithm : MonoBehaviour
         if (isDoneSplitting)
         {
             Debug.Log("I am done");
-            //roomTiles = PlaceRooms();
             newDungeonRooms = PlaceRooms();
+            GetDungeonTiles(newDungeonRooms);
             ConnectRooms();
+            roomTiles = dungeonTiles;
         }
         else
         {
@@ -105,18 +121,33 @@ public class BinarySpacePartitioning_Algorithm : MonoBehaviour
             string parentID = currentID.Substring(0, currentID.Length - 1);
             string endIsAorB = currentID.Substring(currentID.Length - 1);
             string siblingID = GetSiblingIndex(parentID, endIsAorB);
-            
-            if (roomIndex.Contains(siblingID))
+
+            if (roomsToConnect.ContainsKey(siblingID))
             {
+                RoomPoints roomPointsA = roomsToConnect[currentID];
+                RoomPoints roomPointsB = roomsToConnect[siblingID];
+                Vector2Int pointA = new Vector2Int();
+                Vector2Int pointB = new Vector2Int();
+
+                if (roomPointsA.GetRoomPoints().Count + roomPointsB.GetRoomPoints().Count > 2)
+                {
+                    Vector2Int closestPointB = roomsToConnect[siblingID].GetAveragePoint();
+                    pointA = roomsToConnect[currentID].GetClosestPoint(closestPointB);
+                    pointB = roomsToConnect[siblingID].GetClosestPoint(pointA);
+                }
+                else
+                {
+                    pointA = roomPointsA.GetRoomPoints()[0];
+                    pointB = roomPointsB.GetRoomPoints()[0];
+                }
+                
+                SetCorridor(pointA, pointB);
+                RoomPoints newRoomPoints = new RoomPoints(roomPointsA, roomPointsB);
+                roomsToConnect.Add(parentID, newRoomPoints);
+                roomsToConnect.Remove(currentID);
+                roomsToConnect.Remove(siblingID);
+
                 Debug.Log($"<color=cyan>Connecting Rooms</color> {currentID} & {siblingID} ");
-                if (dungeonRooms.ContainsKey(currentID))
-                {
-                    Debug.Log($"Room Positions: {dungeonRooms[currentID]}");
-                }
-                if (dungeonRooms.ContainsKey(siblingID))
-                {
-                    Debug.Log($"Sibling Room Positions: {dungeonRooms[siblingID]}");
-                }
                 Debug.Log($"<color=magenta> newParent: </color> {parentID}");
                 roomIndex.Enqueue(parentID);
                 doneIDs.Enqueue(currentID);
@@ -127,6 +158,122 @@ public class BinarySpacePartitioning_Algorithm : MonoBehaviour
             }
         }
         Debug.Log("<color=black> End Room IDs.</color>");
+    }
+
+    private void SetCorridor(Vector2Int pointA, Vector2Int pointB)
+    {
+        Debug.Log("Connecting!");
+        Vector2Int pointAB = new Vector2Int(pointA.x, pointB.y);
+        Vector2Int pointBA = new Vector2Int(pointB.x, pointA.y);
+
+        HashSet<Vector2Int> pathA = new HashSet<Vector2Int>();
+        HashSet<Vector2Int> pathB = new HashSet<Vector2Int>();
+
+        HashSet<Vector2Int> corridorList = new HashSet<Vector2Int>();
+
+        pathA = GetCorridorPath(pointA, pointB, pointAB);
+        pathB = GetCorridorPath(pointA, pointB, pointBA);
+
+        if (pathA.Count < pathB.Count)
+        {
+            corridorList = pathA;
+            Debug.DrawLine(new Vector3(pointA.x, pointA.y), new Vector3(pointAB.x, pointAB.y), Color.red, 15);
+            Debug.DrawLine(new Vector3(pointAB.x, pointAB.y), new Vector3(pointB.x, pointB.y), Color.red, 15);
+
+        }
+        else if(pathB.Count < pathA.Count)
+        {
+            corridorList = pathB;
+            Debug.DrawLine(new Vector3(pointA.x, pointA.y), new Vector3(pointBA.x, pointBA.y), Color.green, 15);
+            Debug.DrawLine(new Vector3(pointBA.x, pointBA.y), new Vector3(pointB.x, pointB.y), Color.green, 15);
+        }else if(pathA.Count == pathB.Count)
+        {
+
+            corridorList = Random.value <= 0.5f ? pathA : pathB;
+            if(corridorList == pathA)
+            {
+                Debug.DrawLine(new Vector3(pointA.x, pointA.y), new Vector3(pointAB.x, pointAB.y), Color.red, 15);
+                Debug.DrawLine(new Vector3(pointAB.x, pointAB.y), new Vector3(pointB.x, pointB.y), Color.red, 15);
+            }
+            else
+            {
+                Debug.DrawLine(new Vector3(pointA.x, pointA.y), new Vector3(pointBA.x, pointBA.y), Color.green, 15);
+                Debug.DrawLine(new Vector3(pointBA.x, pointBA.y), new Vector3(pointB.x, pointB.y), Color.green, 15);
+            }
+        }
+
+        foreach(var  corridor in corridorList)
+        {
+            dungeonTiles.Add(corridor);
+        }
+    }
+
+    private HashSet<Vector2Int> GetCorridorPath(Vector2Int pointA, Vector2Int pointB, Vector2Int middlePoint)
+    {
+        HashSet<Vector2Int> result = new HashSet<Vector2Int>();
+        
+        Vector2Int startVector = new Vector2Int();
+        Vector2Int goalVector = new Vector2Int();
+
+        Vector2Int startPoint = new Vector2Int();
+        Vector2Int goalPoint = new Vector2Int();
+
+        if(pointA.x == middlePoint.x)
+        {
+            startPoint = pointA;
+            goalPoint = pointB;
+        }
+        else if(pointB.x == middlePoint.x)
+        {
+            startPoint = pointB;
+            goalPoint = pointA;
+        }
+
+
+        #region GoAlongXAxis
+        if (startPoint.y < middlePoint.y)
+        {
+            startVector = startPoint;
+            goalVector = middlePoint;
+        }
+        else
+        {
+            startVector = middlePoint;
+            goalVector = startPoint;
+        }
+        
+        for(int y = startVector.y; y <= goalVector.y; y++)
+        {
+            Vector2Int currentPosition = new Vector2Int(startVector.x, y);
+            if(dungeonTiles.Contains(currentPosition) == false)
+            {
+                result.Add(currentPosition);
+            }
+        }
+        #endregion
+
+        #region GoAlongYAxis
+        if (goalPoint.x < middlePoint.x)
+        {
+            startVector = goalPoint;
+            goalVector = middlePoint;
+        }
+        else
+        {
+            startVector = middlePoint;
+            goalVector = goalPoint;
+        }
+
+        for (int x = startVector.x; x <= goalVector.x; x++)
+        {
+            Vector2Int currentPosition = new Vector2Int(x, startVector.y);
+            if (dungeonTiles.Contains(currentPosition) == false)
+            {
+                result.Add(currentPosition);
+            }
+        }
+        #endregion
+        return result;
     }
 
     private string GetSiblingIndex(string parentString, string ownID)
@@ -153,6 +300,7 @@ public class BinarySpacePartitioning_Algorithm : MonoBehaviour
             BoundsInt newRoom = CreateRoomVariance(rooms.Value);
             dungeonTiles.Add(newRoom);
             newDungeonRooms.Add(rooms.Key, newRoom);
+            roomsToConnect.Add(rooms.Key, new RoomPoints(newRoom.position));
         }
         dungeonRooms = newDungeonRooms;
         return dungeonTiles;
@@ -311,6 +459,11 @@ public class BinarySpacePartitioning_Algorithm : MonoBehaviour
     private void ResetIndexNumber()
     {
         currentIndexNum = 0;
+    }
+    private void ClearDictionaries()
+    {
+        dungeonRooms.Clear();
+        roomsToConnect.Clear();
     }
     private string GetNewIndex(string index)
     {

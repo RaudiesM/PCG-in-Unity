@@ -467,6 +467,7 @@ GameObject:
   - component: {fileID: 883259473}
   - component: {fileID: 883259475}
   - component: {fileID: 883259474}
+  - component: {fileID: 883259476}
   m_Layer: 0
   m_Name: DungeonSpawner
   m_TagString: Untagged
@@ -504,8 +505,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2a465ecbf23d0314ab044d798528a1fc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  floorTile: {fileID: 760897397149223260, guid: aa24b0d455218b84cae80ab58c83e691, type: 3}
+  floorTile: {fileID: 8990267914080497813, guid: 6133a8be8cb2e174293a968b42d22c0b, type: 3}
   boundryTile: {fileID: 760897397149223260, guid: ed629805a743b114a9f3edb5cebb0b2c, type: 3}
+  roomTile: {fileID: 760897397149223260, guid: aa24b0d455218b84cae80ab58c83e691, type: 3}
   tileParent: {fileID: 647128756}
 --- !u!114 &883259475
 MonoBehaviour:
@@ -522,6 +524,22 @@ MonoBehaviour:
   currentAlgorithm: 2
   CA_Algorithm: {fileID: 1563801909}
   BSP_Algorithm: {fileID: 1277086792}
+  tilePlacer: {fileID: 883259474}
+--- !u!114 &883259476
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 883259472}
+  m_Enabled: 0
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8e8c3bf48cf1baf4da09b18628cd0dbf, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  testBounds:
+    m_Position: {x: 51, y: 50, z: 0}
+    m_Size: {x: 71, y: 70, z: 0}
   tilePlacer: {fileID: 883259474}
 --- !u!1 &1277086790
 GameObject:
@@ -567,15 +585,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0297a089f37700e4682073998b921711, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-
-  DungeonSize:
+  dungeonSize:
     m_Position: {x: 50, y: 50, z: 0}
     m_Size: {x: 100, y: 100, z: 0}
   maxNumRooms: 10
   minSize: 250
   minYSize: 12
   minXSize: 12
-  offset: 4
+  offset: 3
 --- !u!1 &1563801907
 GameObject:
   m_ObjectHideFlags: 0
