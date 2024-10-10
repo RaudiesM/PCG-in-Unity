@@ -5,16 +5,21 @@ using UnityEngine;
 
 public class RandomWalker_Algorithm : MonoBehaviour
 {
-    [SerializeField] private DungeonType thisDungeon;
-    [Range(50, 5000)] private int maxTiles;
-    [Range(0, 100)] private int roomSpawnRate;
+    [SerializeField] private DungeonType currentType;
+    [SerializeField] private BoundsInt fieldSize;
+    [Range(50, 5000)]
+    [SerializeField] private int maxTiles;
+    [Range(0, 100)]
+    [SerializeField] private int roomSpawnRate;
 
-    private List<Vector3> tileList = new List<Vector3>();
-
-    public HashSet<Vector3> GetDungeonTiles()
+    private List<Vector2Int> tileList = new List<Vector2Int>();
+    private Vector2Int startPosition;
+    public HashSet<Vector2Int> GetDungeonTiles()
     {
         tileList.Clear();
-        switch (thisDungeon)
+        startPosition = new Vector2Int(Mathf.FloorToInt(fieldSize.center.x), Mathf.FloorToInt(fieldSize.center.y));
+
+        switch (currentType)
         {
             case DungeonType.Caverns:
                 BaseRandomWalker();
@@ -32,11 +37,11 @@ public class RandomWalker_Algorithm : MonoBehaviour
 
     private void BaseRandomWalker()
     {
-        Vector3 curPos = Vector3.zero;
+        Vector2Int curPos = startPosition;
         tileList.Add(curPos);
         while (tileList.Count < maxTiles)
         {
-            curPos += RandomDirection();
+            curPos += RandomDirection(curPos);
             if (!tileList.Contains(curPos))
             {
                 tileList.Add(curPos);
@@ -46,7 +51,7 @@ public class RandomWalker_Algorithm : MonoBehaviour
 
     private void RoomWalker()
     {
-        Vector3 curPos = Vector3.zero;
+        Vector2Int curPos = startPosition;
         tileList.Add(curPos);
         while (tileList.Count < maxTiles)
         {
@@ -56,7 +61,7 @@ public class RandomWalker_Algorithm : MonoBehaviour
     }
     private void WindingWalker()
     {
-        Vector3 curPos = Vector3.zero;
+        Vector2Int curPos = startPosition;
         tileList.Add(curPos);
 
         while (tileList.Count < maxTiles)
@@ -70,7 +75,7 @@ public class RandomWalker_Algorithm : MonoBehaviour
         }
     }
 
-    private void SetRoom(Vector3 curPos)
+    private void SetRoom(Vector2Int curPos)
     {
         int height = Random.Range(1, 5);
         int width = Random.Range(1, 5);
@@ -78,7 +83,7 @@ public class RandomWalker_Algorithm : MonoBehaviour
         {
             for (int h = -height; h <= height; h++)
             {
-                Vector3 offset = new Vector3(w, h, 0);
+                Vector2Int offset = new Vector2Int(w, h);
                 if (!tileList.Contains(curPos + offset))
                 {
                     tileList.Add(curPos + offset);
@@ -88,9 +93,9 @@ public class RandomWalker_Algorithm : MonoBehaviour
         }
     }
 
-    private Vector3 SetHallway(Vector3 curPos)
+    private Vector2Int SetHallway(Vector2Int curPos)
     {
-        Vector3 walkDir = RandomDirection();
+        Vector2Int walkDir = RandomDirection(curPos);
         int walkLength = Random.Range(9, 18);
         for (int i = 0; i < walkLength; i++)
         {
@@ -103,21 +108,53 @@ public class RandomWalker_Algorithm : MonoBehaviour
         return curPos;
     }
 
-    private Vector3 RandomDirection()
+    private Vector2Int RandomDirection()
     {
         switch (Random.Range(1, 5))
         {
             case 1:
-                return Vector3.up;
+                return Vector2Int.up;
             case 2:
-                return Vector3.down;
+                return Vector2Int.down;
             case 3:
-                return Vector3.left;
+                return Vector2Int.left;
             case 4:
-                return Vector3.right;
+                return Vector2Int.right;
         }
-        return Vector3.zero;
+        return Vector2Int.zero;
     }
 
-    
+    private Vector2Int RandomDirection(Vector2Int pos)
+    {
+        List<Vector2Int> directionList = GetListOfDirections(pos);
+        if (directionList.Count > 0)
+        {
+            int randNumb = Random.Range(0, directionList.Count);
+
+            return directionList[randNumb];
+        }
+        return Vector2Int.zero;
+    }
+
+    private List<Vector2Int> GetListOfDirections(Vector2Int pos)
+    {
+        List<Vector2Int> directionList = new List<Vector2Int>();
+        if (pos.y < fieldSize.yMax-1)
+        {
+            directionList.Add(Vector2Int.up);
+        }
+        if (pos.y > fieldSize.yMin)
+        {
+            directionList.Add(Vector2Int.down);
+        }
+        if (pos.x > fieldSize.xMin)
+        {
+            directionList.Add(Vector2Int.left);
+        }
+        if (pos.x < fieldSize.xMax-1)
+        {
+            directionList.Add(Vector2Int.right);
+        }
+        return directionList;
+    }
 }
