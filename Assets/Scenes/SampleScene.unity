@@ -520,7 +520,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f85abe2f572432f4a9dfd0145d4036d1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  currentAlgorithm: 2
+  currentAlgorithm: 0
   CA_Algorithm: {fileID: 1563801909}
   BSP_Algorithm: {fileID: 1277086792}
   tilePlacer: {fileID: 883259474}
@@ -624,7 +624,7 @@ MonoBehaviour:
   numIterations: 1
   fieldSize:
     m_Position: {x: 0, y: 0, z: 0}
-    m_Size: {x: 100, y: 100, z: 0}
+    m_Size: {x: 10, y: 25, z: 0}
   fillPercentage: 0.55
   currentNeighbour: 1
   showWalls: 0
