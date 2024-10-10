@@ -5,6 +5,5 @@ using UnityEngine;
 public enum DungeonType
 {
     Caverns,
-    Rooms,
-    Winding
+    Rooms
 }

@@ -175,8 +175,6 @@ public class BinarySpacePartitioning_Algorithm : MonoBehaviour
 
         pathA = GetCorridorPath(pointA, pointB, pointAB);
         pathB = GetCorridorPath(pointA, pointB, pointBA);
-        Debug.Log("PathA: " + pathA.Count + " Tiles");
-        Debug.Log("PathB: " + pathB.Count + " Tiles");
 
         if(pathA.Count == 0)
         {

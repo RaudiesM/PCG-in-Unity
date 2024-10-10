@@ -12,26 +12,25 @@ public class RandomWalker_Algorithm : MonoBehaviour
     [Range(0, 100)]
     [SerializeField] private int roomSpawnRate;
 
+    [SerializeField] private int roomMin;
+    [SerializeField] private int roomMax;
+    [SerializeField] private int hallwayLengthMin;
+    [SerializeField] private int hallwayLengthMax;
+
     private List<Vector2Int> tileList = new List<Vector2Int>();
+    private Stack<Vector2Int> safePositions = new Stack<Vector2Int>();
     private Vector2Int startPosition;
     public HashSet<Vector2Int> GetDungeonTiles()
     {
         tileList.Clear();
         startPosition = new Vector2Int(Mathf.FloorToInt(fieldSize.center.x), Mathf.FloorToInt(fieldSize.center.y));
-
-        switch (currentType)
+        if(currentType == DungeonType.Caverns)
         {
-            case DungeonType.Caverns:
-                BaseRandomWalker();
-                break;
-            case DungeonType.Rooms:
-                RoomWalker();
-                break;
-            case DungeonType.Winding:
-                WindingWalker();
-                break;
+            BaseRandomWalker();
+        }else if(currentType == DungeonType.Rooms)
+        {
+            RoomWalker();
         }
-
         return tileList.ToHashSet();
     }
 
@@ -53,22 +52,12 @@ public class RandomWalker_Algorithm : MonoBehaviour
     {
         Vector2Int curPos = startPosition;
         tileList.Add(curPos);
-        while (tileList.Count < maxTiles)
-        {
-            curPos = SetHallway(curPos);
-            SetRoom(curPos);
-        }
-    }
-    private void WindingWalker()
-    {
-        Vector2Int curPos = startPosition;
-        tileList.Add(curPos);
-
+        SetRoom(curPos);
         while (tileList.Count < maxTiles)
         {
             curPos = SetHallway(curPos);
             int rollForRoom = Random.Range(1, 101);
-            if(rollForRoom <= roomSpawnRate)
+            if (rollForRoom <= roomSpawnRate)
             {
                 SetRoom(curPos);
             }
@@ -77,8 +66,16 @@ public class RandomWalker_Algorithm : MonoBehaviour
 
     private void SetRoom(Vector2Int curPos)
     {
-        int height = Random.Range(1, 5);
-        int width = Random.Range(1, 5);
+        int newYMax = GetMaxSize(curPos, Vector2Int.up);
+        int newXMax = GetMaxSize(curPos, Vector2Int.left);
+
+        int heightMax = newYMax < roomMax ? newYMax : roomMax;
+        int weightMax = newXMax < roomMax ? newXMax : roomMax;
+
+
+        int height = Random.Range(roomMin, heightMax);
+        int width = Random.Range(roomMin, weightMax);
+
         for (int w = -width; w <= width; w++)
         {
             for (int h = -height; h <= height; h++)
@@ -93,10 +90,30 @@ public class RandomWalker_Algorithm : MonoBehaviour
         }
     }
 
+    private int GetMaxSize(Vector2Int curPos, Vector2Int direction)
+    {
+        int distance = GetDistanceToBorder(curPos, direction);
+        int oppositeDistance = GetDistanceToBorder(curPos, -direction);
+        int maxValue = oppositeDistance < distance ? oppositeDistance : distance;
+        return maxValue;
+    }
+
     private Vector2Int SetHallway(Vector2Int curPos)
     {
-        Vector2Int walkDir = RandomDirection(curPos);
-        int walkLength = Random.Range(9, 18);
+        bool moreThenOneOption = false;
+        Vector2Int walkDir = RandomDirection(curPos, hallwayLengthMin, out moreThenOneOption);
+        while(walkDir == Vector2Int.zero && safePositions.Count > 0)
+        {
+            curPos = safePositions.Pop();
+            walkDir = RandomDirection(curPos, hallwayLengthMin + 2* roomMin, out moreThenOneOption);
+        }
+        if (moreThenOneOption)
+        {
+            safePositions.Push(curPos);
+        }
+        int distanceToBorder = GetDistanceToBorder(curPos, walkDir);
+        int newMax = hallwayLengthMax < distanceToBorder ? hallwayLengthMax : distanceToBorder;
+        int walkLength = Random.Range(hallwayLengthMin, newMax - roomMin);
         for (int i = 0; i < walkLength; i++)
         {
             curPos += walkDir;
@@ -108,20 +125,25 @@ public class RandomWalker_Algorithm : MonoBehaviour
         return curPos;
     }
 
-    private Vector2Int RandomDirection()
+    private int GetDistanceToBorder(Vector2Int curPos, Vector2Int walkDir)
     {
-        switch (Random.Range(1, 5))
+        int newDistance = 0;
+        if(walkDir == Vector2Int.down)
         {
-            case 1:
-                return Vector2Int.up;
-            case 2:
-                return Vector2Int.down;
-            case 3:
-                return Vector2Int.left;
-            case 4:
-                return Vector2Int.right;
+            newDistance = curPos.y - fieldSize.yMin;
+        }else if(walkDir == Vector2Int.up)
+        {
+            newDistance = fieldSize.yMax - curPos.y;
         }
-        return Vector2Int.zero;
+        else if (walkDir == Vector2Int.left)
+        {
+            newDistance = curPos.x - fieldSize.xMin;
+        }
+        else if(walkDir == Vector2Int.right)
+        {
+            newDistance = fieldSize.xMax - curPos.x;
+        }
+        return newDistance;
     }
 
     private Vector2Int RandomDirection(Vector2Int pos)
@@ -136,24 +158,37 @@ public class RandomWalker_Algorithm : MonoBehaviour
         return Vector2Int.zero;
     }
 
-    private List<Vector2Int> GetListOfDirections(Vector2Int pos)
+    private Vector2Int RandomDirection(Vector2Int pos, int length, out bool moreThenOneOption)
+    {
+        List<Vector2Int> directionList = GetListOfDirections(pos, length);
+        moreThenOneOption = directionList.Count > 1;
+        if (directionList.Count > 0)
+        {
+            int randNumb = Random.Range(0, directionList.Count);
+
+            return directionList[randNumb];
+        }
+        return Vector2Int.zero;
+    }
+
+    private List<Vector2Int> GetListOfDirections(Vector2Int pos, int length = 0)
     {
         List<Vector2Int> directionList = new List<Vector2Int>();
-        if (pos.y < fieldSize.yMax-1)
+        if (pos.y + length < fieldSize.yMax-1)
         {
             directionList.Add(Vector2Int.up);
         }
-        if (pos.y > fieldSize.yMin)
+        if (pos.y - length > fieldSize.yMin)
         {
             directionList.Add(Vector2Int.down);
         }
-        if (pos.x > fieldSize.xMin)
-        {
-            directionList.Add(Vector2Int.left);
-        }
-        if (pos.x < fieldSize.xMax-1)
+        if (pos.x + length < fieldSize.xMax-1)
         {
             directionList.Add(Vector2Int.right);
+        }
+        if (pos.x - length > fieldSize.xMin)
+        {
+            directionList.Add(Vector2Int.left);
         }
         return directionList;
     }

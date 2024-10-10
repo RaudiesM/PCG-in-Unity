@@ -166,12 +166,16 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 381b304118ee9d94fbe16d250734fc15, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  currentType: 0
+  currentType: 1
   fieldSize:
     m_Position: {x: 0, y: 0, z: 0}
     m_Size: {x: 100, y: 100, z: 0}
-  maxTiles: 1000
-  roomSpawnRate: 100
+  maxTiles: 2353
+  roomSpawnRate: 82
+  roomMin: 1
+  roomMax: 5
+  hallwayLengthMin: 9
+  hallwayLengthMax: 18
 --- !u!1 &519420028
 GameObject:
   m_ObjectHideFlags: 0
@@ -537,8 +541,8 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
-  - {fileID: 283747622}
   - {fileID: 1563801908}
+  - {fileID: 283747622}
   - {fileID: 1277086791}
   - {fileID: 647128757}
   m_Father: {fileID: 0}
