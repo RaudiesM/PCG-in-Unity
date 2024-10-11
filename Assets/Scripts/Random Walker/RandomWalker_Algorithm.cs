@@ -18,6 +18,7 @@ public class RandomWalker_Algorithm : MonoBehaviour
     [SerializeField] private int hallwayLengthMax;
 
     private List<Vector2Int> tileList = new List<Vector2Int>();
+    private HashSet<Bounds> roomList = new HashSet<Bounds>();
     private Stack<Vector2Int> safePositions = new Stack<Vector2Int>();
     private Vector2Int startPosition;
     public HashSet<Vector2Int> GetDungeonTiles()
@@ -75,6 +76,9 @@ public class RandomWalker_Algorithm : MonoBehaviour
         int height = Random.Range(roomMin, heightMax);
         int width = Random.Range(roomMin, weightMax);
 
+        Bounds newRoom = new Bounds(curPos+new Vector2(0.5f, 0.5f), new Vector2(2*width+1, 2*height + 1));
+        roomList.Add(newRoom);
+        Debug.Log("NewRoom: "+newRoom);
         for (int w = -width; w <= width; w++)
         {
             for (int h = -height; h <= height; h++)
