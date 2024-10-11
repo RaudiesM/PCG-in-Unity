@@ -72,7 +72,6 @@ public class RandomWalker_Algorithm : MonoBehaviour
         int heightMax = newYMax < roomMax ? newYMax : roomMax;
         int weightMax = newXMax < roomMax ? newXMax : roomMax;
 
-
         int height = Random.Range(roomMin, heightMax);
         int width = Random.Range(roomMin, weightMax);
 
