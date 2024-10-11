@@ -35,7 +35,9 @@ public class DungeonSpawner : MonoBehaviour
             }
         }else if(currentAlgorithm == AlgorithmType.RandomWalker)
         {
-            tilePlacer.PlaceFloorTiles(RW_Algorithm.GetDungeonTiles());
+            HashSet<Bounds> roomsAsBounds = new HashSet<Bounds>();
+            tilePlacer.PlaceFloorTiles(RW_Algorithm.GetDungeonTiles(out roomsAsBounds));
+            tilePlacer.PlaceRooms(roomsAsBounds);
         }
     }
 

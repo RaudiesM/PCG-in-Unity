@@ -170,8 +170,8 @@ MonoBehaviour:
   fieldSize:
     m_Position: {x: 0, y: 0, z: 0}
     m_Size: {x: 100, y: 100, z: 0}
-  maxTiles: 2353
-  roomSpawnRate: 82
+  maxTiles: 1814
+  roomSpawnRate: 100
   roomMin: 1
   roomMax: 5
   hallwayLengthMin: 9
@@ -436,6 +436,7 @@ GameObject:
   m_Component:
   - component: {fileID: 653697647}
   - component: {fileID: 653697646}
+  - component: {fileID: 653697648}
   m_Layer: 0
   m_Name: Square
   m_TagString: Untagged
@@ -510,6 +511,28 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &653697648
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 653697645}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8e8c3bf48cf1baf4da09b18628cd0dbf, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  roomMax: 100
+  room1:
+    m_Center: {x: 50, y: 50, z: 0}
+    m_Extent: {x: 5, y: 5, z: 0}
+  room2:
+    m_Center: {x: 65, y: 34, z: 0}
+    m_Extent: {x: 9, y: 9, z: 0}
+  curPos: {x: 50, y: 34}
+  direction: {x: 1, y: 0}
+  tile: {fileID: 760897397149223260, guid: aa24b0d455218b84cae80ab58c83e691, type: 3}
 --- !u!1 &883259472
 GameObject:
   m_ObjectHideFlags: 0
@@ -680,7 +703,7 @@ MonoBehaviour:
   numIterations: 1
   fieldSize:
     m_Position: {x: 0, y: 0, z: 0}
-    m_Size: {x: 10, y: 25, z: 0}
+    m_Size: {x: 100, y: 100, z: 0}
   fillPercentage: 0.55
   currentNeighbour: 1
   showWalls: 0

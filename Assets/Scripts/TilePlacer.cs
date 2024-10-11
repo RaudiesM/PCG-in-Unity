@@ -37,6 +37,24 @@ public class TilePlacer : MonoBehaviour
         }
     }
 
+    public void PlaceRooms(HashSet<Bounds> roomPosition)
+    {
+        //RemoveTiles();
+        foreach (var room in roomPosition)
+        {
+
+            GameObject newRoomTile = Instantiate(roomTile);
+            newRoomTile.transform.parent = tileParent.transform;
+            newRoomTile.transform.position = room.center + new Vector3(0, 0, -1f);
+            newRoomTile.transform.localScale = room.size;
+            newRoomTile.name = "Room";
+            if (newRoomTile.TryGetComponent<SpriteRenderer>(out SpriteRenderer thisRenderer))
+            {
+                thisRenderer.color = new Color(Random.value, Random.value, Random.value);
+            }
+        }
+    }
+
     private void PlaceTiles(HashSet<Vector2Int> tilePosition, GameObject placeableObject)
     {
         RemoveTiles();

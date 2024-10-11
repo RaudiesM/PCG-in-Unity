@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
+
 public class RandomWalker_Algorithm : MonoBehaviour
 {
     [SerializeField] private DungeonType currentType;
@@ -17,13 +18,14 @@ public class RandomWalker_Algorithm : MonoBehaviour
     [SerializeField] private int hallwayLengthMin;
     [SerializeField] private int hallwayLengthMax;
 
-    private List<Vector2Int> tileList = new List<Vector2Int>();
+    private HashSet<Vector2Int> tileList = new HashSet<Vector2Int>();
     private HashSet<Bounds> roomList = new HashSet<Bounds>();
     private Stack<Vector2Int> safePositions = new Stack<Vector2Int>();
     private Vector2Int startPosition;
-    public HashSet<Vector2Int> GetDungeonTiles()
+    public HashSet<Vector2Int> GetDungeonTiles(out HashSet<Bounds> roomsAsBounds)
     {
         tileList.Clear();
+        roomList.Clear();
         startPosition = new Vector2Int(Mathf.FloorToInt(fieldSize.center.x), Mathf.FloorToInt(fieldSize.center.y));
         if(currentType == DungeonType.Caverns)
         {
@@ -32,7 +34,8 @@ public class RandomWalker_Algorithm : MonoBehaviour
         {
             RoomWalker();
         }
-        return tileList.ToHashSet();
+        roomsAsBounds = roomList;
+        return tileList;
     }
 
     private void BaseRandomWalker()
@@ -51,25 +54,59 @@ public class RandomWalker_Algorithm : MonoBehaviour
 
     private void RoomWalker()
     {
+        HashSet<Vector2Int> hallwayTiles = new HashSet<Vector2Int>();
+        HashSet<Vector2Int> roomTiles = new HashSet<Vector2Int>();
+
         Vector2Int curPos = startPosition;
         tileList.Add(curPos);
-        SetRoom(curPos);
-        while (tileList.Count < maxTiles)
+        tileList.UnionWith(SetRoom(curPos));
+        
+        int safetyCheck = 0;
+
+        while (tileList.Count < maxTiles && safetyCheck < 1000)
         {
-            curPos = SetHallway(curPos);
+            int tileCount = tileList.Count;
+            
+            hallwayTiles = SetHallway(curPos, out curPos);
+            tileList.UnionWith(hallwayTiles);
             int rollForRoom = Random.Range(1, 101);
             if (rollForRoom <= roomSpawnRate)
             {
-                SetRoom(curPos);
+                roomTiles = SetRoom(curPos);
+                if(roomTiles.Count == 0 && safePositions.Count >= 0)
+                {
+                    Debug.Log("Whats going on");
+                    /*
+                    curPos = safePositions.Pop();
+                    continue;
+                    */
+                }
+                tileList.UnionWith(roomTiles);
+            }
+
+            if(tileCount == tileList.Count)
+            {
+                safetyCheck++;
+            }
+            else
+            {
+                safetyCheck = 0;
             }
         }
     }
 
-    private void SetRoom(Vector2Int curPos)
+    private HashSet<Vector2Int> SetRoom(Vector2Int curPos)
     {
+        HashSet<Vector2Int> roomTiles = new HashSet<Vector2Int>();
+
         int newYMax = GetMaxSize(curPos, Vector2Int.up);
         int newXMax = GetMaxSize(curPos, Vector2Int.left);
 
+        //Debug.Log($"My Max Size {newXMax}/{newYMax}");
+        if(newYMax <= 0 || newXMax <= 0)
+        {
+            return new HashSet<Vector2Int>();
+        }
         int heightMax = newYMax < roomMax ? newYMax : roomMax;
         int weightMax = newXMax < roomMax ? newXMax : roomMax;
 
@@ -78,32 +115,73 @@ public class RandomWalker_Algorithm : MonoBehaviour
 
         Bounds newRoom = new Bounds(curPos+new Vector2(0.5f, 0.5f), new Vector2(2*width+1, 2*height + 1));
         roomList.Add(newRoom);
-        Debug.Log("NewRoom: "+newRoom);
+        //Debug.Log("<color=green>NewRoom:</color> "+newRoom);
         for (int w = -width; w <= width; w++)
         {
             for (int h = -height; h <= height; h++)
             {
                 Vector2Int offset = new Vector2Int(w, h);
-                if (!tileList.Contains(curPos + offset))
+                if (!roomTiles.Contains(curPos + offset))
                 {
-                    tileList.Add(curPos + offset);
+                    roomTiles.Add(curPos + offset);
                 }
 
             }
         }
+        return roomTiles;
     }
 
     private int GetMaxSize(Vector2Int curPos, Vector2Int direction)
     {
-        int distance = GetDistanceToBorder(curPos, direction);
+        int maxValue = 0;
+        maxValue = GetDistanceToBorder(curPos, direction);
+        
         int oppositeDistance = GetDistanceToBorder(curPos, -direction);
-        int maxValue = oppositeDistance < distance ? oppositeDistance : distance;
+        int distanceToRooms = GetDistanceToRooms(curPos, direction);
+        if(distanceToRooms == 0)
+        {
+            Debug.Log("Overlapping");
+        }
+        maxValue = oppositeDistance < maxValue ? oppositeDistance : maxValue;
+        maxValue = distanceToRooms < maxValue ? distanceToRooms : maxValue;
+
         return maxValue;
     }
 
-    private Vector2Int SetHallway(Vector2Int curPos)
+    private int GetDistanceToRooms(Vector2Int curPos, Vector2 direction)
+    {
+        int maxSize = 0;
+        Vector2 newPosition = new Vector2(curPos.x + 0.5f, curPos.y + 0.5f);
+        Vector2 newRoomSize = new Vector2();
+
+        for (int i = 1; i <= roomMax; i++)
+        {
+            maxSize = i;
+            if (direction == Vector2.up || direction == Vector2.down)
+            {
+                newRoomSize = new Vector2(3, i + 0.5f);
+            }
+            else if (direction == Vector2.left || direction == Vector2.right)
+            {
+                newRoomSize = new Vector2(i + 0.5f, 3);
+            }
+            Bounds newRoom = new Bounds(newPosition, newRoomSize);
+            
+            foreach (Bounds room in roomList)
+            {
+                if (newRoom.Intersects(room))
+                {
+                    return (maxSize - 2);
+                }
+            }
+        }
+        return maxSize;
+    }
+
+    private HashSet<Vector2Int> SetHallway(Vector2Int curPos, out Vector2Int returnCurPos)
     {
         bool moreThenOneOption = false;
+        HashSet<Vector2Int> hallwayTiles = new HashSet<Vector2Int>();
         Vector2Int walkDir = RandomDirection(curPos, hallwayLengthMin, out moreThenOneOption);
         while(walkDir == Vector2Int.zero && safePositions.Count > 0)
         {
@@ -120,12 +198,13 @@ public class RandomWalker_Algorithm : MonoBehaviour
         for (int i = 0; i < walkLength; i++)
         {
             curPos += walkDir;
-            if (!tileList.Contains(curPos))
+            if (!hallwayTiles.Contains(curPos))
             {
-                tileList.Add(curPos);
+                hallwayTiles.Add(curPos);
             }
         }
-        return curPos;
+        returnCurPos = curPos;
+        return hallwayTiles;
     }
 
     private int GetDistanceToBorder(Vector2Int curPos, Vector2Int walkDir)
