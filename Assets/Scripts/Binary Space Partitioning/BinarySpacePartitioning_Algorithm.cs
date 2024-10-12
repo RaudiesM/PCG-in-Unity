@@ -21,7 +21,7 @@ public class BinarySpacePartitioning_Algorithm : MonoBehaviour
 
     private Dictionary<string, BoundsInt> dungeonRooms = new Dictionary<string, BoundsInt>();
     private Dictionary<string, RoomPoints> roomsToConnect = new Dictionary<string, RoomPoints>();
-    private HashSet<Vector2Int> dungeonTiles = new HashSet<Vector2Int>();
+    private HashSet<Vector2Int> corridorTiles = new HashSet<Vector2Int>();
     private int currentIndexNum = 0;
 
     private void Start()
@@ -51,20 +51,23 @@ public class BinarySpacePartitioning_Algorithm : MonoBehaviour
         minSize += offset*offset;
     }
 
-    public HashSet<Vector2Int> GetDungeonTiles(HashSet<BoundsInt> rooms)
+    private HashSet<DungeonRoom> ConvertRoomsToTiles(HashSet<BoundsInt> rooms)
     {
-        dungeonTiles.Clear();
+        HashSet<DungeonRoom> roomTiles = new HashSet<DungeonRoom>();
+        corridorTiles.Clear();
         foreach(var room in rooms)
         {
+            DungeonRoom newRoom = new DungeonRoom(new HashSet<Vector2Int>());
             for (int i = room.xMin - room.size.x / 2; i < room.xMax - room.size.x / 2; i++)
             {
                 for (int j = room.yMin - room.size.y / 2; j < room.yMax - room.size.y / 2; j++)
                 {
-                    dungeonTiles.Add(new Vector2Int(i, j));
+                    newRoom.AddRoomTiles(new Vector2Int(i, j));
                 }
             }
+            roomTiles.Add(newRoom);
         }
-        return dungeonTiles;
+        return roomTiles;
     }
 
     public HashSet<Bounds> NewRooms()
@@ -80,21 +83,22 @@ public class BinarySpacePartitioning_Algorithm : MonoBehaviour
         return ConvertBounds(newDungeonRooms);
     }
 
-    
-
-    public HashSet<Bounds> GetRooms(out HashSet<Vector2Int> roomTiles)
+    public DungeonTiles GetRooms(out HashSet<Bounds> newBounds)
     {
         HashSet<BoundsInt> newDungeonRooms = new HashSet<BoundsInt>();
-        roomTiles = new HashSet<Vector2Int>();
+        newBounds = new HashSet<Bounds>();
+        DungeonTiles dungeonTiles = new DungeonTiles(1);
+
         bool isDoneSplitting = IterateOverRooms();
 
         if (isDoneSplitting)
         {
             Debug.Log("I am done");
             newDungeonRooms = PlaceRooms();
-            GetDungeonTiles(newDungeonRooms);
+            dungeonTiles.AddRoom(ConvertRoomsToTiles(newDungeonRooms));
+            corridorTiles.Clear();
             ConnectRooms();
-            roomTiles = dungeonTiles;
+            dungeonTiles.AddCorridor(corridorTiles);
         }
         else
         {
@@ -103,9 +107,10 @@ public class BinarySpacePartitioning_Algorithm : MonoBehaviour
                 newDungeonRooms.Add(room.Value);
                 //Debug.Log($"Room [Pos.: {room.Value.position}] [ID: {room.Key}] ");
             }
+            newBounds = ConvertBounds(newDungeonRooms);
         }
 
-        return ConvertBounds(newDungeonRooms);
+        return dungeonTiles;
     }
 
     private void ConnectRooms()
@@ -209,7 +214,7 @@ public class BinarySpacePartitioning_Algorithm : MonoBehaviour
 
         foreach (var  corridor in corridorList)
         {
-            dungeonTiles.Add(corridor);
+            corridorTiles.Add(corridor);
         }
     }
 
@@ -250,7 +255,7 @@ public class BinarySpacePartitioning_Algorithm : MonoBehaviour
         for(int y = startVector.y; y <= goalVector.y; y++)
         {
             Vector2Int currentPosition = new Vector2Int(startVector.x, y);
-            if(dungeonTiles.Contains(currentPosition) == false)
+            if(corridorTiles.Contains(currentPosition) == false)
             {
                 result.Add(currentPosition);
             }
@@ -271,7 +276,7 @@ public class BinarySpacePartitioning_Algorithm : MonoBehaviour
         for (int x = startVector.x; x <= goalVector.x; x++)
         {
             Vector2Int currentPosition = new Vector2Int(x, startVector.y);
-            if (dungeonTiles.Contains(currentPosition) == false)
+            if (corridorTiles.Contains(currentPosition) == false)
             {
                 result.Add(currentPosition);
             }
@@ -283,17 +288,17 @@ public class BinarySpacePartitioning_Algorithm : MonoBehaviour
 
     private HashSet<BoundsInt> PlaceRooms()
     {
-        HashSet<BoundsInt> dungeonTiles = new HashSet<BoundsInt>();
+        HashSet<BoundsInt> dungeonRoomTiles = new HashSet<BoundsInt>();
         Dictionary<string, BoundsInt> newDungeonRooms = new Dictionary<string, BoundsInt>();
         foreach (var rooms in dungeonRooms)
         {
             BoundsInt newRoom = CreateRoomVariance(rooms.Value);
-            dungeonTiles.Add(newRoom);
+            dungeonRoomTiles.Add(newRoom);
             newDungeonRooms.Add(rooms.Key, newRoom);
             roomsToConnect.Add(rooms.Key, new RoomPoints(newRoom.position));
         }
         dungeonRooms = newDungeonRooms;
-        return dungeonTiles;
+        return dungeonRoomTiles;
     }
 
     #region RoomVariance

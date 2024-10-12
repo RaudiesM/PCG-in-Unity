@@ -18,11 +18,11 @@ public class RandomWalker_Algorithm : MonoBehaviour
     [SerializeField] private int hallwayLengthMin;
     [SerializeField] private int hallwayLengthMax;
 
-    private HashSet<Vector2Int> tileList = new HashSet<Vector2Int>();
+    private DungeonTiles tileList = new DungeonTiles(1);
     private HashSet<Bounds> roomList = new HashSet<Bounds>();
     private Stack<Vector2Int> safePositions = new Stack<Vector2Int>();
     private Vector2Int startPosition;
-    public HashSet<Vector2Int> GetDungeonTiles(out HashSet<Bounds> roomsAsBounds)
+    public DungeonTiles GetDungeonTiles()
     {
         tileList.Clear();
         roomList.Clear();
@@ -34,21 +34,17 @@ public class RandomWalker_Algorithm : MonoBehaviour
         {
             RoomWalker();
         }
-        roomsAsBounds = roomList;
         return tileList;
     }
 
     private void BaseRandomWalker()
     {
         Vector2Int curPos = startPosition;
-        tileList.Add(curPos);
-        while (tileList.Count < maxTiles)
+        tileList.AddCorridorTile(curPos);
+        while (tileList.Count() < maxTiles)
         {
             curPos += RandomDirection(curPos);
-            if (!tileList.Contains(curPos))
-            {
-                tileList.Add(curPos);
-            }
+            tileList.AddCorridorTile(curPos);
         }
     }
 
@@ -58,17 +54,17 @@ public class RandomWalker_Algorithm : MonoBehaviour
         HashSet<Vector2Int> roomTiles = new HashSet<Vector2Int>();
 
         Vector2Int curPos = startPosition;
-        tileList.Add(curPos);
-        tileList.UnionWith(SetRoom(curPos));
+        tileList.AddCorridorTile(curPos);
+        tileList.AddRoom(SetRoom(curPos));
         
         int safetyCheck = 0;
 
-        while (tileList.Count < maxTiles && safetyCheck < 1000)
+        while (tileList.Count() < maxTiles && safetyCheck < 1000)
         {
-            int tileCount = tileList.Count;
+            int tileCount = tileList.Count();
             
             hallwayTiles = SetHallway(curPos, out curPos);
-            tileList.UnionWith(hallwayTiles);
+            tileList.AddCorridor(hallwayTiles);
             int rollForRoom = Random.Range(1, 101);
             if (rollForRoom <= roomSpawnRate)
             {
@@ -81,10 +77,10 @@ public class RandomWalker_Algorithm : MonoBehaviour
                     continue;
                     */
                 }
-                tileList.UnionWith(roomTiles);
+                tileList.AddRoom(roomTiles);
             }
 
-            if(tileCount == tileList.Count)
+            if(tileCount == tileList.Count())
             {
                 safetyCheck++;
             }

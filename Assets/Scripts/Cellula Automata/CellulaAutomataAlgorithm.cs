@@ -19,40 +19,31 @@ public class CellulaAutomataAlgorithm : MonoBehaviour
     private int neighbourDistance = 1;
     private Dictionary<Vector2Int, CellState> cellDistribution = new Dictionary<Vector2Int, CellState>();
 
-    public HashSet<Vector2Int> GetDungeonTiles()
+    public DungeonTiles GetDungeonTiles()
     {
         cellDistribution.Clear();
         DistributeCells();
-        /*foreach(var item in cellDistribution)
-        {
-            if(item.Value.IsFloor)
-            {
-                Debug.Log("Cell at "+item.Key+" has "+CheckNeighbourCells(item.Key)+" neighbours");
-            }
-        }*/
-        //ApplyCellulaAutomata();
         
-        HashSet<Vector2Int> tiles = new HashSet<Vector2Int>();
+        DungeonTiles tiles = new DungeonTiles(1);
         foreach(var cell in cellDistribution)
         {
             if(cell.Value.IsFloor) 
             {
-                tiles.Add(cell.Key);
+                tiles.AddCorridorTile(cell.Key);
             }
         }
         return tiles;
     }
 
-    public HashSet<Vector2Int> ContinueIterating()
+    public DungeonTiles ContinueIterating()
     {
         ApplyCellulaAutomata();
-        
-        HashSet<Vector2Int> tiles = new HashSet<Vector2Int>();
+        DungeonTiles tiles = new DungeonTiles(1);
         foreach (var cell in cellDistribution)
         {
             if (cell.Value.IsFloor)
             {
-                tiles.Add(cell.Key);
+                tiles.AddCorridorTile(cell.Key);
             }
         }
         return tiles;

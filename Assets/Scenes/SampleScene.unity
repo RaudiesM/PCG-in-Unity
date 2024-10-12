@@ -618,8 +618,22 @@ MonoBehaviour:
   floorTilemap: {fileID: 1517543270}
   floorTile: {fileID: 11400000, guid: 07a73339f75914b45b2b005b7a32d72a, type: 2}
   boundryTile: {fileID: 11400000, guid: 45ecdbcd77c44dc4bac7dea4a8c882d4, type: 2}
+  roomTiles:
+  - {fileID: 11400000, guid: 6883298d6906c344aaaf7c26ead4ae1e, type: 2}
+  - {fileID: 11400000, guid: e936304e943a64041b7379e2a5cc605b, type: 2}
+  - {fileID: 11400000, guid: b4f5c3d3b1e20dd48b6d684c59d2c5db, type: 2}
+  - {fileID: 11400000, guid: e633a9956be7066438c5fbf8407ad970, type: 2}
+  - {fileID: 11400000, guid: 32540b0fe0a39494c898887b61a93dee, type: 2}
+  - {fileID: 11400000, guid: bd768e11cac41e5409522749bca6d442, type: 2}
+  - {fileID: 11400000, guid: 45ecdbcd77c44dc4bac7dea4a8c882d4, type: 2}
+  - {fileID: 11400000, guid: bf7bd1940d20dae4e893ed164742dff6, type: 2}
+  - {fileID: 11400000, guid: d6f33fbb808d0c04fa050dd728ab50ee, type: 2}
+  - {fileID: 11400000, guid: 45fbc138d946baf43b50b712eda9300b, type: 2}
+  - {fileID: 11400000, guid: 280351bf2f7fa4546bc2e8967251f776, type: 2}
+  - {fileID: 11400000, guid: bdfa28a83295f104ba123acc1b6506df, type: 2}
   roomPanel: {fileID: 760897397149223260, guid: aa24b0d455218b84cae80ab58c83e691, type: 3}
   tileParent: {fileID: 647128756}
+  visualizeRooms: 0
 --- !u!114 &883259475
 MonoBehaviour:
   m_ObjectHideFlags: 0

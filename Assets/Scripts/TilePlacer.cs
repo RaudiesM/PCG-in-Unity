@@ -9,7 +9,7 @@ public class TilePlacer : MonoBehaviour
 
     [SerializeField] private TileBase floorTile;
     [SerializeField] private TileBase boundryTile;
-    [SerializeField] private TileBase roomTile;
+    [SerializeField] private List<TileBase> roomTiles;
 
     [SerializeField] private GameObject roomPanel;
     [SerializeField] private GameObject tileParent;
@@ -18,34 +18,53 @@ public class TilePlacer : MonoBehaviour
 
     public void PlaceFloorTiles(HashSet<Vector2Int> tilePosition)
     {
-        PlaceTiles(tilePosition, floorTile);
+        RemoveRooms();
+        foreach (Vector2Int position in tilePosition)
+        {
+            PlaceTile(position, floorTile);
+        }
     }
 
     public void PlaceBoundryTiles(HashSet<Vector2Int> tilePosition)
     {
-        PlaceTiles(tilePosition, boundryTile);
+        RemoveRooms();
+        foreach (Vector2Int position in tilePosition) 
+        { 
+            PlaceTile(position, boundryTile); 
+        }
     }
 
-    public void PlaceRoomTiles(HashSet<Vector2Int> tilePosition)
+    public void PlaceRoomTiles(HashSet<DungeonRoom> rooms)
     {
+        RemoveRooms();
         TileBase tile = floorTile;
-        if (visualizeRooms)
+        foreach(DungeonRoom room in rooms)
         {
-            tile = roomTile;
+            if (visualizeRooms)
+            {
+                int randValue = Random.Range(0, roomTiles.Count);
+                tile = roomTiles[randValue];
+            }
+
+            foreach(Vector2Int position in room.GetRoomTiles())
+            {
+                PlaceTile(position, tile);
+            }
         }
-        PlaceTiles(tilePosition, tile);
+
     }
 
-    private void PlaceTiles(HashSet<Vector2Int> tiles, TileBase tileType)
+    private void PlaceRooms(HashSet<DungeonRoom> rooms, TileBase tile)
     {
-        ClearTilemap();
-        foreach (var tile in tiles)
-        {
-            var tilePosition = floorTilemap.WorldToCell((Vector3Int)tile);
-            floorTilemap.SetTile(tilePosition, tileType);
-        }
+        throw new System.NotImplementedException();
     }
-    private void ClearTilemap()
+
+    private void PlaceTile(Vector2Int tile, TileBase tileType)
+    {
+        var tilePosition = floorTilemap.WorldToCell((Vector3Int)tile);
+        floorTilemap.SetTile(tilePosition, tileType);
+    }
+    public void ClearTilemap()
     {
         floorTilemap.ClearAllTiles();
     }
