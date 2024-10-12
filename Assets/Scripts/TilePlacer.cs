@@ -6,12 +6,15 @@ using UnityEngine.Tilemaps;
 public class TilePlacer : MonoBehaviour
 {
     [SerializeField] private Tilemap floorTilemap;
+
     [SerializeField] private TileBase floorTile;
     [SerializeField] private TileBase boundryTile;
+    [SerializeField] private TileBase roomTile;
 
     [SerializeField] private GameObject roomPanel;
     [SerializeField] private GameObject tileParent;
 
+    [SerializeField] private bool visualizeRooms = false;
 
     public void PlaceFloorTiles(HashSet<Vector2Int> tilePosition)
     {
@@ -21,6 +24,16 @@ public class TilePlacer : MonoBehaviour
     public void PlaceBoundryTiles(HashSet<Vector2Int> tilePosition)
     {
         PlaceTiles(tilePosition, boundryTile);
+    }
+
+    public void PlaceRoomTiles(HashSet<Vector2Int> tilePosition)
+    {
+        TileBase tile = floorTile;
+        if (visualizeRooms)
+        {
+            tile = roomTile;
+        }
+        PlaceTiles(tilePosition, tile);
     }
 
     private void PlaceTiles(HashSet<Vector2Int> tiles, TileBase tileType)
@@ -37,7 +50,7 @@ public class TilePlacer : MonoBehaviour
         floorTilemap.ClearAllTiles();
     }
 
-    public void PlaceRooms(HashSet<Bounds> roomPosition)
+    public void VisualizeRooms(HashSet<Bounds> roomPosition)
     {
         RemoveRooms();
         foreach (var room in roomPosition)
