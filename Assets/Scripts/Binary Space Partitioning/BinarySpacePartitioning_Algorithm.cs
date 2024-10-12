@@ -67,7 +67,7 @@ public class BinarySpacePartitioning_Algorithm : MonoBehaviour
         return dungeonTiles;
     }
 
-    public HashSet<BoundsInt> NewRooms()
+    public HashSet<Bounds> NewRooms()
     {
         ClearDictionaries();
         HashSet<BoundsInt> newDungeonRooms = new HashSet<BoundsInt>();
@@ -77,12 +77,12 @@ public class BinarySpacePartitioning_Algorithm : MonoBehaviour
             newDungeonRooms.Add(room.Value);
             //Debug.Log($"Room [Pos.: {room.Value.position}] [ID: {room.Key}] ");
         }
-        return newDungeonRooms;
+        return ConvertBounds(newDungeonRooms);
     }
 
     
 
-    public HashSet<BoundsInt> GetRooms(out HashSet<Vector2Int> roomTiles)
+    public HashSet<Bounds> GetRooms(out HashSet<Vector2Int> roomTiles)
     {
         HashSet<BoundsInt> newDungeonRooms = new HashSet<BoundsInt>();
         roomTiles = new HashSet<Vector2Int>();
@@ -100,12 +100,12 @@ public class BinarySpacePartitioning_Algorithm : MonoBehaviour
         {
             foreach(var room in dungeonRooms)
             {
-
                 newDungeonRooms.Add(room.Value);
                 //Debug.Log($"Room [Pos.: {room.Value.position}] [ID: {room.Key}] ");
             }
         }
-        return newDungeonRooms;
+
+        return ConvertBounds(newDungeonRooms);
     }
 
     private void ConnectRooms()
@@ -492,5 +492,15 @@ public class BinarySpacePartitioning_Algorithm : MonoBehaviour
         }
         currentIndexNum++;
         return returnString;
+    }
+
+    private HashSet<Bounds> ConvertBounds(HashSet<BoundsInt> oldBounds)
+    {
+        HashSet<Bounds> newBounds = new HashSet<Bounds>();
+        foreach (var bounds in oldBounds)
+        {
+            newBounds.Add(new Bounds(bounds.position, bounds.size));
+        }
+        return newBounds;
     }
 }

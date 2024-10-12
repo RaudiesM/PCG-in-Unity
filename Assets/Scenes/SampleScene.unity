@@ -618,7 +618,7 @@ MonoBehaviour:
   floorTilemap: {fileID: 1517543270}
   floorTile: {fileID: 11400000, guid: 07a73339f75914b45b2b005b7a32d72a, type: 2}
   boundryTile: {fileID: 11400000, guid: 45ecdbcd77c44dc4bac7dea4a8c882d4, type: 2}
-  roomPanel: {fileID: 0}
+  roomPanel: {fileID: 760897397149223260, guid: aa24b0d455218b84cae80ab58c83e691, type: 3}
   tileParent: {fileID: 647128756}
 --- !u!114 &883259475
 MonoBehaviour:
@@ -632,7 +632,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f85abe2f572432f4a9dfd0145d4036d1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  currentAlgorithm: 0
+  currentAlgorithm: 2
   CA_Algorithm: {fileID: 1563801909}
   BSP_Algorithm: {fileID: 1277086792}
   RW_Algorithm: {fileID: 283747623}
