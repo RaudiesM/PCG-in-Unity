@@ -21,7 +21,7 @@ public class DungeonSpawner : MonoBehaviour
 
     private void IterateMore()
     {
-        DungeonTiles dungeonTiles = new DungeonTiles(1);
+        DungeonTiles dungeonTiles = new DungeonTiles(currentAlgorithm);
         HashSet<DungeonRoom> roomTiles = new HashSet<DungeonRoom>();
         HashSet<Vector2Int> corridorTiles = new HashSet<Vector2Int>();
 
@@ -55,7 +55,7 @@ public class DungeonSpawner : MonoBehaviour
 
     public void GenerateDungeon()
     {
-        DungeonTiles dungeonTiles = new DungeonTiles(1);
+        DungeonTiles dungeonTiles = new DungeonTiles(currentAlgorithm);
         HashSet<DungeonRoom> roomTiles = new HashSet<DungeonRoom>();
         HashSet<Vector2Int> corridorTiles = new HashSet<Vector2Int>();
 

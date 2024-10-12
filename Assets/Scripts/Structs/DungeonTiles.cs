@@ -6,12 +6,12 @@ using UnityEngine;
 
 public struct DungeonTiles
 {
-    //private HashSet<Vector2Int> roomTiles;
     private HashSet<Vector2Int> corridorTiles;
     private HashSet<DungeonRoom> dungeonRooms;
-    public DungeonTiles(int b = 0)
+    private AlgorithmType thisAlgorithmType;
+    public DungeonTiles(AlgorithmType _algorithmType)
     {
-        //roomTiles = new HashSet<Vector2Int>();
+        thisAlgorithmType = _algorithmType;   
         corridorTiles = new HashSet<Vector2Int>();
         dungeonRooms = new HashSet<DungeonRoom>();
     }

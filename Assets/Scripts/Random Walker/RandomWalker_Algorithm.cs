@@ -18,7 +18,7 @@ public class RandomWalker_Algorithm : MonoBehaviour
     [SerializeField] private int hallwayLengthMin;
     [SerializeField] private int hallwayLengthMax;
 
-    private DungeonTiles tileList = new DungeonTiles(1);
+    private DungeonTiles tileList = new DungeonTiles(AlgorithmType.RandomWalker);
     private HashSet<Bounds> roomList = new HashSet<Bounds>();
     private Stack<Vector2Int> safePositions = new Stack<Vector2Int>();
     private Vector2Int startPosition;

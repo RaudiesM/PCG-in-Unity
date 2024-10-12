@@ -24,7 +24,7 @@ public class CellulaAutomataAlgorithm : MonoBehaviour
         cellDistribution.Clear();
         DistributeCells();
         
-        DungeonTiles tiles = new DungeonTiles(1);
+        DungeonTiles tiles = new DungeonTiles(AlgorithmType.CellulaAutomata);
         foreach(var cell in cellDistribution)
         {
             if(cell.Value.IsFloor) 
@@ -38,7 +38,7 @@ public class CellulaAutomataAlgorithm : MonoBehaviour
     public DungeonTiles ContinueIterating()
     {
         ApplyCellulaAutomata();
-        DungeonTiles tiles = new DungeonTiles(1);
+        DungeonTiles tiles = new DungeonTiles(AlgorithmType.CellulaAutomata);
         foreach (var cell in cellDistribution)
         {
             if (cell.Value.IsFloor)

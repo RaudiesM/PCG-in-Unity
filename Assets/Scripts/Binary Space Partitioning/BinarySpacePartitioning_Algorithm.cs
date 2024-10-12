@@ -87,7 +87,7 @@ public class BinarySpacePartitioning_Algorithm : MonoBehaviour
     {
         HashSet<BoundsInt> newDungeonRooms = new HashSet<BoundsInt>();
         newBounds = new HashSet<Bounds>();
-        DungeonTiles dungeonTiles = new DungeonTiles(1);
+        DungeonTiles dungeonTiles = new DungeonTiles(AlgorithmType.BinarySpacepartitioning);
 
         bool isDoneSplitting = IterateOverRooms();
 
