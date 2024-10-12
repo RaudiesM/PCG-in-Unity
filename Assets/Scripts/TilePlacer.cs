@@ -9,7 +9,7 @@ public class TilePlacer : MonoBehaviour
     [SerializeField] private TileBase floorTile;
     [SerializeField] private TileBase boundryTile;
 
-    [SerializeField] private GameObject roomTile;
+    [SerializeField] private GameObject roomPanel;
     [SerializeField] private GameObject tileParent;
 
 
@@ -42,7 +42,7 @@ public class TilePlacer : MonoBehaviour
         RemoveRooms();
         foreach (var room in roomPosition) { 
             
-            GameObject newRoomTile = Instantiate(roomTile);
+            GameObject newRoomTile = Instantiate(roomPanel);
             newRoomTile.transform.parent = tileParent.transform;
             newRoomTile.transform.position = new Vector3(room.x, room.y, -1f);
             newRoomTile.transform.localScale = room.size;
@@ -59,7 +59,7 @@ public class TilePlacer : MonoBehaviour
         foreach (var room in roomPosition)
         {
 
-            GameObject newRoomTile = Instantiate(roomTile);
+            GameObject newRoomTile = Instantiate(roomPanel);
             newRoomTile.transform.parent = tileParent.transform;
             newRoomTile.transform.position = room.center + new Vector3(0, 0, -1f);
             newRoomTile.transform.localScale = room.size;
