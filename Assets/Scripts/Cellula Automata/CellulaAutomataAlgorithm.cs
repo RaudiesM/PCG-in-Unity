@@ -4,7 +4,7 @@ using UnityEngine;
 
 
 
-public class CellulaAutomataAlgorithm : MonoBehaviour
+public class CellulaAutomataAlgorithm : DungeonAlgorithmBase
 {
     [SerializeField] private int numIterations = 3;
     [SerializeField] private BoundsInt fieldSize = new BoundsInt(new Vector3Int(0, 0, 0), new Vector3Int(10, 10, 0));
@@ -16,51 +16,51 @@ public class CellulaAutomataAlgorithm : MonoBehaviour
     [SerializeField] private CellRulesetBase currentMooreRuleset;
     [SerializeField] private CellRulesetBase currentNeumannRuleset;
 
+    private int currentIteration = 0;
     private int neighbourDistance = 1;
     private Dictionary<Vector2Int, CellState> cellDistribution = new Dictionary<Vector2Int, CellState>();
 
-    public DungeonTiles GetDungeonTiles()
+    public override DungeonTiles GenerateDungeonTiles()
     {
         cellDistribution.Clear();
         DistributeCells();
-        
-        DungeonTiles tiles = new DungeonTiles(AlgorithmType.CellulaAutomata);
-        foreach(var cell in cellDistribution)
+        currentIteration = 0;
+        for(int i = 0; i < numIterations; i++)
         {
-            if(cell.Value.IsFloor) 
-            {
-                tiles.AddCorridorTile(cell.Key);
-            }
+            ApplyCellulaAutomata();
         }
+        DungeonTiles tiles = GetCellDistribution();
         return tiles;
     }
 
-    public DungeonTiles ContinueIterating()
+    public override DungeonTiles SetUpGeneration()
     {
-        ApplyCellulaAutomata();
+        Debug.Log("Setting up generation");
+        cellDistribution.Clear();
+        currentIteration = 0;
+        DistributeCells();
+        DungeonTiles tiles = GetCellDistribution();
+        return tiles;
+    }
+
+    public override DungeonTiles ContinueIterating()
+    {
+        if(currentIteration < numIterations)
+        {
+            ApplyCellulaAutomata();
+        }
+        DungeonTiles tiles = GetCellDistribution();
+        return tiles;
+    }
+
+    private DungeonTiles GetCellDistribution()
+    {
         DungeonTiles tiles = new DungeonTiles(AlgorithmType.CellulaAutomata);
         foreach (var cell in cellDistribution)
         {
             if (cell.Value.IsFloor)
             {
                 tiles.AddCorridorTile(cell.Key);
-            }
-        }
-        return tiles;
-    }
-
-    public HashSet<Vector2Int> GetBoundry()
-    {
-        HashSet<Vector2Int> tiles = new HashSet<Vector2Int>();
-        if (showWalls)
-        {
-            Debug.Log("Umrandung = "+cellDistribution.Count);
-            foreach (var cell in cellDistribution)
-            {
-                if (cell.Value.IsChangeable == false)
-                {
-                    tiles.Add(cell.Key);
-                }
             }
         }
         return tiles;
@@ -123,6 +123,8 @@ public class CellulaAutomataAlgorithm : MonoBehaviour
 
     private void ApplyCellulaAutomata()
     {
+        currentIteration++;
+
         Dictionary<Vector2Int, bool> newCellStates = new Dictionary<Vector2Int, bool>();
         for (int i = fieldSize.xMin; i <= fieldSize.xMax; i++)
         {
@@ -212,5 +214,21 @@ public class CellulaAutomataAlgorithm : MonoBehaviour
             }
         }
         return numFloorNeighbour;
+    }
+    public HashSet<Vector2Int> GetBoundry()
+    {
+        HashSet<Vector2Int> tiles = new HashSet<Vector2Int>();
+        if (showWalls)
+        {
+            Debug.Log("Umrandung = " + cellDistribution.Count);
+            foreach (var cell in cellDistribution)
+            {
+                if (cell.Value.IsChangeable == false)
+                {
+                    tiles.Add(cell.Key);
+                }
+            }
+        }
+        return tiles;
     }
 }

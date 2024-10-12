@@ -22,6 +22,7 @@ public class RandomWalker_Algorithm : MonoBehaviour
     private HashSet<Bounds> roomList = new HashSet<Bounds>();
     private Stack<Vector2Int> safePositions = new Stack<Vector2Int>();
     private Vector2Int startPosition;
+
     public DungeonTiles GetDungeonTiles()
     {
         tileList.Clear();

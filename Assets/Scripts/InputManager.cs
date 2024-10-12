@@ -5,19 +5,24 @@ using UnityEngine;
 
 public class InputManager : MonoBehaviour
 {
-    public static Action OnGenerate;
+    public static Action OnSetup;
 
     public static Action OnIterate;
+    public static Action OnWholeDungeon;
 
     private void Update()
     {
         if (Input.GetKeyDown(KeyCode.A))
         {
-            OnGenerate?.Invoke();
+            OnSetup?.Invoke();
         }
         if (Input.GetKeyDown(KeyCode.S))
         {
             OnIterate?.Invoke();
+        }
+        if (Input.GetKeyDown(KeyCode.D))
+        {
+            OnWholeDungeon?.Invoke();
         }
     }
 }

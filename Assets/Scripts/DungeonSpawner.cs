@@ -15,16 +15,31 @@ public class DungeonSpawner : MonoBehaviour
 
     private void Start()
     {
-        InputManager.OnGenerate += GenerateDungeon;
+        InputManager.OnSetup += SetupGeneration;
         InputManager.OnIterate += IterateMore;
+        InputManager.OnWholeDungeon += GenerateDungeon;
+    }
+    public void SetupGeneration()
+    {
+        DungeonTiles dungeonTiles = new DungeonTiles(currentAlgorithm);
+
+        if (currentAlgorithm == AlgorithmType.CellulaAutomata)
+        {
+            dungeonTiles = CA_Algorithm.SetUpGeneration();
+
+        }else if(currentAlgorithm == AlgorithmType.BinarySpacepartitioning)
+        {
+            tilePlacer.VisualizeRooms(BSP_Algorithm.NewRooms());
+        }else if(currentAlgorithm == AlgorithmType.RandomWalker)
+        {
+            //dungeonTiles = RW_Algorithm.SetUpGeneration();
+        }
+        PlaceDungeon(dungeonTiles);
     }
 
     private void IterateMore()
     {
         DungeonTiles dungeonTiles = new DungeonTiles(currentAlgorithm);
-        HashSet<DungeonRoom> roomTiles = new HashSet<DungeonRoom>();
-        HashSet<Vector2Int> corridorTiles = new HashSet<Vector2Int>();
-
 
         if (currentAlgorithm == AlgorithmType.CellulaAutomata)
         {
@@ -42,39 +57,42 @@ public class DungeonSpawner : MonoBehaviour
             dungeonTiles = RW_Algorithm.GetDungeonTiles();
         }
 
-        tilePlacer.ClearTilemap();
-        if (dungeonTiles.TryGetRooms(out roomTiles))
-        {
-            tilePlacer.PlaceRoomTiles(roomTiles);
-        }
-        if (dungeonTiles.TryGetCorridors(out corridorTiles))
-        {
-            tilePlacer.PlaceFloorTiles(corridorTiles);
-        }
+        PlaceDungeon(dungeonTiles);
     }
 
-    public void GenerateDungeon()
+    private void GenerateDungeon()
     {
         DungeonTiles dungeonTiles = new DungeonTiles(currentAlgorithm);
-        HashSet<DungeonRoom> roomTiles = new HashSet<DungeonRoom>();
-        HashSet<Vector2Int> corridorTiles = new HashSet<Vector2Int>();
-
         if (currentAlgorithm == AlgorithmType.CellulaAutomata)
         {
-            dungeonTiles = CA_Algorithm.GetDungeonTiles();
-
-        }else if(currentAlgorithm == AlgorithmType.BinarySpacepartitioning)
+            dungeonTiles = CA_Algorithm.GenerateDungeonTiles();
+        }/*
+        else if (currentAlgorithm == AlgorithmType.BinarySpacepartitioning)
         {
-            //dungeonTiles = BSP_Algorithm.GetDungeonTiles();
-            tilePlacer.VisualizeRooms(BSP_Algorithm.NewRooms());
+            HashSet<Bounds> roomBounds = new HashSet<Bounds>();
+            dungeonTiles = BSP_Algorithm.GetRooms(out roomBounds);
+            if (roomBounds.Count > 0)
+            {
+                tilePlacer.VisualizeRooms(roomBounds);
+            }
         }
+        else if (currentAlgorithm == AlgorithmType.RandomWalker)
+        {
+            dungeonTiles = RW_Algorithm.GetDungeonTiles();
+        }*/
+        PlaceDungeon(dungeonTiles);
+    }
 
+    private void PlaceDungeon(DungeonTiles _tiles) 
+    {
+        HashSet<DungeonRoom> roomTiles = new HashSet<DungeonRoom>();
+        HashSet<Vector2Int> corridorTiles = new HashSet<Vector2Int>();
         tilePlacer.ClearTilemap();
-        if (dungeonTiles.TryGetRooms(out roomTiles))
+        if (_tiles.TryGetRooms(out roomTiles))
         {
             tilePlacer.PlaceRoomTiles(roomTiles);
         }
-        if(dungeonTiles.TryGetCorridors(out corridorTiles))
+        if (_tiles.TryGetCorridors(out corridorTiles))
         {
             tilePlacer.PlaceFloorTiles(corridorTiles);
         }

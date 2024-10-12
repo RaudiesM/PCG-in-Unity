@@ -4,7 +4,7 @@ using UnityEngine;
 
 public enum AlgorithmType
 {
-    CellulaAutomata,
     RandomWalker,
+    CellulaAutomata,
     BinarySpacepartitioning
 }
