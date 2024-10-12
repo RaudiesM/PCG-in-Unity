@@ -12,6 +12,7 @@ public class DungeonSpawner : MonoBehaviour
     [SerializeField] private RandomWalker_Algorithm RW_Algorithm;
 
     [SerializeField] private TilePlacer tilePlacer;
+    [SerializeField] private TilemapVisiualizer tileVisualizer;
 
     private void Start()
     {
@@ -36,8 +37,11 @@ public class DungeonSpawner : MonoBehaviour
         }else if(currentAlgorithm == AlgorithmType.RandomWalker)
         {
             HashSet<Bounds> roomsAsBounds = new HashSet<Bounds>();
-            tilePlacer.PlaceFloorTiles(RW_Algorithm.GetDungeonTiles(out roomsAsBounds));
+            dungeonTiles.Clear();
+            dungeonTiles = RW_Algorithm.GetDungeonTiles(out roomsAsBounds);
+            tilePlacer.PlaceFloorTiles(dungeonTiles);
             tilePlacer.PlaceRooms(roomsAsBounds);
+            tileVisualizer.PaintFloorTiles(dungeonTiles);
         }
     }
 
