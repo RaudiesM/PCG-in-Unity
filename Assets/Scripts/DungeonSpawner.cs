@@ -12,7 +12,6 @@ public class DungeonSpawner : MonoBehaviour
     [SerializeField] private RandomWalker_Algorithm RW_Algorithm;
 
     [SerializeField] private TilePlacer tilePlacer;
-    [SerializeField] private TilemapVisiualizer tileVisualizer;
 
     private void Start()
     {
@@ -41,7 +40,6 @@ public class DungeonSpawner : MonoBehaviour
             dungeonTiles = RW_Algorithm.GetDungeonTiles(out roomsAsBounds);
             tilePlacer.PlaceFloorTiles(dungeonTiles);
             tilePlacer.PlaceRooms(roomsAsBounds);
-            tileVisualizer.PaintFloorTiles(dungeonTiles);
         }
     }
 

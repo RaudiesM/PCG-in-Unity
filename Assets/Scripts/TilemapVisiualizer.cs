@@ -8,19 +8,26 @@ public class TilemapVisiualizer : MonoBehaviour
 {
     [SerializeField] private Tilemap floorTilemap;
     [SerializeField] private TileBase floorTile;
+    [SerializeField] private TileBase boundryTile;
 
-    public void PaintFloorTiles(IEnumerable<Vector2Int> tiles)
+    public void PaintFloorTiles(HashSet<Vector2Int> tiles)
     {
-        foreach (Vector2Int tile in tiles)
-        {
-            PaintTiles(tile);
-        }
+        PaintTiles(tiles, floorTile);
     }
 
-    private void PaintTiles(Vector2Int tile)
+    public void PaintBoundryTiles(HashSet<Vector2Int> tiles)
     {
-        var tilePosition = floorTilemap.WorldToCell((Vector3Int)tile);
-        floorTilemap.SetTile(tilePosition, floorTile);
+        PaintTiles(tiles, boundryTile);
+    }
+
+
+    private void PaintTiles(HashSet<Vector2Int> tiles, TileBase tileType)
+    {
+        foreach(var tile in tiles)
+        {
+            var tilePosition = floorTilemap.WorldToCell((Vector3Int)tile);
+            floorTilemap.SetTile(tilePosition, tileType);
+        }
     }
 
     private void ClearTilemap()

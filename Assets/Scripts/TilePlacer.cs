@@ -1,11 +1,14 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Tilemaps;
 
 public class TilePlacer : MonoBehaviour
 {
-    [SerializeField] private GameObject floorTile;
-    [SerializeField] private GameObject boundryTile;
+    [SerializeField] private Tilemap floorTilemap;
+    [SerializeField] private TileBase floorTile;
+    [SerializeField] private TileBase boundryTile;
+
     [SerializeField] private GameObject roomTile;
     [SerializeField] private GameObject tileParent;
 
@@ -20,14 +23,28 @@ public class TilePlacer : MonoBehaviour
         PlaceTiles(tilePosition, boundryTile);
     }
 
+    private void PlaceTiles(HashSet<Vector2Int> tiles, TileBase tileType)
+    {
+        ClearTilemap();
+        foreach (var tile in tiles)
+        {
+            var tilePosition = floorTilemap.WorldToCell((Vector3Int)tile);
+            floorTilemap.SetTile(tilePosition, tileType);
+        }
+    }
+    private void ClearTilemap()
+    {
+        floorTilemap.ClearAllTiles();
+    }
+
     public void PlaceRooms(HashSet<BoundsInt> roomPosition)
     {
-        RemoveTiles();
+        RemoveRooms();
         foreach (var room in roomPosition) { 
             
             GameObject newRoomTile = Instantiate(roomTile);
             newRoomTile.transform.parent = tileParent.transform;
-            newRoomTile.transform.position = new Vector3(room.x, room.y, -0.01f);
+            newRoomTile.transform.position = new Vector3(room.x, room.y, -1f);
             newRoomTile.transform.localScale = room.size;
             newRoomTile.name = "Room";
             if(newRoomTile.TryGetComponent<SpriteRenderer>(out SpriteRenderer thisRenderer))
@@ -36,10 +53,9 @@ public class TilePlacer : MonoBehaviour
             }
         }
     }
-
     public void PlaceRooms(HashSet<Bounds> roomPosition)
     {
-        //RemoveTiles();
+        RemoveRooms();
         foreach (var room in roomPosition)
         {
 
@@ -55,19 +71,7 @@ public class TilePlacer : MonoBehaviour
         }
     }
 
-    private void PlaceTiles(HashSet<Vector2Int> tilePosition, GameObject placeableObject)
-    {
-        RemoveTiles();
-        foreach (var item in tilePosition)
-        {
-            Vector3 newPosition = new Vector3(item.x, item.y);
-            GameObject newFloorTile = Instantiate(placeableObject);
-            newFloorTile.transform.position = newPosition;
-            newFloorTile.transform.parent = tileParent.transform;
-        }
-    }
-
-    public void RemoveTiles()
+    public void RemoveRooms()
     {
         int numChildren = tileParent.transform.childCount;
         for (int i = 0; i < numChildren; i++)
@@ -75,5 +79,4 @@ public class TilePlacer : MonoBehaviour
             Destroy(tileParent.transform.GetChild(i).gameObject);
         }
     }
-
 }
