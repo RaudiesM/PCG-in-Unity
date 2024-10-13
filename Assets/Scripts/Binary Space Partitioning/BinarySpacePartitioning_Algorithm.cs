@@ -28,6 +28,68 @@ public class BinarySpacePartitioning_Algorithm : MonoBehaviour
     {
         CheckGivenValues();
     }
+    public HashSet<Bounds> SetupGeneration()
+    {
+        ClearDictionaries();
+        HashSet<BoundsInt> newDungeonRooms = new HashSet<BoundsInt>();
+        IterateOverRooms();
+        foreach (var room in dungeonRooms)
+        {
+            newDungeonRooms.Add(room.Value);
+            //Debug.Log($"Room [Pos.: {room.Value.position}] [ID: {room.Key}] ");
+        }
+        return ConvertBounds(newDungeonRooms);
+    }
+
+    public DungeonTiles ContinueIterating(out HashSet<Bounds> newBounds)
+    {
+        HashSet<BoundsInt> newDungeonRooms = new HashSet<BoundsInt>();
+        newBounds = new HashSet<Bounds>();
+        DungeonTiles dungeonTiles = new DungeonTiles(AlgorithmType.BinarySpacepartitioning);
+
+        bool isDoneSplitting = IterateOverRooms();
+
+        if (isDoneSplitting)
+        {
+            Debug.Log("I am done");
+            newDungeonRooms = PlaceRooms();
+            dungeonTiles.AddRoom(ConvertRoomsToTiles(newDungeonRooms));
+            corridorTiles.Clear();
+            ConnectRooms();
+            dungeonTiles.AddCorridor(corridorTiles);
+        }
+        else
+        {
+            foreach(var room in dungeonRooms)
+            {
+                newDungeonRooms.Add(room.Value);
+                //Debug.Log($"Room [Pos.: {room.Value.position}] [ID: {room.Key}] ");
+            }
+            newBounds = ConvertBounds(newDungeonRooms);
+        }
+
+        return dungeonTiles;
+    }
+
+    public DungeonTiles GenerateDungeonTiles()
+    {
+        ClearDictionaries();
+        DungeonTiles dungeonTiles = new DungeonTiles(AlgorithmType.BinarySpacepartitioning);
+
+        bool isDoneSplitting = false;
+        while (isDoneSplitting == false)
+        {
+            isDoneSplitting = IterateOverRooms();
+        }
+
+        HashSet<BoundsInt> newDungeonRooms = PlaceRooms();
+        dungeonTiles.AddRoom(ConvertRoomsToTiles(newDungeonRooms));
+        corridorTiles.Clear();
+        ConnectRooms();
+        dungeonTiles.AddCorridor(corridorTiles);
+
+        return dungeonTiles;
+    }
 
     private void CheckGivenValues()
     {
@@ -70,48 +132,6 @@ public class BinarySpacePartitioning_Algorithm : MonoBehaviour
         return roomTiles;
     }
 
-    public HashSet<Bounds> NewRooms()
-    {
-        ClearDictionaries();
-        HashSet<BoundsInt> newDungeonRooms = new HashSet<BoundsInt>();
-        IterateOverRooms();
-        foreach (var room in dungeonRooms)
-        {
-            newDungeonRooms.Add(room.Value);
-            //Debug.Log($"Room [Pos.: {room.Value.position}] [ID: {room.Key}] ");
-        }
-        return ConvertBounds(newDungeonRooms);
-    }
-
-    public DungeonTiles GetRooms(out HashSet<Bounds> newBounds)
-    {
-        HashSet<BoundsInt> newDungeonRooms = new HashSet<BoundsInt>();
-        newBounds = new HashSet<Bounds>();
-        DungeonTiles dungeonTiles = new DungeonTiles(AlgorithmType.BinarySpacepartitioning);
-
-        bool isDoneSplitting = IterateOverRooms();
-
-        if (isDoneSplitting)
-        {
-            Debug.Log("I am done");
-            newDungeonRooms = PlaceRooms();
-            dungeonTiles.AddRoom(ConvertRoomsToTiles(newDungeonRooms));
-            corridorTiles.Clear();
-            ConnectRooms();
-            dungeonTiles.AddCorridor(corridorTiles);
-        }
-        else
-        {
-            foreach(var room in dungeonRooms)
-            {
-                newDungeonRooms.Add(room.Value);
-                //Debug.Log($"Room [Pos.: {room.Value.position}] [ID: {room.Key}] ");
-            }
-            newBounds = ConvertBounds(newDungeonRooms);
-        }
-
-        return dungeonTiles;
-    }
 
     private void ConnectRooms()
     {
@@ -498,7 +518,6 @@ public class BinarySpacePartitioning_Algorithm : MonoBehaviour
         currentIndexNum++;
         return returnString;
     }
-
     private HashSet<Bounds> ConvertBounds(HashSet<BoundsInt> oldBounds)
     {
         HashSet<Bounds> newBounds = new HashSet<Bounds>();

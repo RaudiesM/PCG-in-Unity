@@ -23,16 +23,17 @@ public class DungeonSpawner : MonoBehaviour
     {
         DungeonTiles dungeonTiles = new DungeonTiles(currentAlgorithm);
 
-        if (currentAlgorithm == AlgorithmType.CellulaAutomata)
+        if (currentAlgorithm == AlgorithmType.RandomWalker)
+        {
+            dungeonTiles = RW_Algorithm.SetUpGeneration();
+
+        }else if(currentAlgorithm == AlgorithmType.CellulaAutomata)
         {
             dungeonTiles = CA_Algorithm.SetUpGeneration();
-
-        }else if(currentAlgorithm == AlgorithmType.BinarySpacepartitioning)
+        }
+        else if(currentAlgorithm == AlgorithmType.BinarySpacepartitioning)
         {
-            tilePlacer.VisualizeRooms(BSP_Algorithm.NewRooms());
-        }else if(currentAlgorithm == AlgorithmType.RandomWalker)
-        {
-            //dungeonTiles = RW_Algorithm.SetUpGeneration();
+            tilePlacer.VisualizeRooms(BSP_Algorithm.SetupGeneration());
         }
         PlaceDungeon(dungeonTiles);
     }
@@ -41,20 +42,21 @@ public class DungeonSpawner : MonoBehaviour
     {
         DungeonTiles dungeonTiles = new DungeonTiles(currentAlgorithm);
 
-        if (currentAlgorithm == AlgorithmType.CellulaAutomata)
+        if (currentAlgorithm == AlgorithmType.RandomWalker)
+        {
+            dungeonTiles = RW_Algorithm.ContinueIterating();
+        }
+        else if (currentAlgorithm == AlgorithmType.CellulaAutomata)
         {
             dungeonTiles = CA_Algorithm.ContinueIterating();
         }else if(currentAlgorithm == AlgorithmType.BinarySpacepartitioning)
         {
             HashSet<Bounds> roomBounds = new HashSet<Bounds>();
-            dungeonTiles = BSP_Algorithm.GetRooms(out roomBounds);
+            dungeonTiles = BSP_Algorithm.ContinueIterating(out roomBounds);
             if (roomBounds.Count > 0)
             {
                 tilePlacer.VisualizeRooms(roomBounds);
             }
-        }else if(currentAlgorithm == AlgorithmType.RandomWalker)
-        {
-            dungeonTiles = RW_Algorithm.GetDungeonTiles();
         }
 
         PlaceDungeon(dungeonTiles);
@@ -63,23 +65,18 @@ public class DungeonSpawner : MonoBehaviour
     private void GenerateDungeon()
     {
         DungeonTiles dungeonTiles = new DungeonTiles(currentAlgorithm);
-        if (currentAlgorithm == AlgorithmType.CellulaAutomata)
+        if (currentAlgorithm == AlgorithmType.RandomWalker)
+        {
+            dungeonTiles =RW_Algorithm.GenerateDungeonTiles();
+        }
+        else if (currentAlgorithm == AlgorithmType.CellulaAutomata)
         {
             dungeonTiles = CA_Algorithm.GenerateDungeonTiles();
-        }/*
+        }
         else if (currentAlgorithm == AlgorithmType.BinarySpacepartitioning)
         {
-            HashSet<Bounds> roomBounds = new HashSet<Bounds>();
-            dungeonTiles = BSP_Algorithm.GetRooms(out roomBounds);
-            if (roomBounds.Count > 0)
-            {
-                tilePlacer.VisualizeRooms(roomBounds);
-            }
+            dungeonTiles = BSP_Algorithm.GenerateDungeonTiles();
         }
-        else if (currentAlgorithm == AlgorithmType.RandomWalker)
-        {
-            dungeonTiles = RW_Algorithm.GetDungeonTiles();
-        }*/
         PlaceDungeon(dungeonTiles);
     }
 

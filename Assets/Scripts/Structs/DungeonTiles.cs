@@ -76,6 +76,11 @@ public struct DungeonTiles
         corridorTiles.UnionWith(newTiles);
     }
 
+    public void SetCorridor(HashSet<Vector2Int> newTiles)
+    {
+        corridorTiles = newTiles;
+    }
+
     public void Clear()
     {
         dungeonRooms.Clear();

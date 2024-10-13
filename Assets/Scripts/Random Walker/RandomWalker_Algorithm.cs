@@ -1,10 +1,11 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using Unity.VisualScripting;
 using UnityEngine;
 
 
-public class RandomWalker_Algorithm : MonoBehaviour
+public class RandomWalker_Algorithm : DungeonAlgorithmBase
 {
     [SerializeField] private DungeonType currentType;
     [SerializeField] private BoundsInt fieldSize;
@@ -21,17 +22,82 @@ public class RandomWalker_Algorithm : MonoBehaviour
     private DungeonTiles tileList = new DungeonTiles(AlgorithmType.RandomWalker);
     private HashSet<Bounds> roomList = new HashSet<Bounds>();
     private Stack<Vector2Int> safePositions = new Stack<Vector2Int>();
-    private Vector2Int startPosition;
+    private Vector2Int currentPosition;
 
-    public DungeonTiles GetDungeonTiles()
+    public override DungeonTiles GenerateDungeonTiles()
     {
         tileList.Clear();
         roomList.Clear();
-        startPosition = new Vector2Int(Mathf.FloorToInt(fieldSize.center.x), Mathf.FloorToInt(fieldSize.center.y));
-        if(currentType == DungeonType.Caverns)
+        currentPosition = new Vector2Int(Mathf.FloorToInt(fieldSize.center.x), Mathf.FloorToInt(fieldSize.center.y));
+
+        int safetyCheck = 0;
+
+        if (currentType == DungeonType.Caverns)
+        {
+            while (tileList.Count() < maxTiles && safetyCheck < 1000)
+            {
+                int tileCount = tileList.Count();
+
+                BaseRandomWalker();
+
+                if (tileCount == tileList.Count())
+                {
+                    safetyCheck++;
+                }
+                else
+                {
+                    safetyCheck = 0;
+                }
+            }
+        }
+        else if(currentType == DungeonType.Rooms)
+        {
+            while (tileList.Count() < maxTiles && safetyCheck < 1000)
+            {
+                int tileCount = tileList.Count();
+                
+                RoomWalker();
+                
+                if (tileCount == tileList.Count())
+                {
+                    safetyCheck++;
+                }
+                else
+                {
+                    safetyCheck = 0;
+                }
+            }
+        }
+        return tileList;
+    }
+
+    public override DungeonTiles SetUpGeneration()
+    {
+        tileList.Clear();
+        roomList.Clear();
+        currentPosition = new Vector2Int(Mathf.FloorToInt(fieldSize.center.x), Mathf.FloorToInt(fieldSize.center.y));
+
+        if (currentType == DungeonType.Caverns)
         {
             BaseRandomWalker();
-        }else if(currentType == DungeonType.Rooms)
+        }
+        else if (currentType == DungeonType.Rooms)
+        {
+            RoomWalker();
+        }
+        return tileList;
+    }
+
+    public override DungeonTiles ContinueIterating()
+    {
+        if (tileList.Count() >= maxTiles)
+            return tileList;
+
+        if (currentType == DungeonType.Caverns)
+        {
+            BaseRandomWalker();
+        }
+        else if (currentType == DungeonType.Rooms)
         {
             RoomWalker();
         }
@@ -40,13 +106,9 @@ public class RandomWalker_Algorithm : MonoBehaviour
 
     private void BaseRandomWalker()
     {
-        Vector2Int curPos = startPosition;
-        tileList.AddCorridorTile(curPos);
-        while (tileList.Count() < maxTiles)
-        {
-            curPos += RandomDirection(curPos);
-            tileList.AddCorridorTile(curPos);
-        }
+        tileList.AddCorridorTile(currentPosition);
+        currentPosition += RandomDirection(currentPosition);
+        tileList.AddCorridorTile(currentPosition);
     }
 
     private void RoomWalker()
@@ -54,40 +116,23 @@ public class RandomWalker_Algorithm : MonoBehaviour
         HashSet<Vector2Int> hallwayTiles = new HashSet<Vector2Int>();
         HashSet<Vector2Int> roomTiles = new HashSet<Vector2Int>();
 
-        Vector2Int curPos = startPosition;
-        tileList.AddCorridorTile(curPos);
-        tileList.AddRoom(SetRoom(curPos));
         
-        int safetyCheck = 0;
-
-        while (tileList.Count() < maxTiles && safetyCheck < 1000)
+        tileList.AddCorridorTile(currentPosition);
+        tileList.AddRoom(SetRoom(currentPosition));
+        hallwayTiles = SetHallway(currentPosition, out currentPosition);
+        int rollForRoom = Random.Range(1, 101);
+        if (rollForRoom <= roomSpawnRate)
         {
-            int tileCount = tileList.Count();
-            
-            hallwayTiles = SetHallway(curPos, out curPos);
-            tileList.AddCorridor(hallwayTiles);
-            int rollForRoom = Random.Range(1, 101);
-            if (rollForRoom <= roomSpawnRate)
+            roomTiles = SetRoom(currentPosition);
+            if(roomTiles.Count == 0 && safePositions.Count >= 0)
             {
-                roomTiles = SetRoom(curPos);
-                if(roomTiles.Count == 0 && safePositions.Count >= 0)
-                {
-                    Debug.Log("Whats going on");
-                    /*
-                    curPos = safePositions.Pop();
-                    continue;
-                    */
-                }
-                tileList.AddRoom(roomTiles);
-            }
-
-            if(tileCount == tileList.Count())
-            {
-                safetyCheck++;
+                Debug.Log("Whats going on");
+                currentPosition = safePositions.Pop();
             }
             else
             {
-                safetyCheck = 0;
+                tileList.AddRoom(roomTiles);
+                tileList.AddCorridor(hallwayTiles);
             }
         }
     }

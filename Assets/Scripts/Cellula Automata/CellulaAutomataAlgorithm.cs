@@ -12,6 +12,7 @@ public class CellulaAutomataAlgorithm : DungeonAlgorithmBase
 
     [SerializeField] private NeighbourType currentNeighbour = NeighbourType.Moore;
     [SerializeField] private bool showWalls = false;
+    [SerializeField] private bool showRedundantSpace = false;
 
     [SerializeField] private CellRulesetBase currentMooreRuleset;
     [SerializeField] private CellRulesetBase currentNeumannRuleset;
@@ -30,8 +31,13 @@ public class CellulaAutomataAlgorithm : DungeonAlgorithmBase
             ApplyCellulaAutomata();
         }
         DungeonTiles tiles = GetCellDistribution();
+        Debug.Log("Before: "+tiles.Count());
+        tiles = ReduceTiles(tiles);
+        Debug.Log("After: "+tiles.Count());
         return tiles;
     }
+
+    
 
     public override DungeonTiles SetUpGeneration()
     {
@@ -45,11 +51,17 @@ public class CellulaAutomataAlgorithm : DungeonAlgorithmBase
 
     public override DungeonTiles ContinueIterating()
     {
+        DungeonTiles tiles = new DungeonTiles(AlgorithmType.CellulaAutomata);
         if(currentIteration < numIterations)
         {
             ApplyCellulaAutomata();
+            tiles = GetCellDistribution();
         }
-        DungeonTiles tiles = GetCellDistribution();
+        else
+        {
+            tiles = GetCellDistribution();
+            tiles = ReduceTiles(tiles);
+        }
         return tiles;
     }
 
@@ -138,9 +150,11 @@ public class CellulaAutomataAlgorithm : DungeonAlgorithmBase
                 if (currentNeighbour == NeighbourType.Moore)
                 {
                     newStateIsFloor = currentMooreRuleset.ApplyRulesToCell(isFloor, numNeighbours);
+                    //Debug.Log($"Position {newPosition} / Neighbours {numNeighbours}");
                 }
                 else if(currentNeighbour == NeighbourType.Neumann)
                 {
+                    //Debug.Log($"Position {newPosition} / Neighbours {numNeighbours}");
                     newStateIsFloor = currentNeumannRuleset.ApplyRulesToCell(isFloor, numNeighbours);
                 }
                 
@@ -190,24 +204,28 @@ public class CellulaAutomataAlgorithm : DungeonAlgorithmBase
         {
             for (int i = -neighbourDistance; i <= neighbourDistance; i++)
             {
-
                 //add to x & check
+                if (i == 0)
+                    continue;
+
                 cellToCheck = new Vector2Int(currentCell.x + i, currentCell.y);
-                if (currentCell != cellToCheck && cellDistribution.ContainsKey(cellToCheck))
+                if (cellDistribution.ContainsKey(cellToCheck))
                 {
                     if (cellDistribution[cellToCheck].IsFloor)
                     {
                         numFloorNeighbour++;
+                        //Debug.Log($"currentPosition {currentCell} / currentNeighbour {cellToCheck}");
                     }
                 }
 
                 //add to y & check
                 cellToCheck = new Vector2Int(currentCell.x, currentCell.y+i);
-                if (currentCell != cellToCheck && cellDistribution.ContainsKey(cellToCheck))
+                if (cellDistribution.ContainsKey(cellToCheck))
                 {
                     if (cellDistribution[cellToCheck].IsFloor)
                     {
                         numFloorNeighbour++;
+                        //Debug.Log($"currentPosition {currentCell} / currentNeighbour {cellToCheck}");
                     }
                 }
 
@@ -230,5 +248,85 @@ public class CellulaAutomataAlgorithm : DungeonAlgorithmBase
             }
         }
         return tiles;
+    }
+
+    private DungeonTiles ReduceTiles(DungeonTiles tiles)
+    {
+        Debug.Log("Reducing!");
+        DungeonTiles newDungeonTiles = new DungeonTiles(AlgorithmType.CellulaAutomata);
+        
+        HashSet<Vector2Int> allTiles = new HashSet<Vector2Int>();
+        HashSet<Vector2Int> checkedTiles = new HashSet<Vector2Int>();
+
+        tiles.TryGetCorridors(out allTiles);
+
+        foreach (var tile in allTiles) 
+        {
+            if (checkedTiles.Contains(tile))
+                continue;
+
+            HashSet<Vector2Int> currentTiles = new HashSet<Vector2Int>();
+            Vector2Int currentPosition = tile;
+            Queue<Vector2Int> lastSafePoints = new Queue<Vector2Int>();
+            bool isChecking = true;
+            int safetyCheck = 0;
+            while (isChecking && safetyCheck <= 1000000)
+            {
+                safetyCheck++;
+                bool neighbourIsSet = false;
+                int possibleNeighbours = 0;
+                Vector2Int lastSafePoint = currentPosition;
+                foreach(var neighbour in GetNeighbour(currentPosition))
+                {
+                    if(allTiles.Contains(neighbour) && currentTiles.Contains(neighbour) == false)
+                    {
+                        possibleNeighbours++;
+                        if(neighbourIsSet == false)
+                        {
+                            currentPosition = neighbour;
+                            neighbourIsSet = true;
+                        }
+                    }
+                }
+                if (possibleNeighbours > 1)
+                {
+                    lastSafePoints.Enqueue(lastSafePoint);
+                }
+                if(currentPosition == lastSafePoint && lastSafePoints.Count > 0)
+                {
+                    currentPosition = lastSafePoints.Dequeue();
+                }else if(lastSafePoints.Count == 0)
+                {
+                    isChecking = false;
+                }
+
+                currentTiles.Add(currentPosition);
+            }
+            
+            Debug.Log("Runs");
+            checkedTiles.UnionWith(currentTiles);
+            if(showRedundantSpace)
+            {
+                newDungeonTiles.AddRoom(currentTiles);
+            }
+            else
+            {
+                if(newDungeonTiles.Count() < currentTiles.Count ) 
+                { 
+                    newDungeonTiles.SetCorridor(currentTiles);
+                }
+            }
+        }
+        return newDungeonTiles;
+    }
+
+    private HashSet<Vector2Int> GetNeighbour(Vector2Int position)
+    {
+        HashSet<Vector2Int> neighbours = new HashSet<Vector2Int>();
+        neighbours.Add(position + Vector2Int.up);
+        neighbours.Add(position + Vector2Int.down);
+        neighbours.Add(position + Vector2Int.left);
+        neighbours.Add(position + Vector2Int.right);
+        return neighbours;
     }
 }
