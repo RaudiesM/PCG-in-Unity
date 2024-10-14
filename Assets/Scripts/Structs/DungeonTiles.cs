@@ -38,17 +38,18 @@ public struct DungeonTiles
         return GetDungeonRoomTiles().Count > 0; 
     }
     public bool TryGetCorridors(out HashSet<Vector2Int> corridors) 
-    { 
-       corridors = new HashSet<Vector2Int>();
-       HashSet<Vector2Int> roomTiles = GetDungeonRoomTiles();
-       foreach(var corridor in corridorTiles)
-       {
-            if (!roomTiles.Contains(corridor))
-            {
-                corridors.Add(corridor);
-            }
-       }
-       return corridors.Count > 0;
+    {
+        corridors = corridorTiles;
+        /*corridors = new HashSet<Vector2Int>();
+        HashSet<Vector2Int> roomTiles = GetDungeonRoomTiles();
+        foreach(var corridor in corridorTiles)
+        {
+             if (!roomTiles.Contains(corridor))
+             {
+                 corridors.Add(corridor);
+             }
+        }*/
+        return corridors.Count > 0;
     }
 
     public void AddCorridorTile(Vector2Int tile)

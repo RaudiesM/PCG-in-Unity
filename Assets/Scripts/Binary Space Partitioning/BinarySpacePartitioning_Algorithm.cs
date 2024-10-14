@@ -201,11 +201,13 @@ public class BinarySpacePartitioning_Algorithm : MonoBehaviour
         pathA = GetCorridorPath(pointA, pointB, pointAB);
         pathB = GetCorridorPath(pointA, pointB, pointBA);
 
-        if(pathA.Count == 0)
+        Debug.ClearDeveloperConsole();
+
+        if (pathA.Count <= 1)
         {
             pathA = pathB;
         }
-        else if(pathB.Count == 0)
+        else if(pathB.Count <= 1)
         {
             pathB = pathA;
         }
@@ -220,17 +222,19 @@ public class BinarySpacePartitioning_Algorithm : MonoBehaviour
             
         }
 
+        /*
         if (corridorList == pathA)
         {
 
-            Debug.DrawLine(new Vector3(pointA.x, pointA.y), new Vector3(pointAB.x, pointAB.y), Color.blue, 3);
-            Debug.DrawLine(new Vector3(pointAB.x, pointAB.y), new Vector3(pointB.x, pointB.y), Color.blue, 3);
+            Debug.DrawLine(new Vector3(pointA.x, pointA.y), new Vector3(pointAB.x, pointAB.y), Color.blue, 1);
+            Debug.DrawLine(new Vector3(pointAB.x, pointAB.y), new Vector3(pointB.x, pointB.y), Color.blue, 1);
         }
         else
         {
-            Debug.DrawLine(new Vector3(pointA.x, pointA.y), new Vector3(pointBA.x, pointBA.y), Color.blue, 3);
-            Debug.DrawLine(new Vector3(pointBA.x, pointBA.y), new Vector3(pointB.x, pointB.y), Color.blue, 3);
+            Debug.DrawLine(new Vector3(pointA.x, pointA.y), new Vector3(pointBA.x, pointBA.y), Color.red, 1);
+            Debug.DrawLine(new Vector3(pointBA.x, pointBA.y), new Vector3(pointB.x, pointB.y), Color.red, 1);
         }
+        */
 
         foreach (var  corridor in corridorList)
         {
@@ -302,6 +306,19 @@ public class BinarySpacePartitioning_Algorithm : MonoBehaviour
             }
         }
         #endregion
+
+        if(result.Count < 2) 
+        {
+            Debug.DrawLine(new Vector3(startPoint.x, startPoint.y), new Vector3(middlePoint.x, middlePoint.y), Color.cyan, 100);
+            Debug.DrawLine(new Vector3(middlePoint.x, middlePoint.y), new Vector3(goalPoint.x, goalPoint.y), Color.blue, 100);
+            Debug.Log($"startPoint {startPoint}");
+            Debug.Log($"goalPoint {goalPoint}");
+
+            Debug.Log($"point A {pointA}");
+            Debug.Log($"point B {pointB}");
+
+            Debug.Log($"middlePoint {middlePoint}");
+        }
         return result;
     }
 
@@ -346,7 +363,6 @@ public class BinarySpacePartitioning_Algorithm : MonoBehaviour
         int xRandom = rooms.size.x;
         int yRandom = rooms.size.y;
         
-        
         if (rooms.size.x > rooms.size.y)
         {
             int potYMin = Mathf.FloorToInt(rooms.size.y * roomPercentage);
@@ -363,7 +379,7 @@ public class BinarySpacePartitioning_Algorithm : MonoBehaviour
             xRandom = Random.Range(xMin, rooms.size.x - offset);
             yRandom = Random.Range(minSize / xRandom, rooms.size.y - offset);
         }
-        //Debug.Log($"x: {xRandom} / y: {yRandom}");
+
         return new Vector3Int(xRandom, yRandom);
     }
     #endregion

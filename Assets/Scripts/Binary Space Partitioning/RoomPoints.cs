@@ -64,7 +64,7 @@ public struct RoomPoints
         return roomPoints;
     }
 
-    public Vector2Int GetClosestPoint(Vector2Int pointRef)
+    public Vector2Int GetClosestPoint(Vector2Int pointRef, Vector2Int emergencyPoint = new Vector2Int())
     {
         Vector2Int closestPoint = new Vector2Int();
         float distance = 0;
