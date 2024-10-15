@@ -4,7 +4,7 @@ using UnityEngine;
 
 
 
-public class CellulaAutomataAlgorithm : DungeonAlgorithmBase
+public class CellulaAutomataAlgorithm_old : DungeonAlgorithmBase
 {
     [SerializeField] private int numIterations = 3;
     [SerializeField] private BoundsInt fieldSize = new BoundsInt(new Vector3Int(0, 0, 0), new Vector3Int(10, 10, 0));
@@ -19,7 +19,7 @@ public class CellulaAutomataAlgorithm : DungeonAlgorithmBase
 
     private int currentIteration = 0;
     private int neighbourDistance = 1;
-    private HashSet<Vector2Int> cellDistribution = new HashSet<Vector2Int>();
+    private Dictionary<Vector2Int, CellState> cellDistribution = new Dictionary<Vector2Int, CellState>();
 
     public override DungeonTiles GenerateDungeonTiles()
     {
@@ -70,13 +70,17 @@ public class CellulaAutomataAlgorithm : DungeonAlgorithmBase
         DungeonTiles tiles = new DungeonTiles(AlgorithmType.CellulaAutomata);
         foreach (var cell in cellDistribution)
         {
-            tiles.AddCorridorTile(cell);
+            if (cell.Value.IsFloor)
+            {
+                tiles.AddCorridorTile(cell.Key);
+            }
         }
         return tiles;
     }
 
     private void DistributeCells()
     {
+        SurroundFieldWithWall();
         int numMaxCells = fieldSize.yMax * fieldSize.xMax;
         int cellPercent = Mathf.FloorToInt(numMaxCells * fillPercentage);
         int convertedCells = 0;
@@ -88,9 +92,10 @@ public class CellulaAutomataAlgorithm : DungeonAlgorithmBase
                                             Random.Range(fieldSize.xMin, fieldSize.xMax), 
                                             Random.Range(fieldSize.yMin, fieldSize.yMax)
                                             );
-            if (cellDistribution.Contains(randomPosition) == false)
+            if (cellDistribution.ContainsKey(randomPosition) == false)
             {
-                cellDistribution.Add(randomPosition);
+                CellState cellState = new CellState(true, true);
+                cellDistribution.Add(randomPosition, cellState);
                 convertedCells++;
             }
             maxCounter++;
@@ -101,7 +106,34 @@ public class CellulaAutomataAlgorithm : DungeonAlgorithmBase
         }
     }
 
-   private void ApplyCellulaAutomata()
+    private void SurroundFieldWithWall()
+    {
+        CellState boundryState = new CellState(false, false);
+        HashSet<Vector3Int> boundryTiles = new HashSet<Vector3Int>();
+        for (int i = fieldSize.xMin-1; i <= fieldSize.xMax+1; i++) 
+        { 
+            Vector3Int yMinPos = new Vector3Int(i, fieldSize.yMin-1);
+            Vector3Int yMaxPos = new Vector3Int(i, fieldSize.yMax+1);
+            boundryTiles.Add(yMinPos);
+            boundryTiles.Add(yMaxPos);
+        }
+        for (int i = fieldSize.yMin - 1; i <= fieldSize.yMax + 1; i++)
+        {
+            Vector3Int xMinPos = new Vector3Int(fieldSize.xMin-1, i);
+            Vector3Int xMaxPos = new Vector3Int(fieldSize.xMax+1, i);
+            boundryTiles.Add(xMinPos);
+            boundryTiles.Add(xMaxPos);
+        }
+
+        foreach (Vector2Int position in boundryTiles) 
+        { 
+            if(cellDistribution.ContainsKey(position) == false) 
+            cellDistribution.Add(position, boundryState);
+        }
+    }
+
+
+    private void ApplyCellulaAutomata()
     {
         currentIteration++;
 
@@ -111,7 +143,7 @@ public class CellulaAutomataAlgorithm : DungeonAlgorithmBase
             for (int j = fieldSize.yMin; j <= fieldSize.yMax; j++)
             {
                 Vector2Int newPosition = new Vector2Int(i, j);
-                bool isFloor = cellDistribution.Contains(newPosition);
+                bool isFloor = cellDistribution.ContainsKey(newPosition);
                 int numNeighbours = CheckNeighbourCells(newPosition);
                 
                 bool newStateIsFloor = false;
@@ -136,11 +168,11 @@ public class CellulaAutomataAlgorithm : DungeonAlgorithmBase
 
         foreach(var cell in newCellStates)
         {
-            if (cell.Value && cellDistribution.Contains(cell.Key) == false)
+            if (cell.Value && cellDistribution.ContainsKey(cell.Key) == false)
             {
-                cellDistribution.Add(cell.Key);
+                cellDistribution.Add(cell.Key, new CellState(true));
             }
-            else if(cell.Value == false && cellDistribution.Contains(cell.Key))
+            else if(cell.Value == false && cellDistribution.ContainsKey(cell.Key))
             {
                 cellDistribution.Remove(cell.Key);
             }
@@ -158,9 +190,12 @@ public class CellulaAutomataAlgorithm : DungeonAlgorithmBase
                 for(int j = -neighbourDistance; j<=neighbourDistance; j++)
                 {
                     cellToCheck = new Vector2Int(currentCell.x+i, currentCell.y+j);
-                    if(currentCell != cellToCheck && cellDistribution.Contains(cellToCheck))
+                    if(currentCell != cellToCheck && cellDistribution.ContainsKey(cellToCheck))
                     {
-                        numFloorNeighbour++;
+                        if (cellDistribution[cellToCheck].IsFloor)
+                        {
+                            numFloorNeighbour++;
+                        }
                     }
                 }
             }
@@ -169,29 +204,52 @@ public class CellulaAutomataAlgorithm : DungeonAlgorithmBase
         {
             for (int i = -neighbourDistance; i <= neighbourDistance; i++)
             {
-                //ignore self
+                //add to x & check
                 if (i == 0)
                     continue;
 
-                //add to x & check
                 cellToCheck = new Vector2Int(currentCell.x + i, currentCell.y);
-                if (cellDistribution.Contains(cellToCheck))
+                if (cellDistribution.ContainsKey(cellToCheck))
                 {
-                    numFloorNeighbour++;
+                    if (cellDistribution[cellToCheck].IsFloor)
+                    {
+                        numFloorNeighbour++;
+                        //Debug.Log($"currentPosition {currentCell} / currentNeighbour {cellToCheck}");
+                    }
                 }
 
                 //add to y & check
                 cellToCheck = new Vector2Int(currentCell.x, currentCell.y+i);
-                if (cellDistribution.Contains(cellToCheck))
+                if (cellDistribution.ContainsKey(cellToCheck))
                 {
-                    numFloorNeighbour++;
+                    if (cellDistribution[cellToCheck].IsFloor)
+                    {
+                        numFloorNeighbour++;
+                        //Debug.Log($"currentPosition {currentCell} / currentNeighbour {cellToCheck}");
+                    }
                 }
 
             }
         }
         return numFloorNeighbour;
     }
-   
+    public HashSet<Vector2Int> GetBoundry()
+    {
+        HashSet<Vector2Int> tiles = new HashSet<Vector2Int>();
+        if (showWalls)
+        {
+            Debug.Log("Umrandung = " + cellDistribution.Count);
+            foreach (var cell in cellDistribution)
+            {
+                if (cell.Value.IsChangeable == false)
+                {
+                    tiles.Add(cell.Key);
+                }
+            }
+        }
+        return tiles;
+    }
+
     private DungeonTiles ReduceTiles(DungeonTiles tiles)
     {
         Debug.Log("Reducing!");
