@@ -644,7 +644,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f85abe2f572432f4a9dfd0145d4036d1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  currentAlgorithm: 1
+  currentAlgorithm: 0
   CA_Algorithm: {fileID: 1563801909}
   BSP_Algorithm: {fileID: 883259476}
   RW_Algorithm: {fileID: 283747623}
@@ -666,10 +666,10 @@ MonoBehaviour:
     m_Size: {x: 100, y: 100, z: 0}
   maxNumRooms: 10
   minSize: 250
-  roomPercentage: 0.653
+  roomPercentage: 0.9
   minYSize: 12
   minXSize: 12
-  offset: 0
+  offset: 2
 --- !u!1 &949035483
 GameObject:
   m_ObjectHideFlags: 0

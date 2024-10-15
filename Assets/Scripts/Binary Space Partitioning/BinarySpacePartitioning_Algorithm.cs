@@ -55,7 +55,7 @@ public class BinarySpacePartitioning_Algorithm : MonoBehaviour
             newDungeonRooms = PlaceRooms();
             dungeonTiles.AddRoom(ConvertRoomsToTiles(newDungeonRooms));
             corridorTiles.Clear();
-            ConnectRooms();
+            ConnectRooms(dungeonTiles);
             dungeonTiles.AddCorridor(corridorTiles);
         }
         else
@@ -85,7 +85,7 @@ public class BinarySpacePartitioning_Algorithm : MonoBehaviour
         HashSet<BoundsInt> newDungeonRooms = PlaceRooms();
         dungeonTiles.AddRoom(ConvertRoomsToTiles(newDungeonRooms));
         corridorTiles.Clear();
-        ConnectRooms();
+        ConnectRooms(dungeonTiles);
         dungeonTiles.AddCorridor(corridorTiles);
 
         return dungeonTiles;
@@ -133,7 +133,7 @@ public class BinarySpacePartitioning_Algorithm : MonoBehaviour
     }
 
 
-    private void ConnectRooms()
+    private void ConnectRooms(DungeonTiles _dungeonTiles)
     {
         Queue<string> roomIndex = new Queue<string>();
         Queue<string> doneIDs = new Queue<string>();
@@ -168,7 +168,7 @@ public class BinarySpacePartitioning_Algorithm : MonoBehaviour
                     pointB = roomPointsB.GetRoomPoints()[0];
                 }
                 
-                SetCorridor(pointA, pointB);
+                SetCorridor(pointA, pointB, _dungeonTiles);
                 RoomPoints newRoomPoints = new RoomPoints(roomPointsA, roomPointsB);
                 roomsToConnect.Add(parentID, newRoomPoints);
                 roomsToConnect.Remove(currentID);
@@ -187,7 +187,7 @@ public class BinarySpacePartitioning_Algorithm : MonoBehaviour
         //Debug.Log("<color=black> End Room IDs.</color>");
     }
 
-    private void SetCorridor(Vector2Int pointA, Vector2Int pointB)
+    private void SetCorridor(Vector2Int pointA, Vector2Int pointB, DungeonTiles _dungeonTiles)
     {
         //Debug.Log("Connecting!");
         Vector2Int pointAB = new Vector2Int(pointA.x, pointB.y);
@@ -198,8 +198,8 @@ public class BinarySpacePartitioning_Algorithm : MonoBehaviour
 
         HashSet<Vector2Int> corridorList = new HashSet<Vector2Int>();
 
-        pathA = GetCorridorPath(pointA, pointB, pointAB);
-        pathB = GetCorridorPath(pointA, pointB, pointBA);
+        pathA = GetCorridorPath(pointA, pointB, pointAB, _dungeonTiles);
+        pathB = GetCorridorPath(pointA, pointB, pointBA, _dungeonTiles);
 
         Debug.ClearDeveloperConsole();
 
@@ -242,10 +242,18 @@ public class BinarySpacePartitioning_Algorithm : MonoBehaviour
         }
     }
 
-    private HashSet<Vector2Int> GetCorridorPath(Vector2Int pointA, Vector2Int pointB, Vector2Int middlePoint)
+    private HashSet<Vector2Int> GetCorridorPath(Vector2Int pointA, Vector2Int pointB, Vector2Int middlePoint, DungeonTiles _dungeonTiles)
     {
         HashSet<Vector2Int> result = new HashSet<Vector2Int>();
-        
+        HashSet<Vector2Int> refTiles = new HashSet<Vector2Int>();
+        refTiles.UnionWith(corridorTiles);
+        HashSet<DungeonRoom> rooms = new HashSet<DungeonRoom>();
+        _dungeonTiles.TryGetRooms(out rooms);
+        foreach (var room in rooms)
+        {
+            refTiles.UnionWith(room.GetRoomTiles());
+        }
+
         Vector2Int startVector = new Vector2Int();
         Vector2Int goalVector = new Vector2Int();
 
@@ -279,7 +287,7 @@ public class BinarySpacePartitioning_Algorithm : MonoBehaviour
         for(int y = startVector.y; y <= goalVector.y; y++)
         {
             Vector2Int currentPosition = new Vector2Int(startVector.x, y);
-            if(corridorTiles.Contains(currentPosition) == false)
+            if(refTiles.Contains(currentPosition) == false)
             {
                 result.Add(currentPosition);
             }
@@ -300,13 +308,13 @@ public class BinarySpacePartitioning_Algorithm : MonoBehaviour
         for (int x = startVector.x; x <= goalVector.x; x++)
         {
             Vector2Int currentPosition = new Vector2Int(x, startVector.y);
-            if (corridorTiles.Contains(currentPosition) == false)
+            if (refTiles.Contains(currentPosition) == false)
             {
                 result.Add(currentPosition);
             }
         }
         #endregion
-
+        /*
         if(result.Count < 2) 
         {
             Debug.DrawLine(new Vector3(startPoint.x, startPoint.y), new Vector3(middlePoint.x, middlePoint.y), Color.cyan, 100);
@@ -319,6 +327,7 @@ public class BinarySpacePartitioning_Algorithm : MonoBehaviour
 
             Debug.Log($"middlePoint {middlePoint}");
         }
+        */
         return result;
     }
 
@@ -349,12 +358,15 @@ public class BinarySpacePartitioning_Algorithm : MonoBehaviour
 
     private Vector3Int VariantPosition(BoundsInt rooms, Vector3Int newSize)
     {
-        int xDiff = rooms.size.x - newSize.x-offset;
-        int yDiff = rooms.size.y - newSize.y-offset;
+        int xDiff = rooms.size.x - newSize.x;
+        int yDiff = rooms.size.y - newSize.y;
 
         int xRandom = Random.Range(-xDiff/2, xDiff/2);
         int yRandom = Random.Range(-yDiff/2, yDiff/2);
 
+        xRandom -= xRandom > offset ? offset : 0;
+        yRandom -= yRandom > offset ? offset : 0;
+        
         return new Vector3Int(rooms.position.x + xRandom, rooms.position.y + yRandom);
     }
 
@@ -367,19 +379,22 @@ public class BinarySpacePartitioning_Algorithm : MonoBehaviour
         {
             int potYMin = Mathf.FloorToInt(rooms.size.y * roomPercentage);
             int yMin = potYMin > minYSize ? potYMin : minYSize;
-
-            yRandom = Random.Range(yMin, rooms.size.y - offset);
-            xRandom = Random.Range(minSize / yRandom, rooms.size.x - offset);
+            yRandom = Random.Range(yMin, rooms.size.y);
+            
+            int xMin = minSize / yRandom > minXSize ? minSize / yRandom : minXSize;
+            xRandom = Random.Range(xMin, rooms.size.x);
         }
         else if (rooms.size.y >= rooms.size.x)
         {
             int potXMin = Mathf.FloorToInt(rooms.size.x * roomPercentage);
             int xMin = potXMin > minXSize ? potXMin : minXSize;
+            xRandom = Random.Range(xMin, rooms.size.x);
 
-            xRandom = Random.Range(xMin, rooms.size.x - offset);
-            yRandom = Random.Range(minSize / xRandom, rooms.size.y - offset);
+            int yMin = minSize / yRandom > minYSize ? minSize / yRandom : minYSize;
+            yRandom = Random.Range(yMin, rooms.size.y);
         }
-
+        yRandom -= offset;
+        xRandom -= offset;
         return new Vector3Int(xRandom, yRandom);
     }
     #endregion
