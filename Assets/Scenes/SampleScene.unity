@@ -171,7 +171,7 @@ MonoBehaviour:
     m_Position: {x: 0, y: 0, z: 0}
     m_Size: {x: 100, y: 100, z: 0}
   maxTiles: 1814
-  roomSpawnRate: 100
+  roomSpawnRate: 50
   roomMin: 1
   roomMax: 5
   hallwayLengthMin: 9

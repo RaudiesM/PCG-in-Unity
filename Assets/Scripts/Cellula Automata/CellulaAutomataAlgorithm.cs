@@ -21,6 +21,7 @@ public class CellulaAutomataAlgorithm : DungeonAlgorithmBase
     private int neighbourDistance = 1;
     private HashSet<Vector2Int> cellDistribution = new HashSet<Vector2Int>();
 
+    #region Generation Methods
     public override DungeonTiles GenerateDungeonTiles()
     {
         cellDistribution.Clear();
@@ -31,9 +32,7 @@ public class CellulaAutomataAlgorithm : DungeonAlgorithmBase
             ApplyCellulaAutomata();
         }
         DungeonTiles tiles = GetCellDistribution();
-        Debug.Log("Before: "+tiles.Count());
         tiles = ReduceTiles(tiles);
-        Debug.Log("After: "+tiles.Count());
         return tiles;
     }
 
@@ -41,7 +40,6 @@ public class CellulaAutomataAlgorithm : DungeonAlgorithmBase
 
     public override DungeonTiles SetUpGeneration()
     {
-        Debug.Log("Setting up generation");
         cellDistribution.Clear();
         currentIteration = 0;
         DistributeCells();
@@ -64,6 +62,8 @@ public class CellulaAutomataAlgorithm : DungeonAlgorithmBase
         }
         return tiles;
     }
+
+    #endregion
 
     private DungeonTiles GetCellDistribution()
     {
@@ -218,7 +218,7 @@ public class CellulaAutomataAlgorithm : DungeonAlgorithmBase
                 bool neighbourIsSet = false;
                 int possibleNeighbours = 0;
                 Vector2Int lastSafePoint = currentPosition;
-                foreach(var neighbour in GetNeighbour(currentPosition))
+                foreach(var neighbour in UtilityFunctions.GetNeighbourCell(currentPosition))
                 {
                     if(allTiles.Contains(neighbour) && currentTiles.Contains(neighbour) == false)
                     {
@@ -244,8 +244,6 @@ public class CellulaAutomataAlgorithm : DungeonAlgorithmBase
 
                 currentTiles.Add(currentPosition);
             }
-            
-            Debug.Log("Runs");
             checkedTiles.UnionWith(currentTiles);
             if(showRedundantSpace)
             {
@@ -260,15 +258,5 @@ public class CellulaAutomataAlgorithm : DungeonAlgorithmBase
             }
         }
         return newDungeonTiles;
-    }
-
-    private HashSet<Vector2Int> GetNeighbour(Vector2Int position)
-    {
-        HashSet<Vector2Int> neighbours = new HashSet<Vector2Int>();
-        neighbours.Add(position + Vector2Int.up);
-        neighbours.Add(position + Vector2Int.down);
-        neighbours.Add(position + Vector2Int.left);
-        neighbours.Add(position + Vector2Int.right);
-        return neighbours;
     }
 }

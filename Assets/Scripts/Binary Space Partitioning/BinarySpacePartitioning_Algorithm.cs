@@ -28,6 +28,27 @@ public class BinarySpacePartitioning_Algorithm : MonoBehaviour
     {
         CheckGivenValues();
     }
+
+    #region Generation Methods
+    public DungeonTiles GenerateDungeonTiles()
+    {
+        ClearDictionaries();
+        DungeonTiles dungeonTiles = new DungeonTiles(AlgorithmType.BinarySpacepartitioning);
+
+        bool isDoneSplitting = false;
+        while (isDoneSplitting == false)
+        {
+            isDoneSplitting = IterateOverRooms();
+        }
+
+        HashSet<BoundsInt> newDungeonRooms = PlaceRooms();
+        dungeonTiles.AddRoom(ConvertRoomsToTiles(newDungeonRooms));
+        corridorTiles.Clear();
+        ConnectRooms(dungeonTiles);
+        dungeonTiles.AddCorridor(corridorTiles);
+
+        return dungeonTiles;
+    }
     public HashSet<Bounds> SetupGeneration()
     {
         ClearDictionaries();
@@ -38,7 +59,7 @@ public class BinarySpacePartitioning_Algorithm : MonoBehaviour
             newDungeonRooms.Add(room.Value);
             //Debug.Log($"Room [Pos.: {room.Value.position}] [ID: {room.Key}] ");
         }
-        return ConvertBounds(newDungeonRooms);
+        return UtilityFunctions.ConvertBounds(newDungeonRooms);
     }
 
     public DungeonTiles ContinueIterating(out HashSet<Bounds> newBounds)
@@ -65,31 +86,12 @@ public class BinarySpacePartitioning_Algorithm : MonoBehaviour
                 newDungeonRooms.Add(room.Value);
                 //Debug.Log($"Room [Pos.: {room.Value.position}] [ID: {room.Key}] ");
             }
-            newBounds = ConvertBounds(newDungeonRooms);
+            newBounds = UtilityFunctions.ConvertBounds(newDungeonRooms);
         }
 
         return dungeonTiles;
     }
-
-    public DungeonTiles GenerateDungeonTiles()
-    {
-        ClearDictionaries();
-        DungeonTiles dungeonTiles = new DungeonTiles(AlgorithmType.BinarySpacepartitioning);
-
-        bool isDoneSplitting = false;
-        while (isDoneSplitting == false)
-        {
-            isDoneSplitting = IterateOverRooms();
-        }
-
-        HashSet<BoundsInt> newDungeonRooms = PlaceRooms();
-        dungeonTiles.AddRoom(ConvertRoomsToTiles(newDungeonRooms));
-        corridorTiles.Clear();
-        ConnectRooms(dungeonTiles);
-        dungeonTiles.AddCorridor(corridorTiles);
-
-        return dungeonTiles;
-    }
+    #endregion
 
     private void CheckGivenValues()
     {
@@ -542,20 +544,11 @@ public class BinarySpacePartitioning_Algorithm : MonoBehaviour
         }else if(currentIndexNum == 1)
         {
             returnString += "B";
-        }else if( currentIndexNum == 2)
+        }else
         {
-            returnString += "C";
+            returnString += "0";
         }
         currentIndexNum++;
         return returnString;
-    }
-    private HashSet<Bounds> ConvertBounds(HashSet<BoundsInt> oldBounds)
-    {
-        HashSet<Bounds> newBounds = new HashSet<Bounds>();
-        foreach (var bounds in oldBounds)
-        {
-            newBounds.Add(new Bounds(bounds.position, bounds.size));
-        }
-        return newBounds;
     }
 }
