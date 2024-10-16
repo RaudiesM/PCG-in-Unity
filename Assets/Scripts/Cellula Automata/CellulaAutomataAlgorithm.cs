@@ -6,11 +6,11 @@ using UnityEngine;
 
 public class CellulaAutomataAlgorithm : DungeonAlgorithmBase
 {
-    [SerializeField] private int numIterations = 3;
-    [SerializeField] private BoundsInt fieldSize = new BoundsInt(new Vector3Int(0, 0, 0), new Vector3Int(10, 10, 0));
+    [SerializeField] public int numIterations = 3;
+    [SerializeField] public BoundsInt fieldSize = new BoundsInt(new Vector3Int(0, 0, 0), new Vector3Int(10, 10, 0));
     [SerializeField][Range(0, 1)] private float fillPercentage = 0.5f;
 
-    [SerializeField] private NeighbourType currentNeighbour = NeighbourType.Moore;
+    [field: SerializeField] public NeighbourType currentNeighbour { get; private set; } = NeighbourType.Moore;
     [SerializeField] private bool showWalls = false;
     [SerializeField] private bool showRedundantSpace = false;
 
