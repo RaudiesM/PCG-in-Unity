@@ -171,11 +171,12 @@ MonoBehaviour:
     m_Position: {x: 0, y: 0, z: 0}
     m_Size: {x: 100, y: 100, z: 0}
   maxTiles: 1814
-  roomSpawnRate: 50
-  roomMin: 1
-  roomMax: 5
+  roomSpawnRate: 90
+  isLookingAhead: 0
+  roomMin: 3
+  roomMax: 7
   hallwayLengthMin: 9
-  hallwayLengthMax: 18
+  hallwayLengthMax: 15
 --- !u!1 &428888462
 GameObject:
   m_ObjectHideFlags: 0
@@ -646,8 +647,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   currentAlgorithm: 0
   CA_Algorithm: {fileID: 1563801909}
-  BSP_Algorithm: {fileID: 883259476}
-  RW_Algorithm: {fileID: 283747623}
+  BSP_Algorithm: {fileID: 1277086792}
+  RW_Algorithm: {fileID: 883259476}
   tilePlacer: {fileID: 883259474}
 --- !u!114 &883259476
 MonoBehaviour:
@@ -658,18 +659,20 @@ MonoBehaviour:
   m_GameObject: {fileID: 883259472}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 0297a089f37700e4682073998b921711, type: 3}
+  m_Script: {fileID: 11500000, guid: 381b304118ee9d94fbe16d250734fc15, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  dungeonSize:
-    m_Position: {x: 50, y: 50, z: 0}
+  currentType: 1
+  fieldSize:
+    m_Position: {x: 0, y: 0, z: 0}
     m_Size: {x: 100, y: 100, z: 0}
-  maxNumRooms: 10
-  minSize: 250
-  roomPercentage: 0.9
-  minYSize: 12
-  minXSize: 12
-  offset: 2
+  maxTiles: 1814
+  roomSpawnRate: 82
+  isLookingAhead: 0
+  roomMin: 3
+  roomMax: 8
+  hallwayLengthMin: 12
+  hallwayLengthMax: 20
 --- !u!1 &949035483
 GameObject:
   m_ObjectHideFlags: 0
@@ -978,7 +981,7 @@ MonoBehaviour:
     m_Size: {x: 100, y: 100, z: 0}
   maxNumRooms: 10
   minSize: 250
-  roomPercentage: 0.653
+  roomPercentage: 0.8
   minYSize: 12
   minXSize: 12
   offset: 3
