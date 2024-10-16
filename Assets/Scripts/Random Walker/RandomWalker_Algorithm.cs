@@ -19,30 +19,28 @@ public class RandomWalker_Algorithm : DungeonAlgorithmBase
     [SerializeField] private int hallwayLengthMin;
     [SerializeField] private int hallwayLengthMax;
 
-    private DungeonTiles tileList = new DungeonTiles(AlgorithmType.RandomWalker);
-    private HashSet<Bounds> roomList = new HashSet<Bounds>();
+    private DungeonTiles dungeonTiles = new DungeonTiles(AlgorithmType.RandomWalker);
     private Stack<Vector2Int> safePositions = new Stack<Vector2Int>();
     private Vector2Int currentPosition;
-    bool firstGeneration = false;
+    private bool firstGeneration = false;
 
     #region Generation Methods
     public override DungeonTiles GenerateDungeonTiles()
     {
-        tileList.Clear();
-        roomList.Clear();
+        dungeonTiles.Clear();
         currentPosition = new Vector2Int(Mathf.FloorToInt(fieldSize.center.x), Mathf.FloorToInt(fieldSize.center.y));
 
         int safetyCheck = 0;
 
         if (currentType == DungeonType.Caverns)
         {
-            while (tileList.Count() < maxTiles && safetyCheck < 1000)
+            while (dungeonTiles.Count() < maxTiles && safetyCheck < 1000)
             {
-                int tileCount = tileList.Count();
+                int tileCount = dungeonTiles.Count();
 
                 BaseRandomWalker();
 
-                if (tileCount == tileList.Count())
+                if (tileCount == dungeonTiles.Count())
                 {
                     safetyCheck++;
                 }
@@ -55,13 +53,13 @@ public class RandomWalker_Algorithm : DungeonAlgorithmBase
         else if(currentType == DungeonType.Rooms)
         {
             firstGeneration = true;
-            while (tileList.Count() < maxTiles && safetyCheck < 1000)
+            while (dungeonTiles.Count() < maxTiles && safetyCheck < 1000)
             {
-                int tileCount = tileList.Count();
+                int tileCount = dungeonTiles.Count();
                 
                 RoomWalker();
                 
-                if (tileCount == tileList.Count())
+                if (tileCount == dungeonTiles.Count())
                 {
                     safetyCheck++;
                 }
@@ -71,13 +69,12 @@ public class RandomWalker_Algorithm : DungeonAlgorithmBase
                 }
             }
         }
-        return tileList;
+        return dungeonTiles;
     }
 
     public override DungeonTiles SetUpGeneration()
     {
-        tileList.Clear();
-        roomList.Clear();
+        dungeonTiles.Clear();
         currentPosition = new Vector2Int(Mathf.FloorToInt(fieldSize.center.x), Mathf.FloorToInt(fieldSize.center.y));
 
         if (currentType == DungeonType.Caverns)
@@ -89,13 +86,13 @@ public class RandomWalker_Algorithm : DungeonAlgorithmBase
             firstGeneration = true;
             RoomWalker();
         }
-        return tileList;
+        return dungeonTiles;
     }
 
     public override DungeonTiles ContinueIterating()
     {
-        if (tileList.Count() >= maxTiles)
-            return tileList;
+        if (dungeonTiles.Count() >= maxTiles)
+            return dungeonTiles;
 
         if (currentType == DungeonType.Caverns)
         {
@@ -105,15 +102,15 @@ public class RandomWalker_Algorithm : DungeonAlgorithmBase
         {
             RoomWalker();
         }
-        return tileList;
+        return dungeonTiles;
     }
     #endregion
 
     private void BaseRandomWalker()
     {
-        tileList.AddCorridorTile(currentPosition);
+        dungeonTiles.AddCorridorTile(currentPosition);
         currentPosition += RandomDirection(currentPosition);
-        tileList.AddCorridorTile(currentPosition);
+        dungeonTiles.AddCorridorTile(currentPosition);
     }
 
     private void RoomWalker()
@@ -121,35 +118,21 @@ public class RandomWalker_Algorithm : DungeonAlgorithmBase
         HashSet<Vector2Int> hallwayTiles = new HashSet<Vector2Int>();
         HashSet<Vector2Int> roomTiles = new HashSet<Vector2Int>();
 
-        
-        tileList.AddCorridorTile(currentPosition);
         if (firstGeneration)
         {
-            tileList.AddRoom(SetRoom(currentPosition));
+            dungeonTiles.AddCorridorTile(currentPosition);
+            dungeonTiles.AddRoom(SetRoom(currentPosition));
             firstGeneration = false;
         }
+
         hallwayTiles = SetHallway(currentPosition, out currentPosition);
         int rollForRoom = Random.Range(1, 101);
         if (rollForRoom <= roomSpawnRate)
         {
             roomTiles = SetRoom(currentPosition);
-            if(roomTiles.Count == 0 && safePositions.Count > 0)
-            {
-                Debug.Log("Whats going on");
-                UtilityFunctions.MarkPosition(currentPosition, Color.red, 5);
-                currentPosition = safePositions.Pop();
-                UtilityFunctions.MarkPosition(currentPosition, Color.blue, 5);
-            }
-            else
-            {
-                tileList.AddRoom(roomTiles);
-                tileList.AddCorridor(hallwayTiles);
-            }
-        }
-        else
-        {
-            tileList.AddCorridor(hallwayTiles);
-        }
+            dungeonTiles.AddRoom(roomTiles);
+        } 
+        dungeonTiles.AddCorridor(hallwayTiles);
     }
 
     private HashSet<Vector2Int> SetRoom(Vector2Int curPos)
@@ -159,7 +142,6 @@ public class RandomWalker_Algorithm : DungeonAlgorithmBase
         int newYMax = GetMaxSize(curPos, Vector2Int.up);
         int newXMax = GetMaxSize(curPos, Vector2Int.left);
 
-        //Debug.Log($"My Max Size {newXMax}/{newYMax}");
         if(newYMax <= 0 || newXMax <= 0)
         {
             return new HashSet<Vector2Int>();
@@ -171,18 +153,13 @@ public class RandomWalker_Algorithm : DungeonAlgorithmBase
         int width = Random.Range(roomMin, weightMax);
 
         Bounds newRoom = new Bounds(curPos+new Vector2(0.5f, 0.5f), new Vector2(2*width+1, 2*height + 1));
-        roomList.Add(newRoom);
-        //Debug.Log("<color=green>NewRoom:</color> "+newRoom);
+
         for (int w = -width; w <= width; w++)
         {
             for (int h = -height; h <= height; h++)
             {
                 Vector2Int offset = new Vector2Int(w, h);
-                if (!roomTiles.Contains(curPos + offset))
-                {
-                    roomTiles.Add(curPos + offset);
-                }
-
+                roomTiles.Add(curPos + offset);
             }
         }
         return roomTiles;
@@ -191,48 +168,11 @@ public class RandomWalker_Algorithm : DungeonAlgorithmBase
     private int GetMaxSize(Vector2Int curPos, Vector2Int direction)
     {
         int maxValue = 0;
-        maxValue = GetDistanceToBorder(curPos, direction);
-        
+        int distance = GetDistanceToBorder(curPos, direction);
         int oppositeDistance = GetDistanceToBorder(curPos, -direction);
-        int distanceToRooms = GetDistanceToRooms(curPos, direction);
-        if(distanceToRooms == 0)
-        {
-            Debug.Log("Overlapping");
-        }
-        maxValue = oppositeDistance < maxValue ? oppositeDistance : maxValue;
-        maxValue = distanceToRooms < maxValue ? distanceToRooms : maxValue;
-
+        
+        maxValue = distance < oppositeDistance ? distance : oppositeDistance;
         return maxValue;
-    }
-
-    private int GetDistanceToRooms(Vector2Int curPos, Vector2 direction)
-    {
-        int maxSize = 0;
-        Vector2 newPosition = new Vector2(curPos.x + 0.5f, curPos.y + 0.5f);
-        Vector2 newRoomSize = new Vector2();
-
-        for (int i = 1; i <= roomMax; i++)
-        {
-            maxSize = i;
-            if (direction == Vector2.up || direction == Vector2.down)
-            {
-                newRoomSize = new Vector2(3, i + 0.5f);
-            }
-            else if (direction == Vector2.left || direction == Vector2.right)
-            {
-                newRoomSize = new Vector2(i + 0.5f, 3);
-            }
-            Bounds newRoom = new Bounds(newPosition, newRoomSize);
-            
-            foreach (Bounds room in roomList)
-            {
-                if (newRoom.Intersects(room))
-                {
-                    return (maxSize - 2);
-                }
-            }
-        }
-        return maxSize;
     }
 
     private HashSet<Vector2Int> SetHallway(Vector2Int curPos, out Vector2Int returnCurPos)
@@ -285,34 +225,6 @@ public class RandomWalker_Algorithm : DungeonAlgorithmBase
         }
         return newDistance;
     }
-
-    private int GetDistanceToCorridor(Vector2Int curPos, Vector2Int walkDir)
-    {
-        Vector2Int newPosition = new Vector2Int();
-        HashSet<Vector2Int> corridorTiles = new HashSet<Vector2Int>();
-        tileList.TryGetCorridors(out corridorTiles);
-        for(int i = 1; i < hallwayLengthMax; i++)
-        {
-           newPosition = curPos + walkDir * i;
-            if (corridorTiles.Contains(newPosition))
-            {
-               if(i <= hallwayLengthMin)
-               {
-                    Debug.Log("Return 0 bei " +i);
-                   return 0;
-               }
-               else
-               {
-                    Debug.Log("Return " + (i - 1));
-                   return i--;
-               }
-            }
-
-        }
-        Debug.Log("Return Max!");
-        return hallwayLengthMax;
-    }
-
     private Vector2Int RandomDirection(Vector2Int pos)
     {
         List<Vector2Int> directionList = GetPossibleDirections(pos);
@@ -341,19 +253,19 @@ public class RandomWalker_Algorithm : DungeonAlgorithmBase
     private List<Vector2Int> GetPossibleDirections(Vector2Int pos, int length = 0)
     {
         List<Vector2Int> directionList = new List<Vector2Int>();
-        if (pos.y + length < fieldSize.yMax-1 && GetDistanceToCorridor(pos, Vector2Int.up) > 0)
+        if (pos.y + length < fieldSize.yMax-1)
         {
             directionList.Add(Vector2Int.up);
         }
-        if (pos.y - length > fieldSize.yMin && GetDistanceToCorridor(pos, Vector2Int.down) > 0)
+        if (pos.y - length > fieldSize.yMin)
         {
             directionList.Add(Vector2Int.down);
         }
-        if (pos.x + length < fieldSize.xMax-1 && GetDistanceToCorridor(pos, Vector2Int.right) > 0)
+        if (pos.x + length < fieldSize.xMax - 1)
         {
             directionList.Add(Vector2Int.right);
         }
-        if (pos.x - length > fieldSize.xMin && GetDistanceToCorridor(pos, Vector2Int.left) > 0)
+        if (pos.x - length > fieldSize.xMin)
         {
             directionList.Add(Vector2Int.left);
         }

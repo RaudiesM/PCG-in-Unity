@@ -4,8 +4,6 @@ using System.Collections.Generic;
 using Random = UnityEngine.Random;
 using UnityEngine;
 
-
-
 public class BinarySpacePartitioning_Algorithm : MonoBehaviour
 {
     [SerializeField] private BoundsInt dungeonSize = new BoundsInt();
@@ -42,7 +40,7 @@ public class BinarySpacePartitioning_Algorithm : MonoBehaviour
         }
 
         HashSet<BoundsInt> newDungeonRooms = PlaceRooms();
-        dungeonTiles.AddRoom(ConvertRoomsToTiles(newDungeonRooms));
+        dungeonTiles.AddRoom(UtilityFunctions.ConvertRoomsToTiles(newDungeonRooms));
         corridorTiles.Clear();
         ConnectRooms(dungeonTiles);
         dungeonTiles.AddCorridor(corridorTiles);
@@ -74,7 +72,7 @@ public class BinarySpacePartitioning_Algorithm : MonoBehaviour
         {
             Debug.Log("I am done");
             newDungeonRooms = PlaceRooms();
-            dungeonTiles.AddRoom(ConvertRoomsToTiles(newDungeonRooms));
+            dungeonTiles.AddRoom(UtilityFunctions.ConvertRoomsToTiles(newDungeonRooms));
             corridorTiles.Clear();
             ConnectRooms(dungeonTiles);
             dungeonTiles.AddCorridor(corridorTiles);
@@ -114,26 +112,6 @@ public class BinarySpacePartitioning_Algorithm : MonoBehaviour
         minYSize += offset;
         minSize += offset*offset;
     }
-
-    private HashSet<DungeonRoom> ConvertRoomsToTiles(HashSet<BoundsInt> rooms)
-    {
-        HashSet<DungeonRoom> roomTiles = new HashSet<DungeonRoom>();
-        corridorTiles.Clear();
-        foreach(var room in rooms)
-        {
-            DungeonRoom newRoom = new DungeonRoom(new HashSet<Vector2Int>());
-            for (int i = room.xMin - room.size.x / 2; i < room.xMax - room.size.x / 2; i++)
-            {
-                for (int j = room.yMin - room.size.y / 2; j < room.yMax - room.size.y / 2; j++)
-                {
-                    newRoom.AddRoomTiles(new Vector2Int(i, j));
-                }
-            }
-            roomTiles.Add(newRoom);
-        }
-        return roomTiles;
-    }
-
 
     private void ConnectRooms(DungeonTiles _dungeonTiles)
     {

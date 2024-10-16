@@ -28,4 +28,22 @@ public static class UtilityFunctions
         Debug.DrawLine(position-Vector2.up, position-Vector2.down, color, duration);
         Debug.DrawLine(position - Vector2.left, position - Vector2.right, color, duration);
     }
+
+    public static HashSet<DungeonRoom> ConvertRoomsToTiles(HashSet<BoundsInt> rooms)
+    {
+        HashSet<DungeonRoom> dungeonRooms = new HashSet<DungeonRoom>();
+        foreach (var room in rooms)
+        {
+            DungeonRoom newRoom = new DungeonRoom(new HashSet<Vector2Int>());
+            for (int i = room.xMin - room.size.x / 2; i < room.xMax - room.size.x / 2; i++)
+            {
+                for (int j = room.yMin - room.size.y / 2; j < room.yMax - room.size.y / 2; j++)
+                {
+                    newRoom.AddRoomTiles(new Vector2Int(i, j));
+                }
+            }
+            dungeonRooms.Add(newRoom);
+        }
+        return dungeonRooms;
+    }
 }
