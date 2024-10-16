@@ -36,7 +36,6 @@ public struct DungeonTiles
     public bool TryGetRooms(out HashSet<DungeonRoom> rooms) 
     {
         rooms = dungeonRooms;
-        CombineOverlappingRooms();
         return GetDungeonRoomTiles().Count > 0; 
     }
     public bool TryGetCorridors(out HashSet<Vector2Int> corridors) 
@@ -62,44 +61,6 @@ public struct DungeonTiles
     public void AddRoom(HashSet<Vector2Int> newTiles)
     {
         dungeonRooms.Add(new DungeonRoom(newTiles));
-        CombineOverlappingRooms();
-    }
-
-    private void CombineOverlappingRooms()
-    {
-        Debug.Log("Anzahl Räume(before): "+dungeonRooms.Count);
-        HashSet<int> checkedRooms = new HashSet<int>();
-        List<DungeonRoom> newDungeonRooms = dungeonRooms.ToList<DungeonRoom>();
-        HashSet<DungeonRoom> overlappingRooms = new HashSet<DungeonRoom>();
-
-        for(int i = 0; i < newDungeonRooms.Count; i++)
-        {
-            overlappingRooms.Clear();
-            HashSet<Vector2Int> roomTiles = newDungeonRooms[i].GetRoomTiles();
-            for(int j = i; j < newDungeonRooms.Count; j++)
-            {
-                if (checkedRooms.Contains(j) || i==j)
-                    continue;
-                HashSet<Vector2Int> otherRoomTiles = newDungeonRooms[j].GetRoomTiles();
-                if (otherRoomTiles.Overlaps(roomTiles))
-                {
-                    checkedRooms.Add(j);
-                    overlappingRooms.Add(newDungeonRooms[j]);
-                }
-            }
-            if(overlappingRooms.Count > 0)
-            {
-                dungeonRooms.Remove(newDungeonRooms[i]);
-                foreach(var room in overlappingRooms)
-                {
-                    Debug.Log("Combining");
-                    roomTiles.UnionWith(room.GetRoomTiles());
-                    dungeonRooms.Remove(room);
-                }
-                dungeonRooms.Add(new DungeonRoom(roomTiles));
-            }
-        }
-        Debug.Log("Anzahl Räume(after): " + dungeonRooms.Count);
     }
 
     public void AddRoom(DungeonRoom room)
@@ -128,4 +89,8 @@ public struct DungeonTiles
         corridorTiles.Clear();
     }
 
+    internal void TryGetCorridors(out object corridorTiles)
+    {
+        throw new NotImplementedException();
+    }
 }
