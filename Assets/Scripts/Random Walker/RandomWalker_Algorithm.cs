@@ -5,24 +5,44 @@ using Unity.VisualScripting;
 using UnityEngine;
 
 
-public class RandomWalker_Algorithm : DungeonAlgorithmBase
+public class RandomWalker_Algorithm : DungeonAlgorithm
 {
     [SerializeField] private DungeonType currentType;
     [SerializeField] private BoundsInt fieldSize;
-    [Range(50, 5000)]
-    [SerializeField] private int maxTiles;
+    [Range(0, 1)]
+    [SerializeField] private float fillPercentage;
     [Range(0, 100)]
     [SerializeField] private int roomSpawnRate;
-
+    [SerializeField] private bool isCombiningRooms = true;
     [SerializeField] private int roomMin;
     [SerializeField] private int roomMax;
     [SerializeField] private int hallwayLengthMin;
     [SerializeField] private int hallwayLengthMax;
 
+    private int dungeonSizeInTiles;
     private DungeonTiles dungeonTiles = new DungeonTiles(AlgorithmType.RandomWalker);
     private Stack<Vector2Int> safePositions = new Stack<Vector2Int>();
     private Vector2Int currentPosition;
     private bool firstGeneration = false;
+
+    public override string GetAlgorithmData()
+    {
+        string data = $"RandomWalker Algorithm \n" +
+                    $"fieldsize: {fieldSize.size.x * fieldSize.size.y} \n" +
+                    $"fill percentage: {fillPercentage * 100}\n" +
+                    $"DungeonType: {currentType.ToString()}\n";
+        if(currentType == DungeonType.Rooms)
+        {
+            data += $"Room Spawn Percentage: {roomSpawnRate} \n" +
+                    $"Room Measurements: [{roomMin} - {roomMax}] \n" +
+                    $"Hallway Measurements: [{hallwayLengthMin} - {hallwayLengthMax}] \n" +
+                    $"Combining Rooms: {isCombiningRooms}";
+        }
+        data += $"#######################################################################################";
+        return data;
+    }
+
+    
 
     #region Generation Methods
     public override DungeonTiles GenerateDungeonTiles()
@@ -33,7 +53,7 @@ public class RandomWalker_Algorithm : DungeonAlgorithmBase
 
         if (currentType == DungeonType.Caverns)
         {
-            while (dungeonTiles.Count() < maxTiles && safetyCheck < 1000)
+            while (dungeonTiles.Count() < dungeonSizeInTiles && safetyCheck < 1000)
             {
                 int tileCount = dungeonTiles.Count();
 
@@ -52,7 +72,7 @@ public class RandomWalker_Algorithm : DungeonAlgorithmBase
         else if (currentType == DungeonType.Rooms)
         {
             firstGeneration = true;
-            while (dungeonTiles.Count() < maxTiles && safetyCheck < 1000)
+            while (dungeonTiles.Count() < dungeonSizeInTiles && safetyCheck < 1000)
             {
                 int tileCount = dungeonTiles.Count();
 
@@ -68,13 +88,17 @@ public class RandomWalker_Algorithm : DungeonAlgorithmBase
                 }
             }
         }
-        dungeonTiles = ReorganiseDungeonRooms();
+
+        if(isCombiningRooms) 
+            dungeonTiles = ReorganiseDungeonRooms();
+
         return dungeonTiles;
     }
 
     private void PrepareGeneration()
     {
         dungeonTiles.Clear();
+        GetMaxFillTiles();
         currentPosition = GetRandomStartPosition();
     }
 
@@ -102,7 +126,7 @@ public class RandomWalker_Algorithm : DungeonAlgorithmBase
 
     public override DungeonTiles ContinueIterating()
     {
-        if (dungeonTiles.Count() >= maxTiles)
+        if (dungeonTiles.Count() >= dungeonSizeInTiles)
             return dungeonTiles;
 
         if (currentType == DungeonType.Caverns)
@@ -113,7 +137,10 @@ public class RandomWalker_Algorithm : DungeonAlgorithmBase
         {
             RoomWalker();
         }
-        dungeonTiles = ReorganiseDungeonRooms();
+
+        if(isCombiningRooms)
+            dungeonTiles = ReorganiseDungeonRooms();
+        
         return dungeonTiles;
     }
     #endregion
@@ -348,5 +375,10 @@ public class RandomWalker_Algorithm : DungeonAlgorithmBase
             newDungeonTiles.AddRoom(new DungeonRoom(currentTiles));
         }
         return newDungeonTiles;
+    }
+    private void GetMaxFillTiles()
+    {
+        int maxTiles = fieldSize.x * fieldSize.y;
+        dungeonSizeInTiles = Mathf.FloorToInt(maxTiles * fillPercentage);
     }
 }

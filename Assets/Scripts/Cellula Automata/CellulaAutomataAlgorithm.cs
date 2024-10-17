@@ -4,14 +4,14 @@ using UnityEngine;
 
 
 
-public class CellulaAutomataAlgorithm : DungeonAlgorithmBase
+public class CellulaAutomataAlgorithm : DungeonAlgorithm
 {
-    [SerializeField] public int numIterations = 3;
-    [SerializeField] public BoundsInt fieldSize = new BoundsInt(new Vector3Int(0, 0, 0), new Vector3Int(10, 10, 0));
+    [SerializeField] private int numIterations = 3;
+    [SerializeField] private BoundsInt fieldSize = new BoundsInt(new Vector3Int(0, 0, 0), new Vector3Int(10, 10, 0));
     [SerializeField][Range(0, 1)] private float fillPercentage = 0.5f;
 
-    [field: SerializeField] public NeighbourType currentNeighbour { get; private set; } = NeighbourType.Moore;
-    [SerializeField] private bool showWalls = false;
+    [field: SerializeField] private NeighbourType currentNeighbour = NeighbourType.Moore;
+    [SerializeField] private bool isReducingTiles = true;
     [SerializeField] private bool showRedundantSpace = false;
 
     [SerializeField] private CellRulesetBase currentMooreRuleset;
@@ -21,6 +21,17 @@ public class CellulaAutomataAlgorithm : DungeonAlgorithmBase
     private int neighbourDistance = 1;
     private HashSet<Vector2Int> cellDistribution = new HashSet<Vector2Int>();
 
+    public override string GetAlgorithmData()
+    {
+        string data = $"CellulaAutomata Algorithm \n" +
+            $"fieldsize: {fieldSize.size.x * fieldSize.size.y} \n" +
+            $"fill percentage: {fillPercentage * 100}\n" +
+            $"Itartations: {numIterations} \n" +
+            $"Neighbourhood: {currentNeighbour.ToString()}\n" +
+            $"eliminate non-reachable spaces: {isReducingTiles}" +
+            $"#######################################################################################";
+        return data;
+    }
     #region Generation Methods
     public override DungeonTiles GenerateDungeonTiles()
     {
@@ -32,11 +43,10 @@ public class CellulaAutomataAlgorithm : DungeonAlgorithmBase
             ApplyCellulaAutomata();
         }
         DungeonTiles tiles = GetCellDistribution();
-        tiles = ReduceTiles(tiles);
+        if(isReducingTiles)
+            tiles = ReduceTiles(tiles);
         return tiles;
     }
-
-    
 
     public override DungeonTiles SetUpGeneration()
     {
@@ -58,7 +68,8 @@ public class CellulaAutomataAlgorithm : DungeonAlgorithmBase
         else
         {
             tiles = GetCellDistribution();
-            tiles = ReduceTiles(tiles);
+            if(isReducingTiles)
+                tiles = ReduceTiles(tiles);
         }
         return tiles;
     }

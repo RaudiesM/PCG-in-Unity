@@ -4,10 +4,10 @@ using System.Collections.Generic;
 using Random = UnityEngine.Random;
 using UnityEngine;
 
-public class BinarySpacePartitioning_Algorithm : MonoBehaviour
+public class BinarySpacePartitioning_Algorithm : DungeonAlgorithm
 {
-    [SerializeField] private BoundsInt dungeonSize = new BoundsInt();
-    [SerializeField] private int maxNumRooms;
+    [SerializeField] private BoundsInt fieldSize = new BoundsInt();
+    [SerializeField] private int numRooms;
 
     [SerializeField] private int minSize;
     [Range(0, 1)]
@@ -22,13 +22,22 @@ public class BinarySpacePartitioning_Algorithm : MonoBehaviour
     private HashSet<Vector2Int> corridorTiles = new HashSet<Vector2Int>();
     private int currentIndexNum = 0;
 
+    public override string GetAlgorithmData()
+    {
+        string data = $"Binary Space Partitioning Algorithm \n" +
+            $"fieldsize: {fieldSize.size.x * fieldSize.size.y} \n" +
+            $"Number of Rooms: {numRooms}\n" +
+            $"Room Measurments: atleast {minSize}[x: {minXSize}; y:{minYSize}] \n" +
+            $"#######################################################################################";
+        return data;
+    }
     private void Start()
     {
         CheckGivenValues();
     }
 
     #region Generation Methods
-    public DungeonTiles GenerateDungeonTiles()
+    public override DungeonTiles GenerateDungeonTiles()
     {
         ClearDictionaries();
         DungeonTiles dungeonTiles = new DungeonTiles(AlgorithmType.BinarySpacepartitioning);
@@ -93,14 +102,14 @@ public class BinarySpacePartitioning_Algorithm : MonoBehaviour
 
     private void CheckGivenValues()
     {
-        int dungeonSizeInt = dungeonSize.size.x * dungeonSize.size.y;
-        if (maxNumRooms > dungeonSizeInt || maxNumRooms == 0)
+        int dungeonSizeInt = fieldSize.size.x * fieldSize.size.y;
+        if (numRooms > dungeonSizeInt || numRooms == 0)
         {
-            maxNumRooms = 10;
+            numRooms = 10;
         }
-        if (maxNumRooms * minSize > dungeonSizeInt)
+        if (numRooms * minSize > dungeonSizeInt)
         {
-            minSize = dungeonSizeInt / maxNumRooms;
+            minSize = dungeonSizeInt / numRooms;
         }
         if (minSize < minXSize * minYSize)
         {
@@ -383,7 +392,7 @@ public class BinarySpacePartitioning_Algorithm : MonoBehaviour
     {
         int numSplitRooms = 0;
         Queue<string> roomQueue = FillQueue();
-        while (roomQueue.Count > 0 && dungeonRooms.Count < maxNumRooms)
+        while (roomQueue.Count > 0 && dungeonRooms.Count < numRooms)
         {
             string roomIndex = roomQueue.Dequeue();
             HashSet<BoundsInt> newRooms = SplitSpace(dungeonRooms[roomIndex]);
@@ -414,7 +423,7 @@ public class BinarySpacePartitioning_Algorithm : MonoBehaviour
         else
         {
             newQueue.Enqueue("A");
-            dungeonRooms.Add("A", dungeonSize);
+            dungeonRooms.Add("A", fieldSize);
         }
         return newQueue;
     }

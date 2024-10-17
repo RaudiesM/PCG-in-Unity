@@ -4,7 +4,7 @@ using UnityEngine;
 
 
 
-public class CellulaAutomataAlgorithm_old : DungeonAlgorithmBase
+public class CellulaAutomataAlgorithm_old : DungeonAlgorithm
 {
     [SerializeField] private int numIterations = 3;
     [SerializeField] private BoundsInt fieldSize = new BoundsInt(new Vector3Int(0, 0, 0), new Vector3Int(10, 10, 0));
