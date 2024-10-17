@@ -558,16 +558,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8e8c3bf48cf1baf4da09b18628cd0dbf, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  roomMax: 100
-  room1:
-    m_Center: {x: 50, y: 50, z: 0}
-    m_Extent: {x: 5, y: 5, z: 0}
-  room2:
-    m_Center: {x: 65, y: 34, z: 0}
-    m_Extent: {x: 9, y: 9, z: 0}
-  curPos: {x: 50, y: 34}
-  direction: {x: 1, y: 0}
-  tile: {fileID: 760897397149223260, guid: aa24b0d455218b84cae80ab58c83e691, type: 3}
 --- !u!1 &883259472
 GameObject:
   m_ObjectHideFlags: 0
@@ -646,7 +636,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f85abe2f572432f4a9dfd0145d4036d1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  currentAlgorithm: 0
+  currentAlgorithm: 4
   CA_Algorithm: {fileID: 1563801909}
   BSP_Algorithm: {fileID: 1277086792}
   RW_Algorithm: {fileID: 883259476}
@@ -705,16 +695,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8e8c3bf48cf1baf4da09b18628cd0dbf, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  roomMax: 100
-  room1:
-    m_Center: {x: 50, y: 50, z: 0}
-    m_Extent: {x: 5, y: 5, z: 0}
-  room2:
-    m_Center: {x: 65, y: 34, z: 0}
-    m_Extent: {x: 9, y: 9, z: 0}
-  curPos: {x: 50, y: 34}
-  direction: {x: 1, y: 0}
-  tile: {fileID: 760897397149223260, guid: aa24b0d455218b84cae80ab58c83e691, type: 3}
 --- !u!212 &949035485
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -812,16 +792,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8e8c3bf48cf1baf4da09b18628cd0dbf, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  roomMax: 100
-  room1:
-    m_Center: {x: 50, y: 50, z: 0}
-    m_Extent: {x: 5, y: 5, z: 0}
-  room2:
-    m_Center: {x: 65, y: 34, z: 0}
-    m_Extent: {x: 9, y: 9, z: 0}
-  curPos: {x: 50, y: 34}
-  direction: {x: 1, y: 0}
-  tile: {fileID: 760897397149223260, guid: aa24b0d455218b84cae80ab58c83e691, type: 3}
 --- !u!212 &1025706760
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -1117,6 +1087,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1563801908}
   - component: {fileID: 1563801909}
+  - component: {fileID: 1563801910}
   m_Layer: 0
   m_Name: CA_Spawner
   m_TagString: Untagged
@@ -1161,6 +1132,28 @@ MonoBehaviour:
   showRedundantSpace: 1
   currentMooreRuleset: {fileID: 11400000, guid: 069a7ae7baaa19342a48732e05f465da, type: 2}
   currentNeumannRuleset: {fileID: 11400000, guid: 5248f4f36cef3f549b54c0e8773584da, type: 2}
+--- !u!114 &1563801910
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1563801907}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e1f8ec345b61bf34aa2c92cb2e108875, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  numIterations: 3
+  fieldSize:
+    m_Position: {x: 10, y: 10, z: 0}
+    m_Size: {x: 10, y: 10, z: 0}
+  fillPercentage: 0.5
+  currentNeighbour: 0
+  showWalls: 0
+  showRedundantSpace: 0
+  currentMooreRuleset: {fileID: 0}
+  currentNeumannRuleset: {fileID: 0}
 --- !u!1 &1952590106
 GameObject:
   m_ObjectHideFlags: 0

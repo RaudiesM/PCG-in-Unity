@@ -34,6 +34,8 @@ public class CellulaAutomataAlgorithm : DungeonAlgorithmBase
         return evaluationData;
     }
     #region Generation Methods
+
+
     public override DungeonTiles GenerateDungeonTiles()
     {
         cellDistribution.Clear();
@@ -48,6 +50,19 @@ public class CellulaAutomataAlgorithm : DungeonAlgorithmBase
             tiles = ReduceTiles(tiles);
         return tiles;
     }
+    public DungeonTiles GenerateDungeonTiles(DungeonTiles inputTiles)
+    {
+        inputTiles.TryGetCorridors(out cellDistribution);
+        currentIteration = 0;
+        for (int i = 0; i < numIterations; i++)
+        {
+            ApplyCellulaAutomata();
+        }
+        DungeonTiles tiles = GetCellDistribution();
+        if (isReducingTiles)
+            tiles = ReduceTiles(tiles);
+        return tiles;
+    }
 
     public override DungeonTiles SetUpGeneration()
     {
@@ -56,6 +71,13 @@ public class CellulaAutomataAlgorithm : DungeonAlgorithmBase
         DistributeCells();
         DungeonTiles tiles = GetCellDistribution();
         return tiles;
+    }
+
+    public void SetUpGeneration(DungeonTiles inputTiles)
+    {
+        cellDistribution.Clear();
+        currentIteration = 0;
+        inputTiles.TryGetCorridors(out cellDistribution);
     }
 
     public override DungeonTiles ContinueIterating()

@@ -34,6 +34,10 @@ public class DungeonSpawner : MonoBehaviour
         else if(currentAlgorithm == AlgorithmType.BinarySpacepartitioning)
         {
             tilePlacer.VisualizeRooms(BSP_Algorithm.SetupGeneration());
+        }else if(currentAlgorithm == AlgorithmType.RW_CA)
+        {
+            dungeonTiles = RW_Algorithm.GenerateDungeonTiles();
+            CA_Algorithm.SetUpGeneration(dungeonTiles);
         }
         PlaceDungeon(dungeonTiles);
     }
@@ -57,6 +61,9 @@ public class DungeonSpawner : MonoBehaviour
             {
                 tilePlacer.VisualizeRooms(roomBounds);
             }
+        }else if( currentAlgorithm == AlgorithmType.RW_CA)
+        { 
+            dungeonTiles = CA_Algorithm.ContinueIterating() ;
         }
 
         PlaceDungeon(dungeonTiles);
@@ -76,6 +83,10 @@ public class DungeonSpawner : MonoBehaviour
         else if (currentAlgorithm == AlgorithmType.BinarySpacepartitioning)
         {
             dungeonTiles = BSP_Algorithm.GenerateDungeonTiles();
+        }else if(currentAlgorithm == AlgorithmType.RW_CA)
+        {
+            dungeonTiles = RW_Algorithm.GenerateDungeonTiles();
+            dungeonTiles = CA_Algorithm.GenerateDungeonTiles(dungeonTiles);
         }
         PlaceDungeon(dungeonTiles);
     }
