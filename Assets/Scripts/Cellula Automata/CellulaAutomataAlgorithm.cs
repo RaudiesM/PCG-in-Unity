@@ -4,7 +4,7 @@ using UnityEngine;
 
 
 
-public class CellulaAutomataAlgorithm : DungeonAlgorithm
+public class CellulaAutomataAlgorithm : DungeonAlgorithmBase
 {
     [SerializeField] private int numIterations = 3;
     [SerializeField] private BoundsInt fieldSize = new BoundsInt(new Vector3Int(0, 0, 0), new Vector3Int(10, 10, 0));
@@ -21,16 +21,17 @@ public class CellulaAutomataAlgorithm : DungeonAlgorithm
     private int neighbourDistance = 1;
     private HashSet<Vector2Int> cellDistribution = new HashSet<Vector2Int>();
 
-    public override string GetAlgorithmData()
+    public override EvaluationBase GetAlgorithmData()
     {
-        string data = $"CellulaAutomata Algorithm \n" +
-            $"fieldsize: {fieldSize.size.x * fieldSize.size.y} \n" +
-            $"fill percentage: {fillPercentage * 100}\n" +
-            $"Itartations: {numIterations} \n" +
-            $"Neighbourhood: {currentNeighbour.ToString()}\n" +
-            $"eliminate non-reachable spaces: {isReducingTiles}" +
-            $"#######################################################################################";
-        return data;
+        EvaluationBase evaluationData = new CA_Evaluation(
+            fieldSize.size.x * fieldSize.size.y,
+            Mathf.RoundToInt(fillPercentage * 100),
+            numIterations,
+            currentNeighbour.ToString(),
+            isReducingTiles
+            );
+            
+        return evaluationData;
     }
     #region Generation Methods
     public override DungeonTiles GenerateDungeonTiles()

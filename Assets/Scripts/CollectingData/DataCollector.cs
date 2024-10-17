@@ -13,12 +13,12 @@ public class DataCollector : MonoBehaviour
     private BinarySpacePartitioning_Algorithm bsp_algorithm;
     private CellulaAutomataAlgorithm ca_algorithm;
     private RandomWalker_Algorithm rw_algorithm;
-    private DungeonAlgorithm currentAlgorithm;
+    private DungeonAlgorithmBase currentAlgorithm;
     private JSONWriter jsonWriter;
 
-    private string data;
-    List<float> timeList = new List<float>();
+    private EvaluationBase data;
 
+    [SerializeField]private float[] timeList = new float[1000];
     private void Awake()
     {
         bsp_algorithm = FindObjectOfType<BinarySpacePartitioning_Algorithm>();
@@ -32,7 +32,7 @@ public class DataCollector : MonoBehaviour
         SetupCollection();
         for (int i = 0; i < numFiles; i++)
         {
-            timeList.Clear();
+            timeList = new float[numIterations];
 
             for (int j = 0; j < numIterations; j++)
             {
@@ -40,17 +40,16 @@ public class DataCollector : MonoBehaviour
                 currentAlgorithm.GenerateDungeonTiles();
                 float timeAfter = Time.realtimeSinceStartup;
                 float generationDuration = timeAfter - timeBefore;
-                timeList.Add(generationDuration);
+                timeList[j] = generationDuration;
             }
-
-            data += "\n" + JsonUtility.ToJson(timeList);
+            data.SetUpTimetable(timeList);
             SaveData(data);
         }
     }
 
     public void SetupCollection()
     {
-        data = string.Empty;
+        data = null;
         currentAlgorithm = GetAlgorithm();
         if(currentAlgorithm == null)
         {
@@ -59,7 +58,7 @@ public class DataCollector : MonoBehaviour
         data = GetAlgorithmInformation();
     }
 
-    private DungeonAlgorithm GetAlgorithm()
+    private DungeonAlgorithmBase GetAlgorithm()
     {
         if (algorithmType == AlgorithmType.RandomWalker)
         {
@@ -77,13 +76,14 @@ public class DataCollector : MonoBehaviour
         return null;
     }
 
-    private string GetAlgorithmInformation()
+    private EvaluationBase GetAlgorithmInformation()
     {
         return currentAlgorithm.GetAlgorithmData();
     }
 
-    private void SaveData(string data)
+    private void SaveData(object data)
     {
-        jsonWriter.WriteJsonFile(data, algorithmType);
+        string dataAsString = JsonUtility.ToJson(data, true);
+        jsonWriter.WriteJsonFile(dataAsString, algorithmType);
     }
 }

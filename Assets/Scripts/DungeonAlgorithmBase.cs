@@ -5,8 +5,8 @@ using UnityEngine;
 
 public abstract class DungeonAlgorithmBase : MonoBehaviour
 {
-    public abstract DungeonTiles GenerateDungeonTiles();
-    public abstract DungeonTiles SetUpGeneration();
-    public abstract DungeonTiles ContinueIterating();
-    public abstract string GetAlgorithmData();
+    public virtual DungeonTiles GenerateDungeonTiles() { throw new NotImplementedException(); }
+    public virtual DungeonTiles SetUpGeneration() { throw new NotImplementedException(); }
+    public virtual DungeonTiles ContinueIterating() { throw new NotImplementedException(); }
+    public virtual EvaluationBase GetAlgorithmData() { throw new NotImplementedException(); }
 }

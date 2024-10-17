@@ -5,14 +5,16 @@ using Unity.VisualScripting;
 using UnityEngine;
 
 
-public class RandomWalker_Algorithm : DungeonAlgorithm
+public class RandomWalker_Algorithm : DungeonAlgorithmBase
 {
     [SerializeField] private DungeonType currentType;
     [SerializeField] private BoundsInt fieldSize;
     [Range(0, 1)]
-    [SerializeField] private float fillPercentage;
-    [Range(0, 100)]
-    [SerializeField] private int roomSpawnRate;
+    [SerializeField] private float fillPercentage = 0.5f;
+    [Range(0, 1)]
+    [SerializeField] private float baseRoomSpawnRate;
+    [Range(0.01f, 0.1f)]
+    [SerializeField] private float increaseSpawnRate;
     [SerializeField] private bool isCombiningRooms = true;
     [SerializeField] private int roomMin;
     [SerializeField] private int roomMax;
@@ -24,22 +26,19 @@ public class RandomWalker_Algorithm : DungeonAlgorithm
     private Stack<Vector2Int> safePositions = new Stack<Vector2Int>();
     private Vector2Int currentPosition;
     private bool firstGeneration = false;
+    private float currentRoomSpawnRate;
 
-    public override string GetAlgorithmData()
+    public override EvaluationBase GetAlgorithmData()
     {
-        string data = $"RandomWalker Algorithm \n" +
-                    $"fieldsize: {fieldSize.size.x * fieldSize.size.y} \n" +
-                    $"fill percentage: {fillPercentage * 100}\n" +
-                    $"DungeonType: {currentType.ToString()}\n";
-        if(currentType == DungeonType.Rooms)
-        {
-            data += $"Room Spawn Percentage: {roomSpawnRate} \n" +
-                    $"Room Measurements: [{roomMin} - {roomMax}] \n" +
-                    $"Hallway Measurements: [{hallwayLengthMin} - {hallwayLengthMax}] \n" +
-                    $"Combining Rooms: {isCombiningRooms}";
-        }
-        data += $"#######################################################################################";
-        return data;
+        EvaluationBase evaluationData = new RW_Evaluation
+            (
+                fieldSize.size.x * fieldSize.size.y, 
+                Mathf.RoundToInt(fillPercentage * 100), 
+                currentType, 
+                Mathf.RoundToInt(baseRoomSpawnRate*100), 
+                isCombiningRooms
+             );
+        return evaluationData;
     }
 
     
@@ -99,6 +98,7 @@ public class RandomWalker_Algorithm : DungeonAlgorithm
     {
         dungeonTiles.Clear();
         GetMaxFillTiles();
+        currentRoomSpawnRate = baseRoomSpawnRate;
         currentPosition = GetRandomStartPosition();
     }
 
@@ -165,13 +165,26 @@ public class RandomWalker_Algorithm : DungeonAlgorithm
         }
 
         hallwayTiles = SetHallway(currentPosition, out currentPosition);
-        int rollForRoom = Random.Range(1, 101);
-        if (rollForRoom <= roomSpawnRate)
+        if (isSpawningRoom())
         {
             roomTiles = SetRoom(currentPosition);
             dungeonTiles.AddRoom(roomTiles);
         } 
         dungeonTiles.AddCorridor(hallwayTiles);
+    }
+
+    private bool isSpawningRoom()
+    {
+        if(Random.value <= currentRoomSpawnRate)
+        {
+            currentRoomSpawnRate = baseRoomSpawnRate;
+            return true;
+        }
+        else
+        {
+            currentRoomSpawnRate += increaseSpawnRate;
+        }
+        return false;
     }
 
     private HashSet<Vector2Int> SetRoom(Vector2Int curPos)
@@ -378,7 +391,7 @@ public class RandomWalker_Algorithm : DungeonAlgorithm
     }
     private void GetMaxFillTiles()
     {
-        int maxTiles = fieldSize.x * fieldSize.y;
+        int maxTiles = fieldSize.size.x * fieldSize.size.y;
         dungeonSizeInTiles = Mathf.FloorToInt(maxTiles * fillPercentage);
     }
 }

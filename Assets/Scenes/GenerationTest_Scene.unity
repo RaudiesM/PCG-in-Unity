@@ -170,8 +170,10 @@ MonoBehaviour:
   fieldSize:
     m_Position: {x: 0, y: 0, z: 0}
     m_Size: {x: 100, y: 100, z: 0}
-  maxTiles: 1814
-  roomSpawnRate: 50
+  fillPercentage: 0
+  baseRoomSpawnRate: 0
+  increaseSpawnRate: 0
+  isCombiningRooms: 1
   roomMin: 1
   roomMax: 5
   hallwayLengthMin: 9
@@ -647,7 +649,7 @@ MonoBehaviour:
   currentAlgorithm: 0
   CA_Algorithm: {fileID: 1563801909}
   BSP_Algorithm: {fileID: 1277086792}
-  RW_Algorithm: {fileID: 283747623}
+  RW_Algorithm: {fileID: 883259476}
   tilePlacer: {fileID: 883259474}
 --- !u!114 &883259476
 MonoBehaviour:
@@ -665,8 +667,10 @@ MonoBehaviour:
   fieldSize:
     m_Position: {x: 0, y: 0, z: 0}
     m_Size: {x: 100, y: 100, z: 0}
-  maxTiles: 1814
-  roomSpawnRate: 50
+  fillPercentage: 0.5
+  baseRoomSpawnRate: 0.05
+  increaseSpawnRate: 0.05
+  isCombiningRooms: 1
   roomMin: 1
   roomMax: 5
   hallwayLengthMin: 9
@@ -974,10 +978,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0297a089f37700e4682073998b921711, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  dungeonSize:
-    m_Position: {x: 50, y: 50, z: 0}
-    m_Size: {x: 100, y: 100, z: 0}
-  maxNumRooms: 10
+  fieldSize:
+    m_Position: {x: 0, y: 0, z: 0}
+    m_Size: {x: 0, y: 0, z: 0}
+  numRooms: 0
   minSize: 250
   roomPercentage: 0.653
   minYSize: 12
@@ -1153,7 +1157,7 @@ MonoBehaviour:
     m_Size: {x: 100, y: 100, z: 0}
   fillPercentage: 0.5
   currentNeighbour: 0
-  showWalls: 0
+  isReducingTiles: 1
   showRedundantSpace: 1
   currentMooreRuleset: {fileID: 11400000, guid: 069a7ae7baaa19342a48732e05f465da, type: 2}
   currentNeumannRuleset: {fileID: 11400000, guid: 5248f4f36cef3f549b54c0e8773584da, type: 2}

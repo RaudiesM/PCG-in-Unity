@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using Random = UnityEngine.Random;
 using UnityEngine;
 
-public class BinarySpacePartitioning_Algorithm : DungeonAlgorithm
+public class BinarySpacePartitioning_Algorithm : DungeonAlgorithmBase
 {
     [SerializeField] private BoundsInt fieldSize = new BoundsInt();
     [SerializeField] private int numRooms;
@@ -22,14 +22,10 @@ public class BinarySpacePartitioning_Algorithm : DungeonAlgorithm
     private HashSet<Vector2Int> corridorTiles = new HashSet<Vector2Int>();
     private int currentIndexNum = 0;
 
-    public override string GetAlgorithmData()
+    public override EvaluationBase GetAlgorithmData()
     {
-        string data = $"Binary Space Partitioning Algorithm \n" +
-            $"fieldsize: {fieldSize.size.x * fieldSize.size.y} \n" +
-            $"Number of Rooms: {numRooms}\n" +
-            $"Room Measurments: atleast {minSize}[x: {minXSize}; y:{minYSize}] \n" +
-            $"#######################################################################################";
-        return data;
+        EvaluationBase evaluationData = new BSP_Evaluation(fieldSize.size.x * fieldSize.size.y, numRooms, minSize);
+        return evaluationData;
     }
     private void Start()
     {
