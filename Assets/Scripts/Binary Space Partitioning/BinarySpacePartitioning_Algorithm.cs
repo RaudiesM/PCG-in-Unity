@@ -43,8 +43,7 @@ public class BinarySpacePartitioning_Algorithm : DungeonAlgorithmBase
         {
             isDoneSplitting = IterateOverRooms();
         }
-
-        HashSet<BoundsInt> newDungeonRooms = PlaceRooms();
+        HashSet<BoundsInt> newDungeonRooms = PlaceRoom();
         dungeonTiles.AddRoom(UtilityFunctions.ConvertRoomsToTiles(newDungeonRooms));
         corridorTiles.Clear();
         ConnectRooms(dungeonTiles);
@@ -52,14 +51,38 @@ public class BinarySpacePartitioning_Algorithm : DungeonAlgorithmBase
 
         return dungeonTiles;
     }
+
+    public DungeonTiles GenerateDungeonTiles(out HashSet<BoundsInt> outDungeonRooms, out HashSet<Vector3Int> newCenter)
+    {
+        ClearDictionaries();
+        DungeonTiles dungeonTiles = new DungeonTiles(AlgorithmType.BinarySpacepartitioning);
+
+        bool isDoneSplitting = false;
+        while (isDoneSplitting == false)
+        {
+            isDoneSplitting = IterateOverRooms();
+        }
+        outDungeonRooms = new HashSet<BoundsInt>();
+        foreach(var room in dungeonRooms)
+        {
+            outDungeonRooms.Add(room.Value);
+        }
+        HashSet<BoundsInt>newDungeonRooms = PlaceRoomSkeletton(out newCenter);
+        dungeonTiles.AddRoom(UtilityFunctions.ConvertRoomsToTiles(newDungeonRooms));
+        corridorTiles.Clear();
+        ConnectRooms(dungeonTiles);
+        dungeonTiles.AddCorridor(corridorTiles);
+        return dungeonTiles;
+    }
+
     public HashSet<Bounds> SetupGeneration()
     {
         ClearDictionaries();
         HashSet<BoundsInt> newDungeonRooms = new HashSet<BoundsInt>();
         IterateOverRooms();
-        foreach (var room in dungeonRooms)
+        foreach (var room in dungeonRooms.Values)
         {
-            newDungeonRooms.Add(room.Value);
+            newDungeonRooms.Add(room);
             //Debug.Log($"Room [Pos.: {room.Value.position}] [ID: {room.Key}] ");
         }
         return UtilityFunctions.ConvertBounds(newDungeonRooms);
@@ -76,7 +99,7 @@ public class BinarySpacePartitioning_Algorithm : DungeonAlgorithmBase
         if (isDoneSplitting)
         {
             Debug.Log("I am done");
-            newDungeonRooms = PlaceRooms();
+            newDungeonRooms = PlaceRoom();
             dungeonTiles.AddRoom(UtilityFunctions.ConvertRoomsToTiles(newDungeonRooms));
             corridorTiles.Clear();
             ConnectRooms(dungeonTiles);
@@ -84,9 +107,9 @@ public class BinarySpacePartitioning_Algorithm : DungeonAlgorithmBase
         }
         else
         {
-            foreach(var room in dungeonRooms)
+            foreach(var room in dungeonRooms.Values)
             {
-                newDungeonRooms.Add(room.Value);
+                newDungeonRooms.Add(room);
                 //Debug.Log($"Room [Pos.: {room.Value.position}] [ID: {room.Key}] ");
             }
             newBounds = UtilityFunctions.ConvertBounds(newDungeonRooms);
@@ -317,7 +340,7 @@ public class BinarySpacePartitioning_Algorithm : DungeonAlgorithmBase
     }
 
 
-    private HashSet<BoundsInt> PlaceRooms()
+    private HashSet<BoundsInt> PlaceRoom()
     {
         HashSet<BoundsInt> dungeonRoomTiles = new HashSet<BoundsInt>();
         Dictionary<string, BoundsInt> newDungeonRooms = new Dictionary<string, BoundsInt>();
@@ -330,6 +353,27 @@ public class BinarySpacePartitioning_Algorithm : DungeonAlgorithmBase
         }
         dungeonRooms = newDungeonRooms;
         return dungeonRoomTiles;
+    }
+    private HashSet<BoundsInt> PlaceRoomSkeletton(out HashSet<Vector3Int> newCenter)
+    {
+        HashSet<BoundsInt> dungeonRoomTiles = new HashSet<BoundsInt>();
+        newCenter = new HashSet<Vector3Int>();
+        Dictionary<string, BoundsInt> newDungeonRooms = new Dictionary<string, BoundsInt>();
+        foreach (var rooms in dungeonRooms)
+        {
+            Vector3Int newSize = new Vector3Int(4, 4);
+            Vector3Int variantPosition = VariantPosition(rooms.Value, newSize);
+            newCenter.Add(variantPosition);
+            Debug.Log(newCenter.Count);
+            BoundsInt newRoom = new BoundsInt(variantPosition, newSize);
+            dungeonRoomTiles.Add(newRoom);
+            newDungeonRooms.Add(rooms.Key, newRoom);
+            roomsToConnect.Add(rooms.Key, new RoomPoints(newRoom.position));
+        }
+        Debug.Log(newCenter.Count);
+        Debug.Log(dungeonRoomTiles.Count);
+        return dungeonRoomTiles;
+
     }
 
     #region RoomVariance

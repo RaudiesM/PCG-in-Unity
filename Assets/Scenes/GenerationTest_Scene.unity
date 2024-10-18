@@ -471,7 +471,6 @@ GameObject:
   m_Component:
   - component: {fileID: 653697647}
   - component: {fileID: 653697646}
-  - component: {fileID: 653697648}
   m_Layer: 0
   m_Name: Square
   m_TagString: Untagged
@@ -546,18 +545,6 @@ Transform:
   m_Children: []
   m_Father: {fileID: 428888463}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &653697648
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 653697645}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 8e8c3bf48cf1baf4da09b18628cd0dbf, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!1 &883259472
 GameObject:
   m_ObjectHideFlags: 0
@@ -638,6 +625,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   currentAlgorithm: 4
   CA_Algorithm: {fileID: 1563801909}
+  CA_Algorithm_old: {fileID: 1563801910}
   BSP_Algorithm: {fileID: 1277086792}
   RW_Algorithm: {fileID: 883259476}
   tilePlacer: {fileID: 883259474}
@@ -657,7 +645,7 @@ MonoBehaviour:
   fieldSize:
     m_Position: {x: 0, y: 0, z: 0}
     m_Size: {x: 100, y: 100, z: 0}
-  fillPercentage: 0.5
+  fillPercentage: 0.114
   baseRoomSpawnRate: 0.05
   increaseSpawnRate: 0.05
   isCombiningRooms: 1
@@ -675,7 +663,6 @@ GameObject:
   m_Component:
   - component: {fileID: 949035486}
   - component: {fileID: 949035485}
-  - component: {fileID: 949035484}
   m_Layer: 0
   m_Name: Pointer
   m_TagString: Untagged
@@ -683,18 +670,6 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!114 &949035484
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 949035483}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 8e8c3bf48cf1baf4da09b18628cd0dbf, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!212 &949035485
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -772,7 +747,6 @@ GameObject:
   m_Component:
   - component: {fileID: 1025706761}
   - component: {fileID: 1025706760}
-  - component: {fileID: 1025706759}
   m_Layer: 0
   m_Name: Square (1)
   m_TagString: Untagged
@@ -780,18 +754,6 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!114 &1025706759
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1025706758}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 8e8c3bf48cf1baf4da09b18628cd0dbf, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!212 &1025706760
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -949,9 +911,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   fieldSize:
-    m_Position: {x: 0, y: 0, z: 0}
-    m_Size: {x: 0, y: 0, z: 0}
-  numRooms: 0
+    m_Position: {x: 50, y: 50, z: 0}
+    m_Size: {x: 100, y: 100, z: 0}
+  numRooms: 10
   minSize: 250
   roomPercentage: 0.653
   minYSize: 12
@@ -1146,14 +1108,15 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   numIterations: 3
   fieldSize:
-    m_Position: {x: 10, y: 10, z: 0}
-    m_Size: {x: 10, y: 10, z: 0}
-  fillPercentage: 0.5
+    m_Position: {x: 0, y: 0, z: 0}
+    m_Size: {x: 100, y: 100, z: 0}
+  fillPercentage: 0.21
   currentNeighbour: 0
   showWalls: 0
+  isReducingTiles: 1
   showRedundantSpace: 0
-  currentMooreRuleset: {fileID: 0}
-  currentNeumannRuleset: {fileID: 0}
+  currentMooreRuleset: {fileID: 11400000, guid: 136f65f78c32b6a478bfbb36b5188aa0, type: 2}
+  currentNeumannRuleset: {fileID: 11400000, guid: 5248f4f36cef3f549b54c0e8773584da, type: 2}
 --- !u!1 &1952590106
 GameObject:
   m_ObjectHideFlags: 0

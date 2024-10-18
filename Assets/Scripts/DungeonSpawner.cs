@@ -8,6 +8,7 @@ public class DungeonSpawner : MonoBehaviour
 {
     [SerializeField] private AlgorithmType currentAlgorithm = AlgorithmType.CellulaAutomata;
     [SerializeField] private CellulaAutomataAlgorithm CA_Algorithm;
+    [SerializeField] private CellulaAutomataAlgorithm_old CA_Algorithm_old;
     [SerializeField] private BinarySpacePartitioning_Algorithm BSP_Algorithm;
     [SerializeField] private RandomWalker_Algorithm RW_Algorithm;
 
@@ -38,6 +39,12 @@ public class DungeonSpawner : MonoBehaviour
         {
             dungeonTiles = RW_Algorithm.GenerateDungeonTiles();
             CA_Algorithm.SetUpGeneration(dungeonTiles);
+        }else if(currentAlgorithm == AlgorithmType.BSP_CA)
+        {
+            HashSet<BoundsInt> rooms = new HashSet<BoundsInt>();
+            HashSet<Vector3Int> centers = new HashSet<Vector3Int>();
+            dungeonTiles = BSP_Algorithm.GenerateDungeonTiles(out rooms, out centers);
+            dungeonTiles = CA_Algorithm_old.SetUpGeneration(dungeonTiles, rooms, centers);
         }
         PlaceDungeon(dungeonTiles);
     }
@@ -64,6 +71,9 @@ public class DungeonSpawner : MonoBehaviour
         }else if( currentAlgorithm == AlgorithmType.RW_CA)
         { 
             dungeonTiles = CA_Algorithm.ContinueIterating() ;
+        }else if(currentAlgorithm == AlgorithmType.BSP_CA)
+        {
+            dungeonTiles = CA_Algorithm_old.ContinueIterating();
         }
 
         PlaceDungeon(dungeonTiles);
@@ -87,6 +97,12 @@ public class DungeonSpawner : MonoBehaviour
         {
             dungeonTiles = RW_Algorithm.GenerateDungeonTiles();
             dungeonTiles = CA_Algorithm.GenerateDungeonTiles(dungeonTiles);
+        }else if (currentAlgorithm == AlgorithmType.BSP_CA)
+        {
+            HashSet<BoundsInt> rooms = new HashSet<BoundsInt>();
+            HashSet<Vector3Int> centers = new HashSet<Vector3Int>();
+            dungeonTiles = BSP_Algorithm.GenerateDungeonTiles(out rooms, out centers);
+            dungeonTiles = CA_Algorithm_old.GenerateDungeonTiles(dungeonTiles, rooms, centers);
         }
         PlaceDungeon(dungeonTiles);
     }

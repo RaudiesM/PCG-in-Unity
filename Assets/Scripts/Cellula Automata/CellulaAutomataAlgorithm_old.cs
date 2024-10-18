@@ -1,5 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
+using Unity.VisualScripting;
 using UnityEngine;
 
 
@@ -12,6 +14,7 @@ public class CellulaAutomataAlgorithm_old : DungeonAlgorithmBase
 
     [SerializeField] private NeighbourType currentNeighbour = NeighbourType.Moore;
     [SerializeField] private bool showWalls = false;
+    [SerializeField] private bool isReducingTiles = true;
     [SerializeField] private bool showRedundantSpace = false;
 
     [SerializeField] private CellRulesetBase currentMooreRuleset;
@@ -20,6 +23,8 @@ public class CellulaAutomataAlgorithm_old : DungeonAlgorithmBase
     private int currentIteration = 0;
     private int neighbourDistance = 1;
     private Dictionary<Vector2Int, CellState> cellDistribution = new Dictionary<Vector2Int, CellState>();
+    private HashSet<BoundsInt> cellRooms;
+    private DungeonRoom roomBones;
 
     public override DungeonTiles GenerateDungeonTiles()
     {
@@ -31,22 +36,61 @@ public class CellulaAutomataAlgorithm_old : DungeonAlgorithmBase
             ApplyCellulaAutomata();
         }
         DungeonTiles tiles = GetCellDistribution();
-        Debug.Log("Before: "+tiles.Count());
         tiles = ReduceTiles(tiles);
-        Debug.Log("After: "+tiles.Count());
+        return tiles;
+    }
+    public DungeonTiles GenerateDungeonTiles(DungeonTiles inputTiles, HashSet<BoundsInt> rooms, HashSet<Vector3Int> centers)
+    {
+        SetUpGeneration(inputTiles, rooms, centers);
+        currentIteration = 0;
+        for (int i = 0; i < numIterations; i++)
+        {
+            ApplyCellulaAutomata();
+        }
+        DungeonTiles tiles = GetCellDistribution();
+        if (isReducingTiles)
+            tiles = ReduceTiles(tiles);
+        tiles.AddRoom(roomBones);
         return tiles;
     }
 
-    
 
-    public override DungeonTiles SetUpGeneration()
+    public DungeonTiles SetUpGeneration(DungeonTiles tiles, HashSet<BoundsInt> rooms, HashSet<Vector3Int> center)
     {
-        Debug.Log("Setting up generation");
         cellDistribution.Clear();
         currentIteration = 0;
-        DistributeCells();
-        DungeonTiles tiles = GetCellDistribution();
-        return tiles;
+        IncorporateTiles(tiles);
+        HashSet<DungeonRoom> dungeonRooms = new HashSet<DungeonRoom>();
+        tiles.TryGetRooms(out dungeonRooms);
+        List<BoundsInt> roomList = rooms.ToList();
+        List<Vector3Int> centerList = center.ToList();
+        for(int i = 0; i<roomList.Count; i++)
+        {
+            DistributeCells(roomList[i], centerList[i]);
+        }
+        return GetCellDistribution();
+    }
+
+    private void IncorporateTiles(DungeonTiles tiles)
+    {
+        HashSet<Vector2Int> newTiles = new HashSet<Vector2Int>();
+        HashSet<DungeonRoom> newRoomTiles = new HashSet<DungeonRoom>();
+        tiles.TryGetCorridors(out newTiles);
+        tiles.TryGetRooms(out newRoomTiles);
+        roomBones = new DungeonRoom(newTiles);
+        foreach(DungeonRoom room in newRoomTiles)
+        {
+            newTiles.UnionWith(room.GetRoomTiles());
+        }
+        foreach(Vector2Int tile in newTiles)
+        {
+            if (cellDistribution.ContainsKey(tile) == false)
+            {
+                CellState cellState = new CellState(true, false);
+                cellDistribution.Add(tile, cellState);
+            }
+        }
+
     }
 
     public override DungeonTiles ContinueIterating()
@@ -56,11 +100,13 @@ public class CellulaAutomataAlgorithm_old : DungeonAlgorithmBase
         {
             ApplyCellulaAutomata();
             tiles = GetCellDistribution();
+            tiles.AddRoom(roomBones);
         }
         else
         {
             tiles = GetCellDistribution();
             tiles = ReduceTiles(tiles);
+            tiles.AddRoom(roomBones);
         }
         return tiles;
     }
@@ -106,6 +152,53 @@ public class CellulaAutomataAlgorithm_old : DungeonAlgorithmBase
         }
     }
 
+    private void DistributeCells(BoundsInt room, Vector3Int newCenter)
+    {
+        //SurroundFieldWithWall();
+        Vector2Int refPosition = new Vector2Int(newCenter.x, newCenter.y);
+        
+        int numMaxCells = (room.size.x -1) * (room.size.y -1);
+        int cellPercent = Mathf.FloorToInt(numMaxCells * fillPercentage);
+        int convertedCells = 0;
+        int maxCounter = 0;
+       
+        int newXMin = room.position.x - (room.size.x / 2);
+        int newYMin = room.position.y - (room.size.y / 2);
+        int newXMax = room.position.x + (room.size.x / 2);
+        int newYMax = room.position.y + (room.size.y / 2);
+
+        /*Debug.DrawLine(new Vector3(newXMin, newYMin), new Vector3(newXMin, newYMax), Color.red, 10);
+        Debug.DrawLine(new Vector3(newXMin, newYMin), new Vector3(newXMax, newYMin), Color.red, 10);
+        Debug.DrawLine(new Vector3(newXMax, newYMax), new Vector3(newXMin, newYMax), Color.blue, 10);
+        Debug.DrawLine(new Vector3(newXMax, newYMax), new Vector3(newXMax, newYMin), Color.blue, 10);
+        */
+
+        while (convertedCells < cellPercent)
+        {
+            Vector2Int randomPositionA = new Vector2Int(
+                                            Random.Range(newXMin +2, newXMax -2),
+                                            Random.Range(newYMin +2, newYMax-2)
+                                            );
+            Vector2Int randomPositionB = new Vector2Int(
+                                            Random.Range(newXMin + 2, newXMax - 2),
+                                            Random.Range(newYMin + 2, newYMax - 2)
+                                            );
+            Vector2Int randomPosition = Vector2Int.Distance(randomPositionA, refPosition) < Vector2Int.Distance(randomPositionB, refPosition) ? randomPositionA : randomPositionB;
+            if (cellDistribution.ContainsKey(randomPosition) == false)
+            {
+                CellState cellState = new CellState(true, true);
+                cellDistribution.Add(randomPosition, cellState);
+                convertedCells++;
+            }
+            maxCounter++;
+            if (maxCounter >= 100000)
+            {
+                Debug.LogError("To many iterations during while");
+                break;
+            }
+        }
+    }
+
     private void SurroundFieldWithWall()
     {
         CellState boundryState = new CellState(false, false);
@@ -143,7 +236,15 @@ public class CellulaAutomataAlgorithm_old : DungeonAlgorithmBase
             for (int j = fieldSize.yMin; j <= fieldSize.yMax; j++)
             {
                 Vector2Int newPosition = new Vector2Int(i, j);
-                bool isFloor = cellDistribution.ContainsKey(newPosition);
+                bool isFloor = false;
+                if (newCellStates.ContainsKey(newPosition))
+                {
+                    isFloor = true;
+                    if (cellDistribution[newPosition].IsChangeable == false) 
+                    {
+                        continue;
+                    }
+                }
                 int numNeighbours = CheckNeighbourCells(newPosition);
                 
                 bool newStateIsFloor = false;
@@ -238,7 +339,6 @@ public class CellulaAutomataAlgorithm_old : DungeonAlgorithmBase
         HashSet<Vector2Int> tiles = new HashSet<Vector2Int>();
         if (showWalls)
         {
-            Debug.Log("Umrandung = " + cellDistribution.Count);
             foreach (var cell in cellDistribution)
             {
                 if (cell.Value.IsChangeable == false)
@@ -252,7 +352,6 @@ public class CellulaAutomataAlgorithm_old : DungeonAlgorithmBase
 
     private DungeonTiles ReduceTiles(DungeonTiles tiles)
     {
-        Debug.Log("Reducing!");
         DungeonTiles newDungeonTiles = new DungeonTiles(AlgorithmType.CellulaAutomata);
         
         HashSet<Vector2Int> allTiles = new HashSet<Vector2Int>();
@@ -303,7 +402,6 @@ public class CellulaAutomataAlgorithm_old : DungeonAlgorithmBase
                 currentTiles.Add(currentPosition);
             }
             
-            Debug.Log("Runs");
             checkedTiles.UnionWith(currentTiles);
             if(showRedundantSpace)
             {
