@@ -77,7 +77,7 @@ public class BinarySpacePartitioning_Algorithm : DungeonAlgorithmBase
         return dungeonTiles;
     }
 
-    public override DungeonTiles SetUpGeneration()
+    public override DungeonTiles FirstGeneration()
     {
         DungeonTiles newDungeonTiles = new DungeonTiles(AlgorithmType.BinarySpacepartitioning);
         ClearDictionaries();

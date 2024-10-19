@@ -64,7 +64,7 @@ public class CellulaAutomataAlgorithm : DungeonAlgorithmBase
         return tiles;
     }
 
-    public override DungeonTiles SetUpGeneration()
+    public override DungeonTiles FirstGeneration()
     {
         cellDistribution.Clear();
         currentIteration = 0;
@@ -73,7 +73,7 @@ public class CellulaAutomataAlgorithm : DungeonAlgorithmBase
         return tiles;
     }
 
-    public void SetUpGeneration(DungeonTiles inputTiles)
+    public void FirstGeneration(DungeonTiles inputTiles)
     {
         cellDistribution.Clear();
         currentIteration = 0;

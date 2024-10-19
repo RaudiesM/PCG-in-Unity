@@ -6,50 +6,24 @@ public struct RoomPoints
 {
     private List<Vector2Int> roomPoints;
 
-
     #region Constructor Functions
-    public RoomPoints(Vector2Int newRoomPoint)
+    public RoomPoints(Vector3Int newPostition)
     {
         roomPoints = new List<Vector2Int>();
-        roomPoints.Add(newRoomPoint);
-    }
-    public RoomPoints(Vector3Int newRoomPoint)
-    {
-        roomPoints = new List<Vector2Int>();
-        AddRoomPoints(newRoomPoint);
-    }
-    public RoomPoints(List<Vector2Int> newRoomPoints)
-    {
-        roomPoints = newRoomPoints;
-    }
-    public RoomPoints(RoomPoints roomPointsA)
-    {
-        roomPoints = new List<Vector2Int>();
-        AddRoomPoints(roomPointsA);
+        AddRoomPoints(newPostition);
     }
     public RoomPoints(RoomPoints roomPointsA, RoomPoints roomPointsB)
     {
+        //constructor variant to directly combine to points of two spaces
         roomPoints = new List<Vector2Int>();
         AddRoomPoints(roomPointsA);
         AddRoomPoints(roomPointsB);
     }
     #endregion
-
-    #region functions
-    public void AddRoomPoints(Vector2Int newRoomPoint)
+    #region Add funcitons
+    public void AddRoomPoints(Vector3Int newPosition)
     {
-        roomPoints.Add(newRoomPoint);
-    }
-    public void AddRoomPoints(Vector3Int newRoomPoint)
-    {
-        roomPoints.Add(new Vector2Int(newRoomPoint.x, newRoomPoint.y));
-    }
-    public void AddRoomPoints(List<Vector2Int> newRoomPoints)
-    {
-        foreach(Vector2Int point in newRoomPoints)
-        {
-            roomPoints.Add(point);
-        }
+        roomPoints.Add(new Vector2Int(newPosition.x, newPosition.y));
     }
     public void AddRoomPoints(RoomPoints newRoomPoints)
     {
@@ -58,6 +32,9 @@ public struct RoomPoints
             roomPoints.Add(point);
         }
     }
+
+    #endregion
+    #region Get functions
 
     public List<Vector2Int> GetRoomPoints()
     {

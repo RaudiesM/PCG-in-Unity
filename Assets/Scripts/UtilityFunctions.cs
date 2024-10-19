@@ -13,16 +13,6 @@ public static class UtilityFunctions
         neighbours.Add(position + Vector2Int.right);
         return neighbours;
     }
-    public static HashSet<Bounds> ConvertBounds(HashSet<BoundsInt> oldBounds)
-    {
-        HashSet<Bounds> newBounds = new HashSet<Bounds>();
-        foreach (var bounds in oldBounds)
-        {
-            newBounds.Add(new Bounds(bounds.position, bounds.size));
-        }
-        return newBounds;
-    }
-
     public static HashSet<DungeonRoom> ConvertBoundsIntToRooms(HashSet<BoundsInt> rooms)
     {
         HashSet<DungeonRoom> dungeonRooms = new HashSet<DungeonRoom>();

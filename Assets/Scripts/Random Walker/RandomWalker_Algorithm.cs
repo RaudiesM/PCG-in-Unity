@@ -109,7 +109,7 @@ public class RandomWalker_Algorithm : DungeonAlgorithmBase
         return new Vector2Int(randomX, randomY);
     }
 
-    public override DungeonTiles SetUpGeneration()
+    public override DungeonTiles FirstGeneration()
     {
         PrepareGeneration();
         if (currentType == DungeonType.Caverns)

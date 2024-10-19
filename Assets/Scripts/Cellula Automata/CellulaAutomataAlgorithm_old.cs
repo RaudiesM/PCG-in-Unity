@@ -41,7 +41,7 @@ public class CellulaAutomataAlgorithm_old : DungeonAlgorithmBase
     }
     public DungeonTiles GenerateDungeonTiles(DungeonTiles inputTiles, HashSet<BoundsInt> rooms, HashSet<Vector3Int> centers)
     {
-        SetUpGeneration(inputTiles, rooms, centers);
+        FirstGeneration(inputTiles, rooms, centers);
         currentIteration = 0;
         for (int i = 0; i < numIterations; i++)
         {
@@ -55,7 +55,7 @@ public class CellulaAutomataAlgorithm_old : DungeonAlgorithmBase
     }
 
 
-    public DungeonTiles SetUpGeneration(DungeonTiles tiles, HashSet<BoundsInt> rooms, HashSet<Vector3Int> center)
+    public DungeonTiles FirstGeneration(DungeonTiles tiles, HashSet<BoundsInt> rooms, HashSet<Vector3Int> center)
     {
         cellDistribution.Clear();
         currentIteration = 0;
