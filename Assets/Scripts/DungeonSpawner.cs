@@ -48,7 +48,7 @@ public class DungeonSpawner : MonoBehaviour
             HashSet<BoundsInt> rooms = new HashSet<BoundsInt>();
             //newRoomCenters are given to spawn cells around the shifted room center
             HashSet<Vector3Int> newRoomCenters = new HashSet<Vector3Int>();
-            dungeonTiles = BSP_Algorithm.GenerateDungeonTiles(out rooms, out newRoomCenters);
+            dungeonTiles = BSP_Algorithm.Hybrid_GenerateDungeonTiles(out rooms, out newRoomCenters);
             dungeonTiles = CA_Algorithm_alt.Hybrid_PrepareGeneration(dungeonTiles, rooms, newRoomCenters);
         }
         else
@@ -98,7 +98,7 @@ public class DungeonSpawner : MonoBehaviour
             HashSet<BoundsInt> rooms = new HashSet<BoundsInt>();
             //newRoomCenters are given to spawn cells around the shifted room center
             HashSet<Vector3Int> newRoomCenters = new HashSet<Vector3Int>();
-            dungeonTiles = BSP_Algorithm.GenerateDungeonTiles(out rooms, out newRoomCenters);
+            dungeonTiles = BSP_Algorithm.Hybrid_GenerateDungeonTiles(out rooms, out newRoomCenters);
             dungeonTiles = CA_Algorithm_alt.Hybrid_GenerateDungeonTiles(dungeonTiles, rooms, newRoomCenters);
         }
         else

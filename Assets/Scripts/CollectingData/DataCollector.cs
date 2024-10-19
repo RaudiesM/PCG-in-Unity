@@ -120,7 +120,7 @@ public class DataCollector : MonoBehaviour
             {
                 //collect iterations
                 float timeBefore = Time.realtimeSinceStartup;
-                dungeonTiles = bsp_algorithm.GenerateDungeonTiles(out rooms, out centers);
+                dungeonTiles = bsp_algorithm.Hybrid_GenerateDungeonTiles(out rooms, out centers);
                 dungeonTiles = ca_algorithm_alt.Hybrid_GenerateDungeonTiles(dungeonTiles, rooms, centers);
                 float timeAfter = Time.realtimeSinceStartup;
                 //get amount of generated tiles and duration of this process

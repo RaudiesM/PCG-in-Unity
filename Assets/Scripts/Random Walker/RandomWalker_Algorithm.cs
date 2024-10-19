@@ -65,7 +65,7 @@ public class RandomWalker_Algorithm : DungeonAlgorithmBase
                 {
                     safetyCheck++;
                  
-                    if (safetyCheck >= 1000)
+                    if (safetyCheck >= 100000)
                         break;
                 }
             }
@@ -83,7 +83,7 @@ public class RandomWalker_Algorithm : DungeonAlgorithmBase
                 {
                     safetyCheck++;
 
-                    if(safetyCheck >= 1000)
+                    if(safetyCheck >= 100000)
                         break;
                     
                 }

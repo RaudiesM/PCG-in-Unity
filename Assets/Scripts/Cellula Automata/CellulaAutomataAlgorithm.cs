@@ -90,12 +90,12 @@ public class CellulaAutomataAlgorithm : DungeonAlgorithmBase
     }
     public void Hybrid_PrepareGeneration(DungeonTiles inputTiles)
     {
-        Reset();
+        currentIteration = 0;
         cellDistribution = inputTiles.GetCorridors();
     }
     #endregion
     #endregion
-    protected int CheckNeighbourCells(Vector2Int currentCell)
+    private int CheckNeighbourCells(Vector2Int currentCell)
     {
         int numFloorNeighbour = 0;
         Vector2Int cellToCheck = new Vector2Int();

@@ -639,7 +639,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 381b304118ee9d94fbe16d250734fc15, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  currentType: 0
+  currentType: 1
   fieldSize:
     m_Position: {x: 0, y: 0, z: 0}
     m_Size: {x: 100, y: 100, z: 0}
@@ -912,12 +912,15 @@ MonoBehaviour:
     m_Position: {x: 50, y: 50, z: 0}
     m_Size: {x: 100, y: 100, z: 0}
   numRooms: 10
+  indexOptions:
+  - A
+  - B
   minSize: 250
   roomPercentage: 0.653
   minYSize: 12
   minXSize: 12
-  boneRoomSize: 4
   offset: 3
+  skelettonRoomSize: 4
 --- !u!1 &1517543267
 GameObject:
   m_ObjectHideFlags: 0
@@ -1088,9 +1091,9 @@ MonoBehaviour:
     m_Position: {x: 0, y: 0, z: 0}
     m_Size: {x: 100, y: 100, z: 0}
   fillPercentage: 0.5
-  currentNeighbour: 0
   isReducingTiles: 1
   showRedundantSpace: 1
+  currentNeighbour: 0
   currentMooreRuleset: {fileID: 11400000, guid: 069a7ae7baaa19342a48732e05f465da, type: 2}
   currentNeumannRuleset: {fileID: 11400000, guid: 5248f4f36cef3f549b54c0e8773584da, type: 2}
 --- !u!114 &1563801910
@@ -1110,11 +1113,12 @@ MonoBehaviour:
     m_Position: {x: 0, y: 0, z: 0}
     m_Size: {x: 100, y: 100, z: 0}
   fillPercentage: 0.5
-  currentNeighbour: 0
   isReducingTiles: 1
-  showRedundantSpace: 0
+  showRedundantSpace: 1
+  currentNeighbour: 0
   currentMooreRuleset: {fileID: 11400000, guid: 136f65f78c32b6a478bfbb36b5188aa0, type: 2}
   currentNeumannRuleset: {fileID: 11400000, guid: 5248f4f36cef3f549b54c0e8773584da, type: 2}
+  offset: 2
 --- !u!1 &1952590106
 GameObject:
   m_ObjectHideFlags: 0

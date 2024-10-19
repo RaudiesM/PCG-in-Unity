@@ -9,15 +9,13 @@ using UnityEngine;
 public class CellulaAutomataAlgorithm_alt : CellulaAutomataAlgorithm
 {
 
-    [SerializeField] private int offset = 2
-        ;
+    [SerializeField] private int offset = 2;
     private Dictionary<Vector2Int, Changeability> cellDistribution = new Dictionary<Vector2Int, Changeability>();
     private DungeonRoom roomSkeletton;
 
     #region Generation Methods
     public DungeonTiles Hybrid_GenerateDungeonTiles(DungeonTiles inputTiles, HashSet<BoundsInt> rooms, HashSet<Vector3Int> centers)
     {
-        Reset();
         Hybrid_PrepareGeneration(inputTiles, rooms, centers);
 
         for (int i = 0; i < numIterations; i++)
@@ -36,7 +34,8 @@ public class CellulaAutomataAlgorithm_alt : CellulaAutomataAlgorithm
     }
     public DungeonTiles Hybrid_PrepareGeneration(DungeonTiles tiles, HashSet<BoundsInt> rooms, HashSet<Vector3Int> center)
     {
-        Reset();
+        cellDistribution.Clear();
+        currentIteration = 0;
         IncorporateTiles(tiles);
         HashSet<DungeonRoom> dungeonRooms = new HashSet<DungeonRoom>();
         tiles.TryGetRooms(out dungeonRooms);
@@ -128,6 +127,7 @@ public class CellulaAutomataAlgorithm_alt : CellulaAutomataAlgorithm
             
             if (cellDistribution.ContainsKey(randomPosition))
             {
+                convertedCells++;
                 continue;
             }
 
@@ -167,11 +167,9 @@ public class CellulaAutomataAlgorithm_alt : CellulaAutomataAlgorithm
                 if (currentNeighbour == NeighbourType.Moore)
                 {
                     newStateIsFloor = currentMooreRuleset.ApplyRulesToCell(isFloor, numNeighbours);
-                    //Debug.Log($"Position {newPosition} / Neighbours {numNeighbours}");
                 }
                 else if(currentNeighbour == NeighbourType.Neumann)
                 {
-                    //Debug.Log($"Position {newPosition} / Neighbours {numNeighbours}");
                     newStateIsFloor = currentNeumannRuleset.ApplyRulesToCell(isFloor, numNeighbours);
                 }
                 
@@ -195,9 +193,48 @@ public class CellulaAutomataAlgorithm_alt : CellulaAutomataAlgorithm
             }
         }
     }
-    private void Reset()
+    private int CheckNeighbourCells(Vector2Int currentCell)
     {
-        cellDistribution.Clear();
-        currentIteration = 0;
+        int numFloorNeighbour = 0;
+        Vector2Int cellToCheck = new Vector2Int();
+
+        if (currentNeighbour == NeighbourType.Moore)
+        {
+            for (int i = -neighbourDistance; i <= neighbourDistance; i++)
+            {
+                for (int j = -neighbourDistance; j <= neighbourDistance; j++)
+                {
+                    cellToCheck = new Vector2Int(currentCell.x + i, currentCell.y + j);
+                    if (currentCell != cellToCheck && cellDistribution.ContainsKey(cellToCheck))
+                    {
+                        numFloorNeighbour++;
+                    }
+                }
+            }
+        }
+        else if (currentNeighbour == NeighbourType.Neumann)
+        {
+            for (int i = -neighbourDistance; i <= neighbourDistance; i++)
+            {
+                //ignore self
+                if (i == 0)
+                    continue;
+
+                //add to x & check
+                cellToCheck = new Vector2Int(currentCell.x + i, currentCell.y);
+                if (cellDistribution.ContainsKey(cellToCheck))
+                {
+                    numFloorNeighbour++;
+                }
+
+                //add to y & check
+                cellToCheck = new Vector2Int(currentCell.x, currentCell.y + i);
+                if (cellDistribution.ContainsKey(cellToCheck))
+                {
+                    numFloorNeighbour++;
+                }
+            }
+        }
+        return numFloorNeighbour;
     }
 }

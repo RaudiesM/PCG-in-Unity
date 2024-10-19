@@ -10,6 +10,8 @@ public class BinarySpacePartitioning_Algorithm : DungeonAlgorithmBase
     [Space]
     [SerializeField] private int numRooms;
 
+    [SerializeField] private List<string> indexOptions = new List<string>();
+
     [Header("Room Measurements")]
     [SerializeField] private int minSize;
     [Range(0, 1)]
@@ -42,25 +44,77 @@ public class BinarySpacePartitioning_Algorithm : DungeonAlgorithmBase
     public override DungeonTiles GenerateDungeonTiles()
     {
         ClearDictionaries();
+        corridorTiles.Clear();
         DungeonTiles dungeonTiles = new DungeonTiles(AlgorithmType.BinarySpacepartitioning);
-
+        HashSet<DungeonRoom> newDungeonRooms = new HashSet<DungeonRoom>();
         bool isDoneSplitting = false;
+
         while (isDoneSplitting == false)
         {
             isDoneSplitting = IterateOverRooms();
         }
-        HashSet<BoundsInt> newDungeonRooms = PlaceRoom();
-        dungeonTiles.AddRoom(UtilityFunctions.ConvertBoundsIntToRooms(newDungeonRooms));
-        corridorTiles.Clear();
+
+        HashSet<BoundsInt> newRooms = PlaceRoom();
+        newDungeonRooms = UtilityFunctions.ConvertBoundsIntToRooms(newRooms);
+        dungeonTiles.AddRoom(newDungeonRooms);
         ConnectRooms(dungeonTiles);
         dungeonTiles.AddCorridor(corridorTiles);
 
         return dungeonTiles;
     }
+    public override DungeonTiles FirstGeneration()
+    {
+        DungeonTiles newDungeonTiles = new DungeonTiles(AlgorithmType.BinarySpacepartitioning);
+        ClearDictionaries();
+        HashSet<BoundsInt> newRooms = new HashSet<BoundsInt>();
+        HashSet<DungeonRoom> newDungeonRooms = new HashSet<DungeonRoom>();
 
-    public DungeonTiles GenerateDungeonTiles(out HashSet<BoundsInt> outDungeonRooms, out HashSet<Vector3Int> newCenter)
+        IterateOverRooms();
+        foreach (var room in dungeonRooms.Values)
+        {
+            newRooms.Add(room);
+        }
+
+        newDungeonRooms = UtilityFunctions.ConvertBoundsIntToRooms(newRooms);
+        newDungeonTiles.AddRoom(newDungeonRooms);
+
+        return newDungeonTiles;
+    }
+    public override DungeonTiles ContinueIterating()
+    {
+        HashSet<BoundsInt> newRooms = new HashSet<BoundsInt>();
+        DungeonTiles dungeonTiles = new DungeonTiles(AlgorithmType.BinarySpacepartitioning);
+        HashSet<DungeonRoom> newDungeonRooms = new HashSet<DungeonRoom>();
+
+        bool isDoneSplitting = IterateOverRooms();
+
+        if (isDoneSplitting)
+        {
+            corridorTiles.Clear();
+
+            newRooms = PlaceRoom();
+            newDungeonRooms = UtilityFunctions.ConvertBoundsIntToRooms(newRooms);
+            dungeonTiles.AddRoom(newDungeonRooms);
+            ConnectRooms(dungeonTiles);
+            dungeonTiles.AddCorridor(corridorTiles);
+        }
+        else
+        {
+            foreach (var room in dungeonRooms.Values)
+            {
+                newRooms.Add(room);
+            }
+            newDungeonRooms = UtilityFunctions.ConvertBoundsIntToRooms(newRooms);
+            dungeonTiles.AddRoom(newDungeonRooms);
+        }
+
+        return dungeonTiles;
+    }
+    public DungeonTiles Hybrid_GenerateDungeonTiles(out HashSet<BoundsInt> outDungeonRooms, out HashSet<Vector3Int> newCenter)
     {
         ClearDictionaries();
+        corridorTiles.Clear();
+
         DungeonTiles dungeonTiles = new DungeonTiles(AlgorithmType.BinarySpacepartitioning);
 
         bool isDoneSplitting = false;
@@ -69,293 +123,73 @@ public class BinarySpacePartitioning_Algorithm : DungeonAlgorithmBase
             isDoneSplitting = IterateOverRooms();
         }
         outDungeonRooms = new HashSet<BoundsInt>();
-        foreach(var room in dungeonRooms)
+        foreach (var room in dungeonRooms)
         {
             outDungeonRooms.Add(room.Value);
         }
-        HashSet<BoundsInt>newDungeonRooms = PlaceRoomSkeletton(out newCenter);
+
+        HashSet<BoundsInt> newDungeonRooms = PlaceRoomSkeletton(out newCenter);
         dungeonTiles.AddRoom(UtilityFunctions.ConvertBoundsIntToRooms(newDungeonRooms));
-        corridorTiles.Clear();
+
         ConnectRooms(dungeonTiles);
         dungeonTiles.AddCorridor(corridorTiles);
         return dungeonTiles;
     }
-
-    public override DungeonTiles FirstGeneration()
-    {
-        DungeonTiles newDungeonTiles = new DungeonTiles(AlgorithmType.BinarySpacepartitioning);
-        ClearDictionaries();
-        HashSet<BoundsInt> newDungeonRooms = new HashSet<BoundsInt>();
-        IterateOverRooms();
-        foreach (var room in dungeonRooms.Values)
-        {
-            newDungeonRooms.Add(room);
-            //Debug.Log($"Room [Pos.: {room.Value.position}] [ID: {room.Key}] ");
-        }
-        newDungeonTiles.AddRoom(UtilityFunctions.ConvertBoundsIntToRooms(newDungeonRooms));
-        return newDungeonTiles;
-    }
-
-    public override DungeonTiles ContinueIterating()
-    {
-        HashSet<BoundsInt> newDungeonRooms = new HashSet<BoundsInt>();
-        DungeonTiles dungeonTiles = new DungeonTiles(AlgorithmType.BinarySpacepartitioning);
-
-        bool isDoneSplitting = IterateOverRooms();
-
-        if (isDoneSplitting)
-        {
-            Debug.Log("I am done");
-            newDungeonRooms = PlaceRoom();
-            dungeonTiles.AddRoom(UtilityFunctions.ConvertBoundsIntToRooms(newDungeonRooms));
-            corridorTiles.Clear();
-            ConnectRooms(dungeonTiles);
-            dungeonTiles.AddCorridor(corridorTiles);
-        }
-        else
-        {
-            foreach (var room in dungeonRooms.Values)
-            {
-                newDungeonRooms.Add(room);
-                //Debug.Log($"Room [Pos.: {room.Value.position}] [ID: {room.Key}] ");
-            }
-            dungeonTiles.AddRoom(UtilityFunctions.ConvertBoundsIntToRooms(newDungeonRooms));
-        }
-
-        return dungeonTiles;
-    }
     #endregion
-
-    private void CheckGivenValues()
+    #region Rooms
+    private HashSet<BoundsInt> SplitSpace(BoundsInt room)
     {
-        int dungeonSizeInt = fieldSize.size.x * fieldSize.size.y;
-        if (numRooms > dungeonSizeInt || numRooms == 0)
+        HashSet<BoundsInt> result = new HashSet<BoundsInt>();
+
+        //check if the room can be splitt into two (both sub rooms are atleast minSize
+        bool canSplitVertical = (room.size.x >= 2 * minXSize) && (minXSize * room.size.y >= minSize);
+        bool canSplitHorizontal = (room.size.y >= 2 * minYSize) && (minYSize * room.size.x >= minSize);
+        bool canSplitBoth = canSplitHorizontal && canSplitVertical;
+
+        if (canSplitHorizontal == false && canSplitVertical == false)
+            return result;
+
+        BoundsInt newRoomA = new BoundsInt();
+        BoundsInt newRoomB = new BoundsInt();
+
+        #region SplitVertical
+        if (canSplitBoth && Random.value <= 0.5f || canSplitHorizontal == false && canSplitVertical)
         {
-            numRooms = 10;
-        }
-        if (numRooms * minSize > dungeonSizeInt)
-        {
-            minSize = dungeonSizeInt / numRooms;
-        }
-        if (minSize < minXSize * minYSize)
-        {
-            minXSize = Mathf.FloorToInt((float)(Math.Sqrt(minSize)));
-            minYSize = minXSize;
-        }
+            int randomValueA = GetRandomSize(room.size.x, minXSize);
+            int randomValueB = room.size.x - randomValueA;
 
-        minXSize += offset;
-        minYSize += offset;
-        minSize += offset*offset;
-    }
+            newRoomA = new BoundsInt(room.xMin - randomValueB / 2, room.yMin, 0, randomValueA, room.size.y, 0);
+            newRoomB = new BoundsInt(room.xMin + randomValueA / 2, room.yMin, 0, randomValueB, room.size.y, 0);
 
-    private void ConnectRooms(DungeonTiles _dungeonTiles)
-    {
-        Queue<string> roomIndex = new Queue<string>();
-        Queue<string> doneIDs = new Queue<string>();
-        foreach(string index in dungeonRooms.Keys)
-        {
-            roomIndex.Enqueue(index);
-        }
-        //Debug.Log("<color=black> Room IDs:</color>");
-        while (roomIndex.Count > 1)
-        {
-            string currentID = roomIndex.Dequeue();
-            string parentID = currentID.Substring(0, currentID.Length - 1);
-            string endIsAorB = currentID.Substring(currentID.Length - 1);
-            string siblingID = GetSiblingIndex(parentID, endIsAorB);
-
-            if (roomsToConnect.ContainsKey(siblingID))
-            {
-                RoomPoints roomPointsA = roomsToConnect[currentID];
-                RoomPoints roomPointsB = roomsToConnect[siblingID];
-                Vector2Int pointA = new Vector2Int();
-                Vector2Int pointB = new Vector2Int();
-
-                if (roomPointsA.GetRoomPoints().Count + roomPointsB.GetRoomPoints().Count > 2)
-                {
-                    Vector2Int closestPointB = roomsToConnect[siblingID].GetAveragePoint();
-                    pointA = roomsToConnect[currentID].GetClosestPoint(closestPointB);
-                    pointB = roomsToConnect[siblingID].GetClosestPoint(pointA);
-                }
-                else
-                {
-                    pointA = roomPointsA.GetRoomPoints()[0];
-                    pointB = roomPointsB.GetRoomPoints()[0];
-                }
-                
-                SetCorridor(pointA, pointB, _dungeonTiles);
-                RoomPoints newRoomPoints = new RoomPoints(roomPointsA, roomPointsB);
-                roomsToConnect.Add(parentID, newRoomPoints);
-                roomsToConnect.Remove(currentID);
-                roomsToConnect.Remove(siblingID);
-
-                //Debug.Log($"<color=cyan>Connecting Rooms</color> {currentID} & {siblingID} ");
-                //Debug.Log($"<color=magenta> newParent: </color> {parentID}");
-                roomIndex.Enqueue(parentID);
-                doneIDs.Enqueue(currentID);
-            }
-            else if(doneIDs.Contains(siblingID) == false)
-            {
-                roomIndex.Enqueue(currentID);
-            }
-        }
-        //Debug.Log("<color=black> End Room IDs.</color>");
-    }
-
-    private void SetCorridor(Vector2Int pointA, Vector2Int pointB, DungeonTiles _dungeonTiles)
-    {
-        //Debug.Log("Connecting!");
-        Vector2Int pointAB = new Vector2Int(pointA.x, pointB.y);
-        Vector2Int pointBA = new Vector2Int(pointB.x, pointA.y);
-
-        HashSet<Vector2Int> pathA = new HashSet<Vector2Int>();
-        HashSet<Vector2Int> pathB = new HashSet<Vector2Int>();
-
-        HashSet<Vector2Int> corridorList = new HashSet<Vector2Int>();
-
-        pathA = GetCorridorPath(pointA, pointB, pointAB, _dungeonTiles);
-        pathB = GetCorridorPath(pointA, pointB, pointBA, _dungeonTiles);
-
-        Debug.ClearDeveloperConsole();
-
-        if (pathA.Count <= 1)
-        {
-            pathA = pathB;
-        }
-        else if(pathB.Count <= 1)
-        {
-            pathB = pathA;
-        }
-
-        if (pathA.Count == pathB.Count)
-        {
-            corridorList = Random.value <= 0.5f ? pathA : pathB;
-        }
-        else
-        {
-            corridorList = pathA.Count < pathB.Count ? pathA : pathB;
-            
-        }
-
-        /*
-        if (corridorList == pathA)
-        {
-
-            Debug.DrawLine(new Vector3(pointA.x, pointA.y), new Vector3(pointAB.x, pointAB.y), Color.blue, 1);
-            Debug.DrawLine(new Vector3(pointAB.x, pointAB.y), new Vector3(pointB.x, pointB.y), Color.blue, 1);
-        }
-        else
-        {
-            Debug.DrawLine(new Vector3(pointA.x, pointA.y), new Vector3(pointBA.x, pointBA.y), Color.red, 1);
-            Debug.DrawLine(new Vector3(pointBA.x, pointBA.y), new Vector3(pointB.x, pointB.y), Color.red, 1);
-        }
-        */
-
-        foreach (var  corridor in corridorList)
-        {
-            corridorTiles.Add(corridor);
-        }
-    }
-
-    private HashSet<Vector2Int> GetCorridorPath(Vector2Int pointA, Vector2Int pointB, Vector2Int middlePoint, DungeonTiles _dungeonTiles)
-    {
-        HashSet<Vector2Int> result = new HashSet<Vector2Int>();
-        HashSet<Vector2Int> refTiles = new HashSet<Vector2Int>();
-        refTiles.UnionWith(corridorTiles);
-        HashSet<DungeonRoom> rooms = new HashSet<DungeonRoom>();
-        _dungeonTiles.TryGetRooms(out rooms);
-        foreach (var room in rooms)
-        {
-            refTiles.UnionWith(room.GetRoomTiles());
-        }
-
-        Vector2Int startVector = new Vector2Int();
-        Vector2Int goalVector = new Vector2Int();
-
-        Vector2Int startPoint = new Vector2Int();
-        Vector2Int goalPoint = new Vector2Int();
-
-
-        if(pointA.x == middlePoint.x)
-        {
-            startPoint = pointA;
-            goalPoint = pointB;
-        }
-        else if(pointB.x == middlePoint.x)
-        {
-            startPoint = pointB;
-            goalPoint = pointA;
-        }
-
-        #region GoAlongXAxis
-        if (startPoint.y < middlePoint.y)
-        {
-            startVector = startPoint;
-            goalVector = middlePoint;
-        }
-        else
-        {
-            startVector = middlePoint;
-            goalVector = startPoint;
-        }
-        
-        for(int y = startVector.y; y <= goalVector.y; y++)
-        {
-            Vector2Int currentPosition = new Vector2Int(startVector.x, y);
-            if(refTiles.Contains(currentPosition) == false)
-            {
-                result.Add(currentPosition);
-            }
         }
         #endregion
-        #region GoAlongYAxis
-        if (goalPoint.x < middlePoint.x)
+        #region SplitHorizontal
+        else if (canSplitHorizontal)
         {
-            startVector = goalPoint;
-            goalVector = middlePoint;
-        }
-        else
-        {
-            startVector = middlePoint;
-            goalVector = goalPoint;
+            int randomValueA = GetRandomSize(room.size.y, minYSize);
+            int randomValueB = room.size.y - randomValueA;
+
+            newRoomA = new BoundsInt(room.xMin, room.yMin - randomValueB / 2, 0, room.size.x, randomValueA, 0);
+            newRoomB = new BoundsInt(room.xMin, room.yMin + randomValueA / 2, 0, room.size.x, randomValueB, 0);
         }
 
-        for (int x = startVector.x; x <= goalVector.x; x++)
-        {
-            Vector2Int currentPosition = new Vector2Int(x, startVector.y);
-            if (refTiles.Contains(currentPosition) == false)
-            {
-                result.Add(currentPosition);
-            }
-        }
+        result.Add(newRoomA);
+        result.Add(newRoomB);
         #endregion
-        /*
-        if(result.Count < 2) 
-        {
-            Debug.DrawLine(new Vector3(startPoint.x, startPoint.y), new Vector3(middlePoint.x, middlePoint.y), Color.cyan, 100);
-            Debug.DrawLine(new Vector3(middlePoint.x, middlePoint.y), new Vector3(goalPoint.x, goalPoint.y), Color.blue, 100);
-            Debug.Log($"startPoint {startPoint}");
-            Debug.Log($"goalPoint {goalPoint}");
-
-            Debug.Log($"point A {pointA}");
-            Debug.Log($"point B {pointB}");
-
-            Debug.Log($"middlePoint {middlePoint}");
-        }
-        */
         return result;
     }
-
-
     private HashSet<BoundsInt> PlaceRoom()
     {
         HashSet<BoundsInt> dungeonRoomTiles = new HashSet<BoundsInt>();
         Dictionary<string, BoundsInt> newDungeonRooms = new Dictionary<string, BoundsInt>();
+
         foreach (var rooms in dungeonRooms)
         {
             BoundsInt newRoom = CreateRoomVariance(rooms.Value);
+
             dungeonRoomTiles.Add(newRoom);
             newDungeonRooms.Add(rooms.Key, newRoom);
+            
             roomsToConnect.Add(rooms.Key, new RoomPoints(newRoom.position));
         }
         dungeonRooms = newDungeonRooms;
@@ -366,18 +200,62 @@ public class BinarySpacePartitioning_Algorithm : DungeonAlgorithmBase
         HashSet<BoundsInt> dungeonRoomTiles = new HashSet<BoundsInt>();
         newCenter = new HashSet<Vector3Int>();
         Dictionary<string, BoundsInt> newDungeonRooms = new Dictionary<string, BoundsInt>();
+
         foreach (var rooms in dungeonRooms)
         {
             Vector3Int newSize = new Vector3Int(skelettonRoomSize, skelettonRoomSize);
             Vector3Int variantPosition = VariantPosition(rooms.Value, newSize);
             newCenter.Add(variantPosition);
+
             BoundsInt newRoom = new BoundsInt(variantPosition, newSize);
             dungeonRoomTiles.Add(newRoom);
             newDungeonRooms.Add(rooms.Key, newRoom);
+
             roomsToConnect.Add(rooms.Key, new RoomPoints(newRoom.position));
         }
-        return dungeonRoomTiles;
 
+        return dungeonRoomTiles;
+    }
+    private bool IterateOverRooms()
+    {
+        int numSplitRooms = 0;
+        Queue<string> roomQueue = FillQueueWithRooms();
+
+        while (roomQueue.Count > 0 && dungeonRooms.Count < numRooms)
+        {
+            string roomIndex = roomQueue.Dequeue();
+            HashSet<BoundsInt> newRooms = SplitSpace(dungeonRooms[roomIndex]);
+            if(newRooms.Count > 0)
+            {
+                dungeonRooms.Remove(roomIndex);
+                ResetIndexNumber();
+
+                foreach(BoundsInt newRoom in newRooms)
+                {
+                    string newRoomIndex = GetNewIndex(roomIndex);
+                    dungeonRooms.Add(newRoomIndex, newRoom);
+                    numSplitRooms++;
+                }
+            }
+        }
+        return numSplitRooms == 0;
+    }
+    private Queue<string> FillQueueWithRooms()
+    {
+        Queue<string> newQueue = new Queue<string>();
+        if (dungeonRooms.Count > 0)
+        {
+            foreach (var room in dungeonRooms.Keys)
+            {
+                newQueue.Enqueue(room);
+            }
+        }
+        else
+        {
+            newQueue.Enqueue(indexOptions[0]);
+            dungeonRooms.Add(indexOptions[0], fieldSize);
+        }
+        return newQueue;
     }
 
     #region RoomVariance
@@ -391,15 +269,17 @@ public class BinarySpacePartitioning_Algorithm : DungeonAlgorithmBase
 
     private Vector3Int VariantPosition(BoundsInt rooms, Vector3Int newSize)
     {
+        //calculate the possible offset of the new room inside the old room
         int xDiff = rooms.size.x - newSize.x;
         int yDiff = rooms.size.y - newSize.y;
 
-        int xRandom = Random.Range(-xDiff/2, xDiff/2);
-        int yRandom = Random.Range(-yDiff/2, yDiff/2);
+        int xRandom = Random.Range(-xDiff / 2, xDiff / 2);
+        int yRandom = Random.Range(-yDiff / 2, yDiff / 2);
 
+        //if the new randomValue is bigger then the offset the new room should have to other rooms. In that case: subtract the offset.
         xRandom -= xRandom > offset ? offset : 0;
         yRandom -= yRandom > offset ? offset : 0;
-        
+
         return new Vector3Int(rooms.position.x + xRandom, rooms.position.y + yRandom);
     }
 
@@ -430,156 +310,245 @@ public class BinarySpacePartitioning_Algorithm : DungeonAlgorithmBase
         xRandom -= offset;
         return new Vector3Int(xRandom, yRandom);
     }
-    #endregion
-
-    private bool IterateOverRooms()
+    private int GetRandomSize(int roomSize, int minSize)
     {
-        int numSplitRooms = 0;
-        Queue<string> roomQueue = FillQueue();
-        while (roomQueue.Count > 0 && dungeonRooms.Count < numRooms)
+        int randomValue = Random.Range(minSize, roomSize - minSize);
+
+        if (randomValue % 2 > 0)
         {
-            string roomIndex = roomQueue.Dequeue();
-            HashSet<BoundsInt> newRooms = SplitSpace(dungeonRooms[roomIndex]);
-            if(newRooms.Count > 0)
+            if (randomValue > minSize)
             {
-                dungeonRooms.Remove(roomIndex);
-                ResetIndexNumber();
-                foreach(BoundsInt newRoom in newRooms)
-                {
-                    string newRoomIndex = GetNewIndex(roomIndex);
-                    dungeonRooms.Add(newRoomIndex, newRoom);
-                    numSplitRooms++;
-                }
+                randomValue += 1;
+            }
+            else
+            {
+                randomValue -= 1;
             }
         }
-        return numSplitRooms == 0;
-    }
 
-    private Queue<string> FillQueue()
+        return randomValue;
+    }
+    #endregion
+    #endregion
+    #region Corridors
+    private void ConnectRooms(DungeonTiles _dungeonTiles)
     {
-        Queue<string> newQueue = new Queue<string>();
-        if(dungeonRooms.Count > 0) { 
-            foreach(var room in dungeonRooms.Keys)
+        Queue<string> roomIndex = new Queue<string>();
+        Queue<string> checkedIDs = new Queue<string>();
+
+        foreach(string index in dungeonRooms.Keys)
+        {
+            roomIndex.Enqueue(index);
+        }
+        while (roomIndex.Count > 1)
+        {
+            string currentID = roomIndex.Dequeue();
+            string parentID = currentID.Substring(0, currentID.Length - 1);
+            string endIsAorB = currentID.Substring(currentID.Length - 1);
+            string siblingID = GetSiblingIndex(parentID, endIsAorB);
+
+            if (roomsToConnect.ContainsKey(siblingID))
             {
-                newQueue.Enqueue(room);
+                RoomPoints roomPointsA = roomsToConnect[currentID];
+                RoomPoints roomPointsB = roomsToConnect[siblingID];
+
+                Vector2Int pointA = new Vector2Int();
+                Vector2Int pointB = new Vector2Int();
+
+                if (roomPointsA.GetRoomPoints().Count + roomPointsB.GetRoomPoints().Count > 2)
+                {
+                    Vector2Int closestPointB = roomsToConnect[siblingID].GetAveragePoint();
+                    pointA = roomsToConnect[currentID].GetClosestPoint(closestPointB);
+                    pointB = roomsToConnect[siblingID].GetClosestPoint(pointA);
+                }
+                else
+                {
+                    pointA = roomPointsA.GetRoomPoints()[0];
+                    pointB = roomPointsB.GetRoomPoints()[0];
+                }
+                
+                SetCorridor(pointA, pointB, _dungeonTiles);
+                RoomPoints newRoomPoints = new RoomPoints(roomPointsA, roomPointsB);
+                roomsToConnect.Add(parentID, newRoomPoints);
+
+                roomsToConnect.Remove(currentID);
+                roomsToConnect.Remove(siblingID);
+
+                roomIndex.Enqueue(parentID);
+                checkedIDs.Enqueue(currentID);
+            }
+            else if(checkedIDs.Contains(siblingID) == false)
+            {
+                roomIndex.Enqueue(currentID);
+            }
+        }
+    }
+    private void SetCorridor(Vector2Int pointA, Vector2Int pointB, DungeonTiles _dungeonTiles)
+    {
+        Vector2Int pointAB = new Vector2Int(pointA.x, pointB.y);
+        Vector2Int pointBA = new Vector2Int(pointB.x, pointA.y);
+
+        HashSet<Vector2Int> pathA = new HashSet<Vector2Int>();
+        HashSet<Vector2Int> pathB = new HashSet<Vector2Int>();
+
+        HashSet<Vector2Int> corridorList = new HashSet<Vector2Int>();
+
+        pathA = GetCorridorPath(pointA, pointB, pointAB, _dungeonTiles);
+        pathB = GetCorridorPath(pointA, pointB, pointBA, _dungeonTiles);
+
+        Debug.ClearDeveloperConsole();
+
+        pathA = (pathA.Count <= 1 && pathB.Count >= 1) ? pathB : pathA;
+        pathB = (pathB.Count <= 1 && pathA.Count >= 1) ? pathA : pathB;
+
+        if (pathA.Count == pathB.Count)
+        {
+            corridorList = Random.value <= 0.5f ? pathA : pathB;
+        }
+        else
+        {
+            corridorList = pathA.Count < pathB.Count ? pathA : pathB;
+            
+        }
+
+        foreach (var  corridor in corridorList)
+        {
+            corridorTiles.Add(corridor);
+        }
+    }
+    private HashSet<Vector2Int> GetCorridorPath(Vector2Int pointA, Vector2Int pointB, Vector2Int middlePoint, DungeonTiles _dungeonTiles)
+    {
+        HashSet<Vector2Int> result = new HashSet<Vector2Int>();
+        HashSet<Vector2Int> refTiles = new HashSet<Vector2Int>();
+        refTiles.UnionWith(corridorTiles);
+        HashSet<DungeonRoom> rooms = new HashSet<DungeonRoom>();
+        _dungeonTiles.TryGetRooms(out rooms);
+        foreach (var room in rooms)
+        {
+            refTiles.UnionWith(room.GetRoomTiles());
+        }
+
+        Vector2Int startPoint = new Vector2Int();
+        Vector2Int goalPoint = new Vector2Int();
+
+
+        if (pointA.x == middlePoint.x)
+        {
+            startPoint = pointA;
+            goalPoint = pointB;
+        }
+        else if (pointB.x == middlePoint.x)
+        {
+            startPoint = pointB;
+            goalPoint = pointA;
+        }
+
+        result.UnionWith(GoAlongAxis(startPoint, startPoint.y, middlePoint, middlePoint.y, refTiles, false));
+        result.UnionWith(GoAlongAxis(middlePoint, middlePoint.x, goalPoint, goalPoint.x, refTiles, true));
+
+        return result;
+    }
+    private HashSet<Vector2Int> GoAlongAxis(Vector2Int vectorA, int valueA, Vector2Int vectorB, int valueB, HashSet<Vector2Int> refTiles, bool alongYAxis)
+    {
+        Vector2Int startVector = new Vector2Int();
+        Vector2Int goalVector = new Vector2Int();
+
+        HashSet<Vector2Int> results = new HashSet<Vector2Int>();
+        if (valueA < valueB)
+        {
+            startVector = vectorA;
+            goalVector = vectorB;
+        }
+        else
+        {
+            startVector = vectorB;
+            goalVector = vectorA;
+        }
+
+        if (alongYAxis)
+        {
+            for (int x = startVector.x; x <= goalVector.x; x++)
+            {
+                Vector2Int currentPosition = new Vector2Int(x, startVector.y);
+                if (refTiles.Contains(currentPosition) == false)
+                {
+                    results.Add(currentPosition);
+                }
             }
         }
         else
         {
-            newQueue.Enqueue("A");
-            dungeonRooms.Add("A", fieldSize);
-        }
-        return newQueue;
-    }
-    private HashSet<BoundsInt> SplitSpace(BoundsInt room)
-    {
-        HashSet<BoundsInt> result = new HashSet<BoundsInt>();
-
-        //prüfe ob der Raum in 2 Teile geteilt werden kann (beide Räume die mindest Größe erfüllen)
-        bool canSplitVertical = (room.size.x >= 2*minXSize) && (minXSize * room.size.y >= minSize);
-        bool canSplitHorizontal = (room.size.y >= 2*minYSize) && (minYSize * room.size.x >= minSize);
-        bool canSplitBoth = canSplitHorizontal && canSplitVertical;
-
-        #region SplitVertical
-        if (canSplitBoth && Random.value <= 0.5f || canSplitHorizontal == false && canSplitVertical)
-        {
-            //Debug.Log("<color=red>Vertical Slice</color>");
-            
-            int randomValueA = Random.Range(minXSize, room.size.x-minXSize);
-            if(randomValueA%2 > 0)
+            for (int y = startVector.y; y <= goalVector.y; y++)
             {
-                if(randomValueA > minXSize)
+                Vector2Int currentPosition = new Vector2Int(startVector.x, y);
+                if (refTiles.Contains(currentPosition) == false)
                 {
-                    randomValueA += 1;
-                }
-                else
-                {
-                    randomValueA -= 1;
+                    results.Add(currentPosition);
                 }
             }
-            int randomValueB = room.size.x - randomValueA;
-
-            
-
-            BoundsInt newRoomA = new BoundsInt(room.xMin-randomValueB/2, room.yMin, 0, randomValueA, room.size.y, 0);
-            BoundsInt newRoomB = new BoundsInt(room.xMin+randomValueA/2, room.yMin, 0, randomValueB, room.size.y, 0);
-
-            //Debug.Log("New Room Size: A(" + newRoomA.size + ") / B(" + newRoomB.size + ")");
-            //Debug.Log("New Room Position: A(" + newRoomA.position + ") / B(" + newRoomB.position + ")");
-            result.Add(newRoomA);
-            result.Add(newRoomB);
-
         }
-        #endregion
-        #region SplitHorizontal
-        else if (canSplitHorizontal)
-        {
-            //Debug.Log("<color=red>Horizontal Slice</color>");
-           
-            int randomValueA = Random.Range(minYSize, room.size.y - minYSize);
-            if (randomValueA % 2 > 0)
-            {
-                if (randomValueA > minYSize)
-                {
-                    randomValueA += 1;
-                }
-                else
-                {
-                    randomValueA -= 1;
-                }
-            }
-            int randomValueB = room.size.y - randomValueA;
-
-            BoundsInt newRoomA = new BoundsInt(room.xMin, room.yMin-randomValueB/2, 0, room.size.x, randomValueA, 0);
-            BoundsInt newRoomB = new BoundsInt(room.xMin, room.yMin+randomValueA/2, 0, room.size.x, randomValueB, 0);
-
-            //Debug.Log("New Room Size: A("+newRoomA.size+") / B("+newRoomB.size+")");
-            //Debug.Log("New Room Position: A(" + newRoomA.position + ") / B(" + newRoomB.position + ")");
-            result.Add(newRoomA);
-            result.Add(newRoomB);
-        }
-        #endregion
-        return result;
+        return results;
     }
-
-
+    #endregion
+    #region Index
     private string GetSiblingIndex(string parentString, string ownID)
     {
         string siblingIndex = parentString;
-        if (ownID == "A")
+        if (ownID == indexOptions[0])
         {
-            siblingIndex += "B";
+            siblingIndex += indexOptions[1];
 
         }
-        else if (ownID == "B")
+        else if (ownID == indexOptions[1])
         {
-            siblingIndex += "A";
+            siblingIndex += indexOptions[0];
         }
         return siblingIndex;
+    }
+    private string GetNewIndex(string index)
+    {
+        string returnString = index;
+        if (currentIndexNum > indexOptions.Count)
+        {
+            currentIndexNum = 0;
+            return returnString += "0";
+        }
+
+        returnString += indexOptions[currentIndexNum];
+        currentIndexNum++;
+        return returnString;
     }
     private void ResetIndexNumber()
     {
         currentIndexNum = 0;
     }
+    #endregion
+    
+    
     private void ClearDictionaries()
     {
         dungeonRooms.Clear();
         roomsToConnect.Clear();
     }
-    private string GetNewIndex(string index)
+    private void CheckGivenValues()
     {
-        string returnString = index;
-        if(currentIndexNum == 0)
+        int dungeonSizeInt = fieldSize.size.x * fieldSize.size.y;
+        if (numRooms > dungeonSizeInt || numRooms == 0)
         {
-            returnString += "A";
-        }else if(currentIndexNum == 1)
-        {
-            returnString += "B";
-        }else
-        {
-            returnString += "0";
+            numRooms = 10;
         }
-        currentIndexNum++;
-        return returnString;
+        if (numRooms * minSize > dungeonSizeInt)
+        {
+            minSize = dungeonSizeInt / numRooms;
+        }
+        if (minSize < minXSize * minYSize)
+        {
+            minXSize = Mathf.FloorToInt((float)(Math.Sqrt(minSize)));
+            minYSize = minXSize;
+        }
+
+        minXSize += offset;
+        minYSize += offset;
+        minSize += offset * offset;
     }
 }
