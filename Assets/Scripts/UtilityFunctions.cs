@@ -23,7 +23,7 @@ public static class UtilityFunctions
         return newBounds;
     }
 
-    public static HashSet<DungeonRoom> ConvertBoundsIntToTiles(HashSet<BoundsInt> rooms)
+    public static HashSet<DungeonRoom> ConvertBoundsIntToRooms(HashSet<BoundsInt> rooms)
     {
         HashSet<DungeonRoom> dungeonRooms = new HashSet<DungeonRoom>();
         foreach (var room in rooms)

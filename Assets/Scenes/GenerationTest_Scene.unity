@@ -595,9 +595,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2a465ecbf23d0314ab044d798528a1fc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  floorTilemap: {fileID: 1517543270}
+  dungeonTilemap: {fileID: 1517543270}
   floorTile: {fileID: 11400000, guid: 5e25ebb88ad66fb4d92c646200169b92, type: 2}
-  boundryTile: {fileID: 11400000, guid: 35c7cab5c65bd95498519f2c1d5888dc, type: 2}
   roomTiles:
   - {fileID: 11400000, guid: f83cfaa9c55302541973dc99346b328f, type: 2}
   - {fileID: 11400000, guid: b7459aefc1ab72443bd0ddf81af60f20, type: 2}
@@ -623,7 +622,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f85abe2f572432f4a9dfd0145d4036d1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  currentAlgorithm: 4
+  currentAlgorithm: 2
   CA_Algorithm: {fileID: 1563801909}
   CA_Algorithm_old: {fileID: 1563801910}
   BSP_Algorithm: {fileID: 1277086792}

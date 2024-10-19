@@ -5,7 +5,7 @@ using UnityEngine;
 [CreateAssetMenu(menuName = "CellRulesets/CA_NeumannRuleset", fileName = "CA_NeumannRuleset")]
 public class CA_NeumannRuleset : CellRulesetBase
 {
-    //Neumann kann zw. 0-4 Nachbarn haben
+    //Neumann: 0-4 neighbours
     public override bool ApplyRulesToCell(bool isFloor, int numNeighbours)
     {
         bool newState = false;

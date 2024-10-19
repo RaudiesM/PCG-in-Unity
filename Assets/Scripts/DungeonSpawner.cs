@@ -43,12 +43,14 @@ public class DungeonSpawner : MonoBehaviour
         }
         else if(currentAlgorithm == AlgorithmType.BinarySpacepartitioning)
         {
-            tilePlacer.VisualizeRooms(BSP_Algorithm.SetupGeneration());
-        }else if(currentAlgorithm == AlgorithmType.RW_CA)
+            dungeonTiles = BSP_Algorithm.SetUpGeneration();
+        }
+        else if(currentAlgorithm == AlgorithmType.RW_CA)
         {
             dungeonTiles = RW_Algorithm.GenerateDungeonTiles();
             CA_Algorithm.SetUpGeneration(dungeonTiles);
-        }else if(currentAlgorithm == AlgorithmType.BSP_CA)
+        }
+        else if(currentAlgorithm == AlgorithmType.BSP_CA)
         {
             HashSet<BoundsInt> rooms = new HashSet<BoundsInt>();
             HashSet<Vector3Int> centers = new HashSet<Vector3Int>();
@@ -72,11 +74,7 @@ public class DungeonSpawner : MonoBehaviour
         }else if(currentAlgorithm == AlgorithmType.BinarySpacepartitioning)
         {
             HashSet<Bounds> roomBounds = new HashSet<Bounds>();
-            dungeonTiles = BSP_Algorithm.ContinueIterating(out roomBounds);
-            if (roomBounds.Count > 0)
-            {
-                tilePlacer.VisualizeRooms(roomBounds);
-            }
+            dungeonTiles = BSP_Algorithm.ContinueIterating();
         }else if( currentAlgorithm == AlgorithmType.RW_CA)
         { 
             dungeonTiles = CA_Algorithm.ContinueIterating() ;
@@ -127,7 +125,7 @@ public class DungeonSpawner : MonoBehaviour
         }
         if (_tiles.TryGetCorridors(out corridorTiles))
         {
-            tilePlacer.PlaceFloorTiles(corridorTiles);
+            tilePlacer.PlaceCorridorTiles(corridorTiles);
         }
     }
 }

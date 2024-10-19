@@ -5,8 +5,7 @@ using UnityEngine;
 [CreateAssetMenu(menuName = "CellRulesets/CA_MooreIIRuleset", fileName = "CA_MooreIIRuleset")]
 public class CA_MooreIIRuleset : CellRulesetBase
 {
-    //Neumann kann zw. 0-8 Nachbarn haben
-
+    //Moore: 0-8 neighbours
     public override bool ApplyRulesToCell(bool isFloor, int numNeighbours)
     {
         bool newState = false;
