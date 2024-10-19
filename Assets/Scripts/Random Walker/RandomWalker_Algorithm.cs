@@ -327,62 +327,24 @@ public class RandomWalker_Algorithm : DungeonAlgorithmBase
     private DungeonTiles ReorganiseDungeonRooms()
     {
         DungeonTiles newDungeonTiles = new DungeonTiles(AlgorithmType.RandomWalker);
-        HashSet<Vector2Int> corridorTiles = new HashSet<Vector2Int>();
-        dungeonTiles.TryGetCorridors(out corridorTiles);
+        HashSet<Vector2Int> corridorTiles = dungeonTiles.GetCorridors();
         newDungeonTiles.SetCorridor(corridorTiles);
-        HashSet<DungeonRoom> dungeonRoom = new HashSet<DungeonRoom>();
-        HashSet<Vector2Int> tiles = new HashSet<Vector2Int>();
+
+
+        HashSet<Vector2Int> tilesToCheck = new HashSet<Vector2Int>();
         HashSet<Vector2Int> checkedTiles = new HashSet<Vector2Int>();
 
-        dungeonTiles.TryGetRooms(out dungeonRoom);
-        foreach (DungeonRoom room in dungeonRoom)
-        {
-            tiles.UnionWith(room.GetRoomTiles());
-        }
+        tilesToCheck.UnionWith(dungeonTiles.GetDungeonRoomTiles());
 
-        foreach (var tile in tiles)
+        foreach (var tile in tilesToCheck)
         {
             if (checkedTiles.Contains(tile))
                 continue;
 
             HashSet<Vector2Int> currentTiles = new HashSet<Vector2Int>();
             Vector2Int currentPosition = tile;
-            Queue<Vector2Int> lastSafePoints = new Queue<Vector2Int>();
-            bool isChecking = true;
-            int safetyCheck = 0;
-            while (isChecking && safetyCheck <= 1000000)
-            {
-                safetyCheck++;
-                bool neighbourIsSet = false;
-                int possibleNeighbours = 0;
-                Vector2Int lastSafePoint = currentPosition;
-                foreach (var neighbour in UtilityFunctions.GetNeighbourCell(currentPosition))
-                {
-                    if (tiles.Contains(neighbour) && currentTiles.Contains(neighbour) == false)
-                    {
-                        possibleNeighbours++;
-                        if (neighbourIsSet == false)
-                        {
-                            currentPosition = neighbour;
-                            neighbourIsSet = true;
-                        }
-                    }
-                }
-                if (possibleNeighbours > 1)
-                {
-                    lastSafePoints.Enqueue(lastSafePoint);
-                }
-                if (currentPosition == lastSafePoint && lastSafePoints.Count > 0)
-                {
-                    currentPosition = lastSafePoints.Dequeue();
-                }
-                else if (lastSafePoints.Count == 0)
-                {
-                    isChecking = false;
-                }
 
-                currentTiles.Add(currentPosition);
-            }
+            currentTiles = UtilityFunctions.GetConnectedTiles(tilesToCheck, currentTiles, ref currentPosition);
             checkedTiles.UnionWith(currentTiles);
             
             newDungeonTiles.AddRoom(new DungeonRoom(currentTiles));

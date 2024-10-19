@@ -144,68 +144,37 @@ public class CellulaAutomataAlgorithm : DungeonAlgorithmBase
         Debug.Log("Reducing!");
         DungeonTiles newDungeonTiles = new DungeonTiles(AlgorithmType.CellulaAutomata);
         
-        HashSet<Vector2Int> allTiles = new HashSet<Vector2Int>();
+        HashSet<Vector2Int> tilesToCheck = new HashSet<Vector2Int>();
         HashSet<Vector2Int> checkedTiles = new HashSet<Vector2Int>();
 
-        tiles.TryGetCorridors(out allTiles);
+        tiles.TryGetCorridors(out tilesToCheck);
 
-        foreach (var tile in allTiles) 
+        foreach (var tile in tilesToCheck)
         {
             if (checkedTiles.Contains(tile))
                 continue;
 
             HashSet<Vector2Int> currentTiles = new HashSet<Vector2Int>();
             Vector2Int currentPosition = tile;
-            Queue<Vector2Int> lastSafePoints = new Queue<Vector2Int>();
-            bool isChecking = true;
-            int safetyCheck = 0;
-            while (isChecking && safetyCheck <= 1000000)
-            {
-                safetyCheck++;
-                bool neighbourIsSet = false;
-                int possibleNeighbours = 0;
-                Vector2Int lastSafePoint = currentPosition;
-                foreach(var neighbour in UtilityFunctions.GetNeighbourCell(currentPosition))
-                {
-                    if(allTiles.Contains(neighbour) && currentTiles.Contains(neighbour) == false)
-                    {
-                        possibleNeighbours++;
-                        if(neighbourIsSet == false)
-                        {
-                            currentPosition = neighbour;
-                            neighbourIsSet = true;
-                        }
-                    }
-                }
-                if (possibleNeighbours > 1)
-                {
-                    lastSafePoints.Enqueue(lastSafePoint);
-                }
-                if(currentPosition == lastSafePoint && lastSafePoints.Count > 0)
-                {
-                    currentPosition = lastSafePoints.Dequeue();
-                }else if(lastSafePoints.Count == 0)
-                {
-                    isChecking = false;
-                }
-
-                currentTiles.Add(currentPosition);
-            }
+            
+            currentTiles = UtilityFunctions.GetConnectedTiles(tilesToCheck, currentTiles, ref currentPosition);
             checkedTiles.UnionWith(currentTiles);
-            if(showRedundantSpace)
+
+            if (showRedundantSpace)
             {
                 newDungeonTiles.AddRoom(currentTiles);
             }
             else
             {
-                if(newDungeonTiles.Count() < currentTiles.Count ) 
-                { 
+                if (newDungeonTiles.Count() < currentTiles.Count)
+                {
                     newDungeonTiles.SetCorridor(currentTiles);
                 }
             }
         }
         return newDungeonTiles;
     }
+
     private DungeonTiles GetCellDistribution()
     {
         DungeonTiles tiles = new DungeonTiles(AlgorithmType.CellulaAutomata);

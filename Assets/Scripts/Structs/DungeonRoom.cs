@@ -15,10 +15,6 @@ public struct DungeonRoom
     {
         roomTiles.Add(_roomTile);
     }
-    public void AddRoomTiles(HashSet<Vector2Int> _roomTiles)
-    {
-        roomTiles.UnionWith(_roomTiles);
-    }
 
     public HashSet<Vector2Int> GetRoomTiles()
     {

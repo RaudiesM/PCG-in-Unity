@@ -13,6 +13,7 @@ public static class UtilityFunctions
         neighbours.Add(position + Vector2Int.right);
         return neighbours;
     }
+
     public static HashSet<DungeonRoom> ConvertBoundsIntToRooms(HashSet<BoundsInt> rooms)
     {
         HashSet<DungeonRoom> dungeonRooms = new HashSet<DungeonRoom>();
@@ -38,6 +39,51 @@ public static class UtilityFunctions
         return new Vector2Int(xValue, yValue);
     }
 
+    public static HashSet<Vector2Int> GetConnectedTiles(HashSet<Vector2Int> tilesToCheck, HashSet<Vector2Int> currentTiles, ref Vector2Int currentPosition)
+    {
+        Queue<Vector2Int> lastSafePoints = new Queue<Vector2Int>();
+        bool isChecking = true;
+        int safetyCheck = 0;
+        while (isChecking)
+        {
+            safetyCheck++;
+            bool neighbourIsSet = false;
+            int possibleNeighbours = 0;
+            Vector2Int lastSafePoint = currentPosition;
+            foreach (var neighbour in UtilityFunctions.GetNeighbourCell(currentPosition))
+            {
+                if (tilesToCheck.Contains(neighbour) && currentTiles.Contains(neighbour) == false)
+                {
+                    possibleNeighbours++;
+                    if (neighbourIsSet == false)
+                    {
+                        currentPosition = neighbour;
+                        neighbourIsSet = true;
+                    }
+                }
+            }
+            if (possibleNeighbours > 1)
+            {
+                lastSafePoints.Enqueue(lastSafePoint);
+            }
+            if (currentPosition == lastSafePoint && lastSafePoints.Count > 0)
+            {
+                currentPosition = lastSafePoints.Dequeue();
+            }
+            else if (lastSafePoints.Count == 0)
+            {
+                isChecking = false;
+            }
+
+            currentTiles.Add(currentPosition);
+
+            if (safetyCheck >= 100000)
+            {
+                break;
+            }
+        }
+        return currentTiles;
+    }
 
     public static void MarkPosition(Vector2 position, Color color, int duration = 5)
     {

@@ -29,10 +29,6 @@ public struct DungeonTiles
        return roomTiles;
 
     }
-    public HashSet<DungeonRoom> GetRooms() 
-    { 
-        return dungeonRooms; 
-    }
     public bool TryGetRooms(out HashSet<DungeonRoom> rooms) 
     {
         //Check if DungeonTiles contains Rooms
