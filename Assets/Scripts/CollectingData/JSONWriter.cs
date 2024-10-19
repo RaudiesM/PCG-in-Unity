@@ -5,13 +5,17 @@ using UnityEngine;
 
 public class JSONWriter : MonoBehaviour
 {
-    private string cellulaAutomata_path = "/ca_";
-    private string randomWalker_path = "/rw_";
-    private string binarySpacepartitioning_path = "/bsp_";
-    
+    [SerializeField]private string cellulaAutomata_path = "/ca_";
+    [SerializeField]private string randomWalker_path = "/rw_";
+    [SerializeField]private string binarySpacepartitioning_path = "/bsp_";
+    [SerializeField] private string bspca_path = "/bspca_";
+    [SerializeField] private string rwca_path = "/rwca_";
+
     private int numIterationsRW = 0;
     private int numIterationsCA = 0;
     private int numIterationsBSP = 0;
+    private int numIterationsBSPCA = 0;
+    private int numIterationsRWCA = 0;
 
     private string filePath;
     private AlgorithmType lastAlgorithm;
@@ -19,14 +23,11 @@ public class JSONWriter : MonoBehaviour
     {
         filePath = Application.persistentDataPath;
         SetupIterationNumbers();
-        numIterationsRW = 0;
-        numIterationsCA = 0;
-        numIterationsBSP = 0;
     }
     private void WriteIterationNumbers()
     {
         string path = filePath + "/JSONWriter_Setup.json";
-        string input = numIterationsRW +";"+numIterationsCA+";"+numIterationsBSP;
+        string input = numIterationsRW +";"+numIterationsCA+";"+numIterationsBSP+";"+numIterationsBSPCA+";"+numIterationsRWCA;
         System.IO.File.WriteAllText(path, input);
     }
 
@@ -48,9 +49,14 @@ public class JSONWriter : MonoBehaviour
                 case 2:
                     numIterationsBSP = Int32.Parse(numIterations[i]);
                     break;
+                case 3:
+                    numIterationsBSPCA= Int32.Parse(numIterations[i]);
+                    break;
+                case 4:
+                    numIterationsRWCA= Int32.Parse(numIterations[i]); 
+                    break;
             }
         }
-        Debug.Log(input);
     }
 
     public void WriteJsonFile(string data, AlgorithmType type)
@@ -77,6 +83,14 @@ public class JSONWriter : MonoBehaviour
             case AlgorithmType.BinarySpacepartitioning:
                 pathAddition = "/results_bsp" + binarySpacepartitioning_path + numIterationsBSP.ToString("0000");
                 numIterationsBSP++;
+                break;
+            case AlgorithmType.BSP_CA:
+                pathAddition = "/results_bspca" + bspca_path + numIterationsBSPCA.ToString("0000");
+                numIterationsBSPCA++;
+                break;
+            case AlgorithmType.RW_CA:
+                pathAddition = "/results_rwca" + rwca_path + numIterationsRWCA.ToString("0000");
+                numIterationsRWCA++;
                 break;
         }
         return filePath + pathAddition + ".json";

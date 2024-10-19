@@ -88,9 +88,4 @@ public struct DungeonTiles
         dungeonRooms.Clear();
         corridorTiles.Clear();
     }
-
-    internal void TryGetCorridors(out object corridorTiles)
-    {
-        throw new NotImplementedException();
-    }
 }

@@ -15,6 +15,8 @@ public class BinarySpacePartitioning_Algorithm : DungeonAlgorithmBase
     [SerializeField] private int minYSize;
     [SerializeField] private int minXSize;
 
+    [SerializeField] private int boneRoomSize = 4;
+
     [SerializeField] private int offset;
 
     private Dictionary<string, BoundsInt> dungeonRooms = new Dictionary<string, BoundsInt>();
@@ -24,7 +26,7 @@ public class BinarySpacePartitioning_Algorithm : DungeonAlgorithmBase
 
     public override EvaluationBase GetAlgorithmData()
     {
-        EvaluationBase evaluationData = new BSP_Evaluation(fieldSize.size.x * fieldSize.size.y, numRooms, minSize);
+        EvaluationBase evaluationData = new BSP_Evaluation(fieldSize.size.x * fieldSize.size.y, numRooms, minSize, boneRoomSize);
         return evaluationData;
     }
     private void Start()
@@ -361,17 +363,14 @@ public class BinarySpacePartitioning_Algorithm : DungeonAlgorithmBase
         Dictionary<string, BoundsInt> newDungeonRooms = new Dictionary<string, BoundsInt>();
         foreach (var rooms in dungeonRooms)
         {
-            Vector3Int newSize = new Vector3Int(4, 4);
+            Vector3Int newSize = new Vector3Int(boneRoomSize, boneRoomSize);
             Vector3Int variantPosition = VariantPosition(rooms.Value, newSize);
             newCenter.Add(variantPosition);
-            Debug.Log(newCenter.Count);
             BoundsInt newRoom = new BoundsInt(variantPosition, newSize);
             dungeonRoomTiles.Add(newRoom);
             newDungeonRooms.Add(rooms.Key, newRoom);
             roomsToConnect.Add(rooms.Key, new RoomPoints(newRoom.position));
         }
-        Debug.Log(newCenter.Count);
-        Debug.Log(dungeonRoomTiles.Count);
         return dungeonRoomTiles;
 
     }

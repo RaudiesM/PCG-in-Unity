@@ -9,6 +9,7 @@ public class RW_Evaluation : EvaluationBase
     public int RoomSpawnRate;
     public bool CombiningRooms;
     public float[] GenerationTimes;
+    public int[] GeneratedTiles;
     public RW_Evaluation(int fieldSize, int fillPercentage, DungeonType type, int roomSpawnRate = 0, bool combiningRooms = false)
     {
         this.AlgorithmName = "Random Walker Algorithm";
@@ -22,5 +23,10 @@ public class RW_Evaluation : EvaluationBase
     {
         GenerationTimes = new float[timetable.Length];
         GenerationTimes = timetable;
+    }
+    public override void SetUpFilledTiles(int[] filledTilesList)
+    {
+        GeneratedTiles = new int[filledTilesList.Length];
+        GeneratedTiles = filledTilesList;
     }
 }

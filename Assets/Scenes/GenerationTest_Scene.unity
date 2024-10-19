@@ -166,13 +166,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 381b304118ee9d94fbe16d250734fc15, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  currentType: 1
+  currentType: 0
   fieldSize:
     m_Position: {x: 0, y: 0, z: 0}
     m_Size: {x: 100, y: 100, z: 0}
   fillPercentage: 0
   baseRoomSpawnRate: 0
-  increaseSpawnRate: 0
+  increaseSpawnRate: 0.01
   isCombiningRooms: 1
   roomMin: 1
   roomMax: 5
@@ -641,7 +641,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 381b304118ee9d94fbe16d250734fc15, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  currentType: 1
+  currentType: 0
   fieldSize:
     m_Position: {x: 0, y: 0, z: 0}
     m_Size: {x: 100, y: 100, z: 0}
@@ -918,6 +918,7 @@ MonoBehaviour:
   roomPercentage: 0.653
   minYSize: 12
   minXSize: 12
+  boneRoomSize: 4
   offset: 3
 --- !u!1 &1517543267
 GameObject:

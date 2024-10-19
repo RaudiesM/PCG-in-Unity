@@ -2,8 +2,10 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class CA_Evaluation : EvaluationBase
+public class BSPCA_Evaluation : EvaluationBase
 {
+    public int NumberRooms;
+    public int RoomSize;
     public int FillPercentage;
     public int Iterations;
     public string Neighbourhood;
@@ -11,13 +13,15 @@ public class CA_Evaluation : EvaluationBase
     public float[] GenerationTimes;
     public int[] GeneratedTiles;
 
-    public CA_Evaluation(int fieldSize, int fillPercent, int iterations, string neighbourhood, bool removeTiles) { 
+    public BSPCA_Evaluation(CA_Evaluation ca_data, BSP_Evaluation bsp_data) { 
         this.AlgorithmName = "Cellula Automata Algorithm";
-        this.FillPercentage = fillPercent;
-        this.FieldSize = fieldSize;
-        this.Iterations = iterations;
-        this.Neighbourhood = neighbourhood;
-        this.RemoveNonReachableTiles = removeTiles;
+        this.NumberRooms = bsp_data.NumberRooms;
+        this.RoomSize = bsp_data.BoneRoomSize;
+        this.FillPercentage = ca_data.FillPercentage;
+        this.FieldSize = bsp_data.FieldSize;
+        this.Iterations = ca_data.Iterations;
+        this.Neighbourhood = ca_data.Neighbourhood;
+        this.RemoveNonReachableTiles = ca_data.RemoveNonReachableTiles;
     }
 
     public override void SetUpTimetable(float[] timetable)
@@ -25,7 +29,6 @@ public class CA_Evaluation : EvaluationBase
         GenerationTimes = new float[timetable.Length];
         GenerationTimes = timetable;
     }
-
     public override void SetUpFilledTiles(int[] filledTilesList)
     {
         GeneratedTiles = new int[filledTilesList.Length];
