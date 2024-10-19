@@ -6,9 +6,8 @@ using UnityEngine;
 public class InputManager : MonoBehaviour
 {
     public static Action OnSetup;
-
     public static Action OnIterate;
-    public static Action OnWholeDungeon;
+    public static Action OnSpawnDungeon;
 
     private void Update()
     {
@@ -22,7 +21,7 @@ public class InputManager : MonoBehaviour
         }
         if (Input.GetKeyDown(KeyCode.D))
         {
-            OnWholeDungeon?.Invoke();
+            OnSpawnDungeon?.Invoke();
         }
     }
 }

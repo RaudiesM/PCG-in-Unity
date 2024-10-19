@@ -46,7 +46,7 @@ public class BinarySpacePartitioning_Algorithm : DungeonAlgorithmBase
             isDoneSplitting = IterateOverRooms();
         }
         HashSet<BoundsInt> newDungeonRooms = PlaceRoom();
-        dungeonTiles.AddRoom(UtilityFunctions.ConvertRoomsToTiles(newDungeonRooms));
+        dungeonTiles.AddRoom(UtilityFunctions.ConvertBoundsIntToTiles(newDungeonRooms));
         corridorTiles.Clear();
         ConnectRooms(dungeonTiles);
         dungeonTiles.AddCorridor(corridorTiles);
@@ -70,7 +70,7 @@ public class BinarySpacePartitioning_Algorithm : DungeonAlgorithmBase
             outDungeonRooms.Add(room.Value);
         }
         HashSet<BoundsInt>newDungeonRooms = PlaceRoomSkeletton(out newCenter);
-        dungeonTiles.AddRoom(UtilityFunctions.ConvertRoomsToTiles(newDungeonRooms));
+        dungeonTiles.AddRoom(UtilityFunctions.ConvertBoundsIntToTiles(newDungeonRooms));
         corridorTiles.Clear();
         ConnectRooms(dungeonTiles);
         dungeonTiles.AddCorridor(corridorTiles);
@@ -102,7 +102,7 @@ public class BinarySpacePartitioning_Algorithm : DungeonAlgorithmBase
         {
             Debug.Log("I am done");
             newDungeonRooms = PlaceRoom();
-            dungeonTiles.AddRoom(UtilityFunctions.ConvertRoomsToTiles(newDungeonRooms));
+            dungeonTiles.AddRoom(UtilityFunctions.ConvertBoundsIntToTiles(newDungeonRooms));
             corridorTiles.Clear();
             ConnectRooms(dungeonTiles);
             dungeonTiles.AddCorridor(corridorTiles);

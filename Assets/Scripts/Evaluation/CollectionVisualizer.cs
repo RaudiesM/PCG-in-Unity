@@ -11,9 +11,9 @@ public class CollectionVisualizer : MonoBehaviour
     {
         DataCollector.OnFinished += playPing;
     }
-
     private void playPing()
     {
+        //play spound to inform that the collecting process is done
         pingSound.Play();
         Debug.Log("<color=red> Finished collecting!</color>");
     }

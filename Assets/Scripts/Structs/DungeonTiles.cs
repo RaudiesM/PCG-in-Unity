@@ -17,13 +17,10 @@ public struct DungeonTiles
         dungeonRooms = new HashSet<DungeonRoom>();
     }
 
-    public int Count()
+    #region Getter
+    public HashSet<Vector2Int> GetDungeonRoomTiles()
     {
-        return GetDungeonRoomTiles().Count + corridorTiles.Count;
-    }
-
-    private HashSet<Vector2Int> GetDungeonRoomTiles()
-    {
+        //Get the Tiles of all rooms
        HashSet<Vector2Int> roomTiles = new HashSet<Vector2Int>();
        foreach (var room in dungeonRooms) 
        { 
@@ -32,15 +29,23 @@ public struct DungeonTiles
        return roomTiles;
 
     }
-
+    public HashSet<DungeonRoom> GetRooms() 
+    { 
+        return dungeonRooms; 
+    }
     public bool TryGetRooms(out HashSet<DungeonRoom> rooms) 
     {
+        //Check if DungeonTiles contains Rooms
         rooms = dungeonRooms;
         return GetDungeonRoomTiles().Count > 0; 
     }
+    public HashSet<Vector2Int> GetCorridors() 
+    { 
+        return corridorTiles; 
+    }
     public bool TryGetCorridors(out HashSet<Vector2Int> corridors) 
     {
-        //corridors = corridorTiles;
+        //Check if DungeonTiles contains Corridors
         corridors = new HashSet<Vector2Int>();
         HashSet<Vector2Int> roomTiles = GetDungeonRoomTiles();
         foreach(var corridor in corridorTiles)
@@ -52,7 +57,8 @@ public struct DungeonTiles
         }
         return corridors.Count > 0;
     }
-
+    #endregion
+    #region Add & Setter
     public void AddCorridorTile(Vector2Int tile)
     {
         corridorTiles.Add(tile);
@@ -81,6 +87,13 @@ public struct DungeonTiles
     public void SetCorridor(HashSet<Vector2Int> newTiles)
     {
         corridorTiles = newTiles;
+    }
+    #endregion
+
+    public int Count()
+    {
+        //Count the total amount of tiles present in DungeonTiles
+        return GetDungeonRoomTiles().Count + corridorTiles.Count;
     }
 
     public void Clear()

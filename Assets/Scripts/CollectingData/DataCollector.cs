@@ -6,6 +6,8 @@ using UnityEngine;
 
 public class DataCollector : MonoBehaviour
 {
+    public static Action OnFinished;
+
     [SerializeField] private AlgorithmType algorithmType;
     [SerializeField] private int numFiles = 10;
     [SerializeField] private int numIterations = 1000;
@@ -15,6 +17,7 @@ public class DataCollector : MonoBehaviour
     private CellulaAutomataAlgorithm_old ca_algorithm_old;
     private RandomWalker_Algorithm rw_algorithm;
     private DungeonAlgorithmBase currentAlgorithm;
+
     private JSONWriter jsonWriter;
 
     private EvaluationBase data;
@@ -22,19 +25,42 @@ public class DataCollector : MonoBehaviour
     private float[] timeList = new float[1000];
     private int[] generatedTiles = new int[1000];
 
-    public static Action OnFinished;
 
     private void Awake()
     {
+        SetupCollecter();
+        PrintInformation();
+    }
+
+    #region Setups
+    private void SetupCollecter()
+    {
+        //set classes
         bsp_algorithm = FindObjectOfType<BinarySpacePartitioning_Algorithm>();
         ca_algorithm = FindObjectOfType<CellulaAutomataAlgorithm>();
         ca_algorithm_old = FindObjectOfType<CellulaAutomataAlgorithm_old>();
         rw_algorithm = FindObjectOfType<RandomWalker_Algorithm>();
+
         jsonWriter = FindObjectOfType<JSONWriter>();
-        InputManager.OnIterate += CollectData;
+
+        InputManager.OnSpawnDungeon += CollectData;
     }
+    private void SetupCollection()
+    {
+        //prepare Algorithm and data
+        data = null;
+        currentAlgorithm = GetAlgorithm(algorithmType);
+        if(currentAlgorithm == null)
+        {
+            throw new Exception("Algorithm is null");
+        }
+        data = GetAlgorithmInformation(currentAlgorithm);
+    }
+    #endregion
+    #region collectData
     private void CollectData()
     {
+        //switch to special functions if using hybrid algorithm
         if(algorithmType == AlgorithmType.RW_CA)
         {
             CollectHybridData_RWCA();
@@ -44,26 +70,33 @@ public class DataCollector : MonoBehaviour
             CollectHybridData_BSPCA(); 
             return;
         }
+
         SetupCollection();
         DungeonTiles tiles = new DungeonTiles();
         for (int i = 0; i < numFiles; i++)
         {
+            //write files
             timeList = new float[numIterations];
             generatedTiles = new int[numIterations];
             for (int j = 0; j < numIterations; j++)
             {
+                //collect iterations
                 float timeBefore = Time.realtimeSinceStartup;
                 tiles = currentAlgorithm.GenerateDungeonTiles();
                 float timeAfter = Time.realtimeSinceStartup;
+                //get amount of generated tiles and duration of this process
                 int numTiles = tiles.Count();
                 float generationDuration = timeAfter - timeBefore;
+
                 timeList[j] = generationDuration;
                 generatedTiles[j] = numTiles;
             }
+            //save data
             data.SetUpTimetable(timeList);
             data.SetUpFilledTiles(generatedTiles);
             SaveData(data);
         }
+        //inform visualizer to play sound
         OnFinished?.Invoke();
     }
 
@@ -71,6 +104,7 @@ public class DataCollector : MonoBehaviour
     {
         EvaluationBase bspData = GetAlgorithmInformation(bsp_algorithm);
         EvaluationBase caData = GetAlgorithmInformation(ca_algorithm);
+        //combine bsp & ca data
         EvaluationBase completeData = new BSPCA_Evaluation((CA_Evaluation)caData, (BSP_Evaluation)bspData);
 
         DungeonTiles dungeonTiles = new DungeonTiles(algorithmType);
@@ -79,24 +113,29 @@ public class DataCollector : MonoBehaviour
 
         for (int i = 0; i < numFiles; i++)
         {
+            //write file
             timeList = new float[numIterations];
             generatedTiles = new int[numIterations];
             for (int j = 0; j < numIterations; j++)
             {
+                //collect iterations
                 float timeBefore = Time.realtimeSinceStartup;
                 dungeonTiles = bsp_algorithm.GenerateDungeonTiles(out rooms, out centers);
                 dungeonTiles = ca_algorithm_old.GenerateDungeonTiles(dungeonTiles, rooms, centers);
-                int numTiles = dungeonTiles.Count();
                 float timeAfter = Time.realtimeSinceStartup;
+                //get amount of generated tiles and duration of this process
                 float generationDuration = timeAfter - timeBefore;
+                int numTiles = dungeonTiles.Count();
+
                 timeList[j] = generationDuration;
                 generatedTiles[j] = numTiles;
             }
+            //save data
             completeData.SetUpTimetable(timeList);
             completeData.SetUpFilledTiles(generatedTiles);
             SaveData(completeData);
         }
-
+        //inform visualizer to play sound
         OnFinished?.Invoke();
     }
 
@@ -110,38 +149,34 @@ public class DataCollector : MonoBehaviour
 
         for (int i = 0; i < numFiles; i++)
         {
+            //write file
             timeList = new float[numIterations];
             generatedTiles = new int[numIterations];
 
             for (int j = 0; j < numIterations; j++)
             {
+                //collect iterations
                 float timeBefore = Time.realtimeSinceStartup;
                 dungeonTiles = rw_algorithm.GenerateDungeonTiles();
                 dungeonTiles = ca_algorithm.GenerateDungeonTiles(dungeonTiles);
-                int numTiles = dungeonTiles.Count();
                 float timeAfter = Time.realtimeSinceStartup;
+                //get amount of generated tiles and duration of this process
                 float generationDuration = timeAfter - timeBefore;
+                int numTiles = dungeonTiles.Count();
+
                 timeList[j] = generationDuration;
                 generatedTiles[j] = numTiles;
             }
+            //save data
             completeData.SetUpTimetable(timeList);
             completeData.SetUpFilledTiles(generatedTiles);
             SaveData(completeData);
         }
+        //inform visualizer to play sound
         OnFinished?.Invoke();
     }
-
-    public void SetupCollection()
-    {
-        data = null;
-        currentAlgorithm = GetAlgorithm(algorithmType);
-        if(currentAlgorithm == null)
-        {
-            throw new Exception("Algorithm is null");
-        }
-        data = GetAlgorithmInformation(currentAlgorithm);
-    }
-
+    #endregion
+    #region Getter
     private DungeonAlgorithmBase GetAlgorithm(AlgorithmType thisAlgorithmType)
     {
         if (thisAlgorithmType == AlgorithmType.RandomWalker)
@@ -159,15 +194,19 @@ public class DataCollector : MonoBehaviour
         }
         return null;
     }
-
     private EvaluationBase GetAlgorithmInformation(DungeonAlgorithmBase thisAlgorithm)
     {
         return thisAlgorithm.GetAlgorithmData();
     }
-
+    #endregion
     private void SaveData(object data)
     {
+        //Converts class Evaluation into string and saves it
         string dataAsString = JsonUtility.ToJson(data, true);
         jsonWriter.WriteJsonFile(dataAsString, algorithmType);
+    }
+    private void PrintInformation()
+    {
+        Debug.Log("Press [D] to start collecting data");
     }
 }

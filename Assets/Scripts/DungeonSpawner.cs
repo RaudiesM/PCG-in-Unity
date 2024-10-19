@@ -16,10 +16,19 @@ public class DungeonSpawner : MonoBehaviour
 
     private void Start()
     {
-        InputManager.OnSetup += SetupGeneration;
-        InputManager.OnIterate += IterateMore;
-        InputManager.OnWholeDungeon += GenerateDungeon;
+        ConnectToInputs();
     }
+
+    private void ConnectToInputs()
+    {
+        InputManager.OnSetup += SetupGeneration;
+        Debug.Log("Press [A] to (re)start the step-by-step generation");
+        InputManager.OnIterate += IterateMore;
+        Debug.Log("Press [S] to iterate to iterate through the generation process step-by-step");
+        InputManager.OnSpawnDungeon += GenerateDungeon;
+        Debug.Log("Press [D] to create complete dungeon");
+    }
+
     public void SetupGeneration()
     {
         DungeonTiles dungeonTiles = new DungeonTiles(currentAlgorithm);

@@ -23,13 +23,7 @@ public static class UtilityFunctions
         return newBounds;
     }
 
-    public static void MarkPosition(Vector2 position, Color color, int duration = 5)
-    {
-        Debug.DrawLine(position-Vector2.up, position-Vector2.down, color, duration);
-        Debug.DrawLine(position - Vector2.left, position - Vector2.right, color, duration);
-    }
-
-    public static HashSet<DungeonRoom> ConvertRoomsToTiles(HashSet<BoundsInt> rooms)
+    public static HashSet<DungeonRoom> ConvertBoundsIntToTiles(HashSet<BoundsInt> rooms)
     {
         HashSet<DungeonRoom> dungeonRooms = new HashSet<DungeonRoom>();
         foreach (var room in rooms)
@@ -45,5 +39,10 @@ public static class UtilityFunctions
             dungeonRooms.Add(newRoom);
         }
         return dungeonRooms;
+    }
+    public static void MarkPosition(Vector2 position, Color color, int duration = 5)
+    {
+        Debug.DrawLine(position-Vector2.up, position-Vector2.down, color, duration);
+        Debug.DrawLine(position - Vector2.left, position - Vector2.right, color, duration);
     }
 }
