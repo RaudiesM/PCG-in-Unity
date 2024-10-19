@@ -34,8 +34,6 @@ public class CellulaAutomataAlgorithm : DungeonAlgorithmBase
         return evaluationData;
     }
     #region Generation Methods
-
-
     public override DungeonTiles GenerateDungeonTiles()
     {
         cellDistribution.Clear();
@@ -50,20 +48,6 @@ public class CellulaAutomataAlgorithm : DungeonAlgorithmBase
             tiles = ReduceTiles(tiles);
         return tiles;
     }
-    public DungeonTiles GenerateDungeonTiles(DungeonTiles inputTiles)
-    {
-        inputTiles.TryGetCorridors(out cellDistribution);
-        currentIteration = 0;
-        for (int i = 0; i < numIterations; i++)
-        {
-            ApplyCellulaAutomata();
-        }
-        DungeonTiles tiles = GetCellDistribution();
-        if (isReducingTiles)
-            tiles = ReduceTiles(tiles);
-        return tiles;
-    }
-
     public override DungeonTiles FirstGeneration()
     {
         cellDistribution.Clear();
@@ -72,14 +56,6 @@ public class CellulaAutomataAlgorithm : DungeonAlgorithmBase
         DungeonTiles tiles = GetCellDistribution();
         return tiles;
     }
-
-    public void FirstGeneration(DungeonTiles inputTiles)
-    {
-        cellDistribution.Clear();
-        currentIteration = 0;
-        inputTiles.TryGetCorridors(out cellDistribution);
-    }
-
     public override DungeonTiles ContinueIterating()
     {
         DungeonTiles tiles = new DungeonTiles(AlgorithmType.CellulaAutomata);
@@ -96,9 +72,29 @@ public class CellulaAutomataAlgorithm : DungeonAlgorithmBase
         }
         return tiles;
     }
+    #region hybrid only
+    #endregion
+    public DungeonTiles Hybrid_GenerateDungeonTiles(DungeonTiles inputTiles)
+    {
+        inputTiles.TryGetCorridors(out cellDistribution);
+        currentIteration = 0;
+        for (int i = 0; i < numIterations; i++)
+        {
+            ApplyCellulaAutomata();
+        }
+        DungeonTiles tiles = GetCellDistribution();
+        if (isReducingTiles)
+            tiles = ReduceTiles(tiles);
+        return tiles;
+    }
+    public void Hybrid_FirstGeneration(DungeonTiles inputTiles)
+    {
+        cellDistribution.Clear();
+        currentIteration = 0;
+        inputTiles.TryGetCorridors(out cellDistribution);
+    }
 
     #endregion
-
     private DungeonTiles GetCellDistribution()
     {
         DungeonTiles tiles = new DungeonTiles(AlgorithmType.CellulaAutomata);
@@ -116,7 +112,7 @@ public class CellulaAutomataAlgorithm : DungeonAlgorithmBase
         int convertedCells = 0;
         int maxCounter = 0;
         
-        while(convertedCells < cellPercent  || maxCounter == 10000) 
+        while(convertedCells < cellPercent) 
         {
             Vector2Int randomPosition = new Vector2Int(
                                             Random.Range(fieldSize.xMin, fieldSize.xMax), 
@@ -131,11 +127,11 @@ public class CellulaAutomataAlgorithm : DungeonAlgorithmBase
             if(maxCounter == 1000000)
             {
                 Debug.LogError("To many iterations during while");
+                break;
             }
         }
     }
-
-   private void ApplyCellulaAutomata()
+    private void ApplyCellulaAutomata()
     {
         currentIteration++;
 

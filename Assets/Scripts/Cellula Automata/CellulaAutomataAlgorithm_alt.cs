@@ -6,7 +6,7 @@ using UnityEngine;
 
 
 
-public class CellulaAutomataAlgorithm_old : DungeonAlgorithmBase
+public class CellulaAutomataAlgorithm_alt : DungeonAlgorithmBase
 {
     [SerializeField] private int numIterations = 3;
     [SerializeField] private BoundsInt fieldSize = new BoundsInt(new Vector3Int(0, 0, 0), new Vector3Int(10, 10, 0));
@@ -26,22 +26,10 @@ public class CellulaAutomataAlgorithm_old : DungeonAlgorithmBase
     private HashSet<BoundsInt> cellRooms;
     private DungeonRoom roomBones;
 
-    public override DungeonTiles GenerateDungeonTiles()
+    #region Generation Methods
+    public DungeonTiles Hybrid_GenerateDungeonTiles(DungeonTiles inputTiles, HashSet<BoundsInt> rooms, HashSet<Vector3Int> centers)
     {
-        cellDistribution.Clear();
-        DistributeCells();
-        currentIteration = 0;
-        for(int i = 0; i < numIterations; i++)
-        {
-            ApplyCellulaAutomata();
-        }
-        DungeonTiles tiles = GetCellDistribution();
-        tiles = ReduceTiles(tiles);
-        return tiles;
-    }
-    public DungeonTiles GenerateDungeonTiles(DungeonTiles inputTiles, HashSet<BoundsInt> rooms, HashSet<Vector3Int> centers)
-    {
-        FirstGeneration(inputTiles, rooms, centers);
+        Hybrid_FirstGeneration(inputTiles, rooms, centers);
         currentIteration = 0;
         for (int i = 0; i < numIterations; i++)
         {
@@ -53,9 +41,7 @@ public class CellulaAutomataAlgorithm_old : DungeonAlgorithmBase
         tiles.AddRoom(roomBones);
         return tiles;
     }
-
-
-    public DungeonTiles FirstGeneration(DungeonTiles tiles, HashSet<BoundsInt> rooms, HashSet<Vector3Int> center)
+    public DungeonTiles Hybrid_FirstGeneration(DungeonTiles tiles, HashSet<BoundsInt> rooms, HashSet<Vector3Int> center)
     {
         cellDistribution.Clear();
         currentIteration = 0;
@@ -70,7 +56,24 @@ public class CellulaAutomataAlgorithm_old : DungeonAlgorithmBase
         }
         return GetCellDistribution();
     }
-
+    public override DungeonTiles ContinueIterating()
+    {
+        DungeonTiles tiles = new DungeonTiles(AlgorithmType.CellulaAutomata);
+        if(currentIteration < numIterations)
+        {
+            ApplyCellulaAutomata();
+            tiles = GetCellDistribution();
+            tiles.AddRoom(roomBones);
+        }
+        else
+        {
+            tiles = GetCellDistribution();
+            tiles = ReduceTiles(tiles);
+            tiles.AddRoom(roomBones);
+        }
+        return tiles;
+    }
+    #endregion
     private void IncorporateTiles(DungeonTiles tiles)
     {
         HashSet<Vector2Int> newTiles = new HashSet<Vector2Int>();
@@ -92,25 +95,6 @@ public class CellulaAutomataAlgorithm_old : DungeonAlgorithmBase
         }
 
     }
-
-    public override DungeonTiles ContinueIterating()
-    {
-        DungeonTiles tiles = new DungeonTiles(AlgorithmType.CellulaAutomata);
-        if(currentIteration < numIterations)
-        {
-            ApplyCellulaAutomata();
-            tiles = GetCellDistribution();
-            tiles.AddRoom(roomBones);
-        }
-        else
-        {
-            tiles = GetCellDistribution();
-            tiles = ReduceTiles(tiles);
-            tiles.AddRoom(roomBones);
-        }
-        return tiles;
-    }
-
     private DungeonTiles GetCellDistribution()
     {
         DungeonTiles tiles = new DungeonTiles(AlgorithmType.CellulaAutomata);
@@ -123,35 +107,6 @@ public class CellulaAutomataAlgorithm_old : DungeonAlgorithmBase
         }
         return tiles;
     }
-
-    private void DistributeCells()
-    {
-        SurroundFieldWithWall();
-        int numMaxCells = fieldSize.yMax * fieldSize.xMax;
-        int cellPercent = Mathf.FloorToInt(numMaxCells * fillPercentage);
-        int convertedCells = 0;
-        int maxCounter = 0;
-        
-        while(convertedCells < cellPercent  || maxCounter == 10000) 
-        {
-            Vector2Int randomPosition = new Vector2Int(
-                                            Random.Range(fieldSize.xMin, fieldSize.xMax), 
-                                            Random.Range(fieldSize.yMin, fieldSize.yMax)
-                                            );
-            if (cellDistribution.ContainsKey(randomPosition) == false)
-            {
-                CellState cellState = new CellState(true, true);
-                cellDistribution.Add(randomPosition, cellState);
-                convertedCells++;
-            }
-            maxCounter++;
-            if(maxCounter == 1000000)
-            {
-                Debug.LogError("To many iterations during while");
-            }
-        }
-    }
-
     private void DistributeCells(BoundsInt room, Vector3Int newCenter)
     {
         //SurroundFieldWithWall();
@@ -198,34 +153,6 @@ public class CellulaAutomataAlgorithm_old : DungeonAlgorithmBase
             }
         }
     }
-
-    private void SurroundFieldWithWall()
-    {
-        CellState boundryState = new CellState(false, false);
-        HashSet<Vector3Int> boundryTiles = new HashSet<Vector3Int>();
-        for (int i = fieldSize.xMin-1; i <= fieldSize.xMax+1; i++) 
-        { 
-            Vector3Int yMinPos = new Vector3Int(i, fieldSize.yMin-1);
-            Vector3Int yMaxPos = new Vector3Int(i, fieldSize.yMax+1);
-            boundryTiles.Add(yMinPos);
-            boundryTiles.Add(yMaxPos);
-        }
-        for (int i = fieldSize.yMin - 1; i <= fieldSize.yMax + 1; i++)
-        {
-            Vector3Int xMinPos = new Vector3Int(fieldSize.xMin-1, i);
-            Vector3Int xMaxPos = new Vector3Int(fieldSize.xMax+1, i);
-            boundryTiles.Add(xMinPos);
-            boundryTiles.Add(xMaxPos);
-        }
-
-        foreach (Vector2Int position in boundryTiles) 
-        { 
-            if(cellDistribution.ContainsKey(position) == false) 
-            cellDistribution.Add(position, boundryState);
-        }
-    }
-
-
     private void ApplyCellulaAutomata()
     {
         currentIteration++;
@@ -279,7 +206,6 @@ public class CellulaAutomataAlgorithm_old : DungeonAlgorithmBase
             }
         }
     }
-
     private int CheckNeighbourCells(Vector2Int currentCell)
     {
         int numFloorNeighbour = 0;
@@ -334,22 +260,6 @@ public class CellulaAutomataAlgorithm_old : DungeonAlgorithmBase
         }
         return numFloorNeighbour;
     }
-    public HashSet<Vector2Int> GetBoundry()
-    {
-        HashSet<Vector2Int> tiles = new HashSet<Vector2Int>();
-        if (showWalls)
-        {
-            foreach (var cell in cellDistribution)
-            {
-                if (cell.Value.IsChangeable == false)
-                {
-                    tiles.Add(cell.Key);
-                }
-            }
-        }
-        return tiles;
-    }
-
     private DungeonTiles ReduceTiles(DungeonTiles tiles)
     {
         DungeonTiles newDungeonTiles = new DungeonTiles(AlgorithmType.CellulaAutomata);
@@ -375,7 +285,7 @@ public class CellulaAutomataAlgorithm_old : DungeonAlgorithmBase
                 bool neighbourIsSet = false;
                 int possibleNeighbours = 0;
                 Vector2Int lastSafePoint = currentPosition;
-                foreach(var neighbour in GetNeighbour(currentPosition))
+                foreach(var neighbour in UtilityFunctions.GetNeighbourCell(currentPosition))
                 {
                     if(allTiles.Contains(neighbour) && currentTiles.Contains(neighbour) == false)
                     {
@@ -416,15 +326,5 @@ public class CellulaAutomataAlgorithm_old : DungeonAlgorithmBase
             }
         }
         return newDungeonTiles;
-    }
-
-    private HashSet<Vector2Int> GetNeighbour(Vector2Int position)
-    {
-        HashSet<Vector2Int> neighbours = new HashSet<Vector2Int>();
-        neighbours.Add(position + Vector2Int.up);
-        neighbours.Add(position + Vector2Int.down);
-        neighbours.Add(position + Vector2Int.left);
-        neighbours.Add(position + Vector2Int.right);
-        return neighbours;
     }
 }

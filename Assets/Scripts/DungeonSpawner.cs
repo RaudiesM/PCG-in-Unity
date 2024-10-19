@@ -8,7 +8,7 @@ public class DungeonSpawner : MonoBehaviour
 {
     [SerializeField] private AlgorithmType currentAlgorithmType = AlgorithmType.CellulaAutomata;
     [SerializeField] private CellulaAutomataAlgorithm CA_Algorithm;
-    [SerializeField] private CellulaAutomataAlgorithm_old CA_Algorithm_old;
+    [SerializeField] private CellulaAutomataAlgorithm_alt CA_Algorithm_alt;
     [SerializeField] private BinarySpacePartitioning_Algorithm BSP_Algorithm;
     [SerializeField] private RandomWalker_Algorithm RW_Algorithm;
 
@@ -39,7 +39,7 @@ public class DungeonSpawner : MonoBehaviour
         {
             //get dungeonTiles of RW and then iterate over it like CA
             dungeonTiles = RW_Algorithm.GenerateDungeonTiles();
-            CA_Algorithm.FirstGeneration(dungeonTiles);
+            CA_Algorithm.Hybrid_FirstGeneration(dungeonTiles);
         }
         else if(currentAlgorithmType == AlgorithmType.BSP_CA)
         {
@@ -49,7 +49,7 @@ public class DungeonSpawner : MonoBehaviour
             //newRoomCenters are given to spawn cells around the shifted room center
             HashSet<Vector3Int> newRoomCenters = new HashSet<Vector3Int>();
             dungeonTiles = BSP_Algorithm.GenerateDungeonTiles(out rooms, out newRoomCenters);
-            dungeonTiles = CA_Algorithm_old.FirstGeneration(dungeonTiles, rooms, newRoomCenters);
+            dungeonTiles = CA_Algorithm_alt.Hybrid_FirstGeneration(dungeonTiles, rooms, newRoomCenters);
         }
         else
         {
@@ -71,8 +71,8 @@ public class DungeonSpawner : MonoBehaviour
 
         if(currentAlgorithmType == AlgorithmType.BSP_CA)
         {
-            //BSPCA uses the old version of CA algorithm
-            dungeonTiles = CA_Algorithm_old.ContinueIterating();
+            //BSPCA uses an alternative version of CA algorithm
+            dungeonTiles = CA_Algorithm_alt.ContinueIterating();
         }
         else
         {
@@ -89,7 +89,7 @@ public class DungeonSpawner : MonoBehaviour
         {
             //get dungeonTiles of RW and then iterate over it like CA
             dungeonTiles = RW_Algorithm.GenerateDungeonTiles();
-            dungeonTiles = CA_Algorithm.GenerateDungeonTiles(dungeonTiles);
+            dungeonTiles = CA_Algorithm.Hybrid_GenerateDungeonTiles(dungeonTiles);
         }
         else if (currentAlgorithmType == AlgorithmType.BSP_CA)
         {
@@ -99,7 +99,7 @@ public class DungeonSpawner : MonoBehaviour
             //newRoomCenters are given to spawn cells around the shifted room center
             HashSet<Vector3Int> newRoomCenters = new HashSet<Vector3Int>();
             dungeonTiles = BSP_Algorithm.GenerateDungeonTiles(out rooms, out newRoomCenters);
-            dungeonTiles = CA_Algorithm_old.GenerateDungeonTiles(dungeonTiles, rooms, newRoomCenters);
+            dungeonTiles = CA_Algorithm_alt.Hybrid_GenerateDungeonTiles(dungeonTiles, rooms, newRoomCenters);
         }
         else
         {

@@ -5,7 +5,7 @@ using UnityEngine;
 
 public struct CellState
 {
-    //used in CellulaAutomataAlgorithm_old to have unchangeable Tiles that form the foundation of the dungeon
+    //used in CellulaAutomataAlgorithm_alt to have unchangeable Tiles that form the foundation of the dungeon
     public bool IsFloor { get; private set; }
     public bool IsChangeable { get; private set; }
     public CellState(bool isFloor = false, bool isChangeable = true)

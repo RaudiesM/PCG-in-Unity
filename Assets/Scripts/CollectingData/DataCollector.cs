@@ -14,7 +14,7 @@ public class DataCollector : MonoBehaviour
 
     private BinarySpacePartitioning_Algorithm bsp_algorithm;
     private CellulaAutomataAlgorithm ca_algorithm;
-    private CellulaAutomataAlgorithm_old ca_algorithm_old;
+    private CellulaAutomataAlgorithm_alt ca_algorithm_alt;
     private RandomWalker_Algorithm rw_algorithm;
     private DungeonAlgorithmBase currentAlgorithm;
 
@@ -38,7 +38,7 @@ public class DataCollector : MonoBehaviour
         //set classes
         bsp_algorithm = FindObjectOfType<BinarySpacePartitioning_Algorithm>();
         ca_algorithm = FindObjectOfType<CellulaAutomataAlgorithm>();
-        ca_algorithm_old = FindObjectOfType<CellulaAutomataAlgorithm_old>();
+        ca_algorithm_alt = FindObjectOfType<CellulaAutomataAlgorithm_alt>();
         rw_algorithm = FindObjectOfType<RandomWalker_Algorithm>();
 
         jsonWriter = FindObjectOfType<JSONWriter>();
@@ -121,7 +121,7 @@ public class DataCollector : MonoBehaviour
                 //collect iterations
                 float timeBefore = Time.realtimeSinceStartup;
                 dungeonTiles = bsp_algorithm.GenerateDungeonTiles(out rooms, out centers);
-                dungeonTiles = ca_algorithm_old.GenerateDungeonTiles(dungeonTiles, rooms, centers);
+                dungeonTiles = ca_algorithm_alt.Hybrid_GenerateDungeonTiles(dungeonTiles, rooms, centers);
                 float timeAfter = Time.realtimeSinceStartup;
                 //get amount of generated tiles and duration of this process
                 float generationDuration = timeAfter - timeBefore;
@@ -158,7 +158,7 @@ public class DataCollector : MonoBehaviour
                 //collect iterations
                 float timeBefore = Time.realtimeSinceStartup;
                 dungeonTiles = rw_algorithm.GenerateDungeonTiles();
-                dungeonTiles = ca_algorithm.GenerateDungeonTiles(dungeonTiles);
+                dungeonTiles = ca_algorithm.Hybrid_GenerateDungeonTiles(dungeonTiles);
                 float timeAfter = Time.realtimeSinceStartup;
                 //get amount of generated tiles and duration of this process
                 float generationDuration = timeAfter - timeBefore;
