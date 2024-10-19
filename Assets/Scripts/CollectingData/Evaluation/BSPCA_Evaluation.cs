@@ -16,7 +16,7 @@ public class BSPCA_Evaluation : EvaluationBase
     public BSPCA_Evaluation(CA_Evaluation ca_data, BSP_Evaluation bsp_data) { 
         this.AlgorithmName = "Cellula Automata Algorithm";
         this.NumberRooms = bsp_data.NumberRooms;
-        this.RoomSize = bsp_data.BoneRoomSize;
+        this.RoomSize = bsp_data.SkelettonRoomSize;
         this.FillPercentage = ca_data.FillPercentage;
         this.FieldSize = bsp_data.FieldSize;
         this.Iterations = ca_data.Iterations;

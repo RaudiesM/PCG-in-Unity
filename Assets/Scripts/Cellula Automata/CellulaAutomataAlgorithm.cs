@@ -10,11 +10,11 @@ public class CellulaAutomataAlgorithm : DungeonAlgorithmBase
     [SerializeField] protected int numIterations = 3;
     [SerializeField] protected BoundsInt fieldSize = new BoundsInt(new Vector3Int(0, 0, 0), new Vector3Int(10, 10, 0));
     [SerializeField][Range(0, 1)] protected float fillPercentage = 0.5f;
-
-    [SerializeField] protected NeighbourType currentNeighbour = NeighbourType.Moore;
     [SerializeField] protected bool isReducingTiles = true;
     [SerializeField] protected bool showRedundantSpace = false;
 
+    [Header("Neighbourhood Parameter")]
+    [SerializeField] protected NeighbourType currentNeighbour = NeighbourType.Moore;
     [SerializeField] protected CellRulesetBase currentMooreRuleset;
     [SerializeField] protected CellRulesetBase currentNeumannRuleset;
 

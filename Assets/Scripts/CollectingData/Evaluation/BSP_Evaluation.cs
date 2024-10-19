@@ -6,16 +6,16 @@ public class BSP_Evaluation : EvaluationBase
 {
     public int NumberRooms;
     public int RoomMinSize;
-    public int BoneRoomSize;
+    public int SkelettonRoomSize;
     public float[] GenerationTimes;
     public int[] GeneratedTiles;
-    public BSP_Evaluation(int fieldSize, int numbRooms, int roomMinSize, int boneRoomSize)
+    public BSP_Evaluation(int fieldSize, int numbRooms, int roomMinSize, int skelettonRoomSize)
     {
         this.AlgorithmName = "Binary Space Partitioning Algorithm";
         this.FieldSize = fieldSize;
         this.NumberRooms = numbRooms;
         this.RoomMinSize = roomMinSize;
-        this.BoneRoomSize = boneRoomSize;
+        this.SkelettonRoomSize = skelettonRoomSize;
     }
     public override void SetUpTimetable(float[] timetable)
     {

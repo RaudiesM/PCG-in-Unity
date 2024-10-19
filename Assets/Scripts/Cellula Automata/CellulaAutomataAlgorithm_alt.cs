@@ -8,6 +8,7 @@ using UnityEngine;
 
 public class CellulaAutomataAlgorithm_alt : CellulaAutomataAlgorithm
 {
+
     [SerializeField] private int offset = 2
         ;
     private Dictionary<Vector2Int, Changeability> cellDistribution = new Dictionary<Vector2Int, Changeability>();

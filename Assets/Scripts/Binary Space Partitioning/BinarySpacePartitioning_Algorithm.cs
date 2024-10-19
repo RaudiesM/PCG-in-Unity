@@ -7,17 +7,21 @@ using UnityEngine;
 public class BinarySpacePartitioning_Algorithm : DungeonAlgorithmBase
 {
     [SerializeField] private BoundsInt fieldSize = new BoundsInt();
+    [Space]
     [SerializeField] private int numRooms;
 
+    [Header("Room Measurements")]
     [SerializeField] private int minSize;
     [Range(0, 1)]
     [SerializeField] private float roomPercentage;
+    [Space]
     [SerializeField] private int minYSize;
     [SerializeField] private int minXSize;
-
-    [SerializeField] private int boneRoomSize = 4;
-
+    [Space]
     [SerializeField] private int offset;
+
+    [Header("Skeletton Room")]
+    [SerializeField] private int skelettonRoomSize = 4;
 
     private Dictionary<string, BoundsInt> dungeonRooms = new Dictionary<string, BoundsInt>();
     private Dictionary<string, RoomPoints> roomsToConnect = new Dictionary<string, RoomPoints>();
@@ -26,7 +30,7 @@ public class BinarySpacePartitioning_Algorithm : DungeonAlgorithmBase
 
     public override EvaluationBase GetAlgorithmData()
     {
-        EvaluationBase evaluationData = new BSP_Evaluation(fieldSize.size.x * fieldSize.size.y, numRooms, minSize, boneRoomSize);
+        EvaluationBase evaluationData = new BSP_Evaluation(fieldSize.size.x * fieldSize.size.y, numRooms, minSize, skelettonRoomSize);
         return evaluationData;
     }
     private void Start()
@@ -364,7 +368,7 @@ public class BinarySpacePartitioning_Algorithm : DungeonAlgorithmBase
         Dictionary<string, BoundsInt> newDungeonRooms = new Dictionary<string, BoundsInt>();
         foreach (var rooms in dungeonRooms)
         {
-            Vector3Int newSize = new Vector3Int(boneRoomSize, boneRoomSize);
+            Vector3Int newSize = new Vector3Int(skelettonRoomSize, skelettonRoomSize);
             Vector3Int variantPosition = VariantPosition(rooms.Value, newSize);
             newCenter.Add(variantPosition);
             BoundsInt newRoom = new BoundsInt(variantPosition, newSize);
