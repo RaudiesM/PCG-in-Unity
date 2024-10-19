@@ -30,6 +30,15 @@ public static class UtilityFunctions
         }
         return dungeonRooms;
     }
+
+    public static Vector2Int GetRandomPointWithinBounds(int newXMin, int newYMin, int newXMax, int newYMax, int offset)
+    {
+        int xValue = Random.Range(newXMin + offset, newXMax - offset);
+        int yValue = Random.Range(newYMin + offset, newYMax - offset);
+        return new Vector2Int(xValue, yValue);
+    }
+
+
     public static void MarkPosition(Vector2 position, Color color, int duration = 5)
     {
         Debug.DrawLine(position-Vector2.up, position-Vector2.down, color, duration);

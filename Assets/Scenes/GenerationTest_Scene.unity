@@ -608,7 +608,6 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 842d1addee29f574c958bd38dec89225, type: 2}
   - {fileID: 11400000, guid: 99ebf6c9096b3304f80ccafe8915f32e, type: 2}
   roomPanel: {fileID: 760897397149223260, guid: aa24b0d455218b84cae80ab58c83e691, type: 3}
-  tileParent: {fileID: 647128756}
   visualizeRooms: 1
 --- !u!114 &883259475
 MonoBehaviour:
@@ -622,9 +621,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f85abe2f572432f4a9dfd0145d4036d1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  currentAlgorithm: 2
+  currentAlgorithmType: 4
   CA_Algorithm: {fileID: 1563801909}
-  CA_Algorithm_old: {fileID: 1563801910}
+  CA_Algorithm_alt: {fileID: 1563801910}
   BSP_Algorithm: {fileID: 1277086792}
   RW_Algorithm: {fileID: 883259476}
   tilePlacer: {fileID: 883259474}
@@ -1103,16 +1102,15 @@ MonoBehaviour:
   m_GameObject: {fileID: 1563801907}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: e1f8ec345b61bf34aa2c92cb2e108875, type: 3}
+  m_Script: {fileID: 11500000, guid: 9d0d5cfadc7b7024eb982bd6c0ce3747, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   numIterations: 3
   fieldSize:
     m_Position: {x: 0, y: 0, z: 0}
     m_Size: {x: 100, y: 100, z: 0}
-  fillPercentage: 0.21
+  fillPercentage: 0.5
   currentNeighbour: 0
-  showWalls: 0
   isReducingTiles: 1
   showRedundantSpace: 0
   currentMooreRuleset: {fileID: 11400000, guid: 136f65f78c32b6a478bfbb36b5188aa0, type: 2}
