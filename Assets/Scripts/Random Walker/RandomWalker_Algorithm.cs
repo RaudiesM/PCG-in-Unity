@@ -168,7 +168,7 @@ public class RandomWalker_Algorithm : DungeonAlgorithmBase
         int newYMax = GetMaxDistanceToBorder(curPos, Vector2Int.up);
         int newXMax = GetMaxDistanceToBorder(curPos, Vector2Int.left);
 
-        if(newYMax <= 0 || newXMax <= 0)
+        if(newYMax <= roomMin || newXMax <= roomMin )
         {
             //if there is no space to place Room, return
             return new HashSet<Vector2Int>();

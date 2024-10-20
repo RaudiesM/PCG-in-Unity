@@ -166,18 +166,18 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 381b304118ee9d94fbe16d250734fc15, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  currentType: 0
+  currentType: 1
   fieldSize:
     m_Position: {x: 0, y: 0, z: 0}
     m_Size: {x: 100, y: 100, z: 0}
-  fillPercentage: 0
-  baseRoomSpawnRate: 0
-  increaseSpawnRate: 0.01
+  fillPercentage: 0.55
+  baseRoomSpawnRate: 0.05
+  increaseSpawnRate: 0.05
   isCombiningRooms: 1
-  roomMin: 1
+  roomMin: 3
   roomMax: 5
   hallwayLengthMin: 9
-  hallwayLengthMax: 18
+  hallwayLengthMax: 15
 --- !u!1 &428888462
 GameObject:
   m_ObjectHideFlags: 0
@@ -556,7 +556,6 @@ GameObject:
   - component: {fileID: 883259473}
   - component: {fileID: 883259475}
   - component: {fileID: 883259474}
-  - component: {fileID: 883259476}
   m_Layer: 0
   m_Name: DungeonSpawner
   m_TagString: Untagged
@@ -621,36 +620,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f85abe2f572432f4a9dfd0145d4036d1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  currentAlgorithmType: 4
+  currentAlgorithmType: 0
   CA_Algorithm: {fileID: 1563801909}
   CA_Algorithm_alt: {fileID: 1563801910}
   BSP_Algorithm: {fileID: 1277086792}
-  RW_Algorithm: {fileID: 883259476}
+  RW_Algorithm: {fileID: 283747623}
   tilePlacer: {fileID: 883259474}
---- !u!114 &883259476
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 883259472}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 381b304118ee9d94fbe16d250734fc15, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  currentType: 1
-  fieldSize:
-    m_Position: {x: 0, y: 0, z: 0}
-    m_Size: {x: 100, y: 100, z: 0}
-  fillPercentage: 0.114
-  baseRoomSpawnRate: 0.05
-  increaseSpawnRate: 0.05
-  isCombiningRooms: 1
-  roomMin: 1
-  roomMax: 5
-  hallwayLengthMin: 9
-  hallwayLengthMax: 18
 --- !u!1 &949035483
 GameObject:
   m_ObjectHideFlags: 0
@@ -667,7 +642,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!212 &949035485
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -911,12 +886,12 @@ MonoBehaviour:
   fieldSize:
     m_Position: {x: 50, y: 50, z: 0}
     m_Size: {x: 100, y: 100, z: 0}
-  numRooms: 10
+  numRooms: 15
   indexOptions:
   - A
   - B
   minSize: 250
-  roomPercentage: 0.653
+  roomPercentage: 0.65
   minYSize: 12
   minXSize: 12
   offset: 3
@@ -1086,15 +1061,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e25d4c569543b474d88b9788ae6f3581, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  numIterations: 7
+  numIterations: 10
   fieldSize:
     m_Position: {x: 0, y: 0, z: 0}
     m_Size: {x: 100, y: 100, z: 0}
-  fillPercentage: 0.5
+  fillPercentage: 0.37
   isReducingTiles: 1
   showRedundantSpace: 1
   currentNeighbour: 0
-  currentMooreRuleset: {fileID: 11400000, guid: 069a7ae7baaa19342a48732e05f465da, type: 2}
+  currentMooreRuleset: {fileID: 11400000, guid: 136f65f78c32b6a478bfbb36b5188aa0, type: 2}
   currentNeumannRuleset: {fileID: 11400000, guid: 5248f4f36cef3f549b54c0e8773584da, type: 2}
 --- !u!114 &1563801910
 MonoBehaviour:
