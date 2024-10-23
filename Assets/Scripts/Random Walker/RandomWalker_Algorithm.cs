@@ -133,11 +133,10 @@ public class RandomWalker_Algorithm : DungeonAlgorithmBase
     #region RandomWalkerVariants
     private void BaseRandomWalker()
     {
-        dungeonTiles.AddCorridorTile(currentPosition);
         currentPosition += RandomDirection(currentPosition);
         dungeonTiles.AddCorridorTile(currentPosition);
     }
-    private void RoomWalker()
+    private void RoomWalker() 
     {
         HashSet<Vector2Int> hallwayTiles = new HashSet<Vector2Int>();
         HashSet<Vector2Int> roomTiles = new HashSet<Vector2Int>();
@@ -336,7 +335,7 @@ public class RandomWalker_Algorithm : DungeonAlgorithmBase
             HashSet<Vector2Int> currentTiles = new HashSet<Vector2Int>();
             Vector2Int currentPosition = tile;
 
-            currentTiles = UtilityFunctions.GetConnectedTiles(tilesToCheck, currentTiles, ref currentPosition);
+            currentTiles = UtilityFunctions.GetConnectedTiles(tilesToCheck, ref currentPosition);
             checkedTiles.UnionWith(currentTiles);
             
             newDungeonTiles.AddRoom(new DungeonRoom(currentTiles));

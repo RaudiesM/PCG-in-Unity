@@ -7,6 +7,7 @@ using UnityEngine;
 public class DungeonSpawner : MonoBehaviour
 {
     [SerializeField] private AlgorithmType currentAlgorithmType = AlgorithmType.CellulaAutomata;
+
     [SerializeField] private CellulaAutomataAlgorithm CA_Algorithm;
     [SerializeField] private CellulaAutomataAlgorithm_alt CA_Algorithm_alt;
     [SerializeField] private BinarySpacePartitioning_Algorithm BSP_Algorithm;

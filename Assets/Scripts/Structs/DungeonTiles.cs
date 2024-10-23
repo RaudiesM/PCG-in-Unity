@@ -70,7 +70,7 @@ public struct DungeonTiles
         dungeonRooms.Add(room);
     }
 
-    public void AddRoom(HashSet<DungeonRoom> rooms)
+    public void AddRooms(HashSet<DungeonRoom> rooms)
     {
         dungeonRooms.UnionWith(rooms);
     }

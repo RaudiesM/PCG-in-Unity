@@ -39,8 +39,9 @@ public static class UtilityFunctions
         return new Vector2Int(xValue, yValue);
     }
 
-    public static HashSet<Vector2Int> GetConnectedTiles(HashSet<Vector2Int> tilesToCheck, HashSet<Vector2Int> currentTiles, ref Vector2Int currentPosition)
+    public static HashSet<Vector2Int> GetConnectedTiles(HashSet<Vector2Int> tilesToCheck, ref Vector2Int currentPosition)
     {
+        HashSet<Vector2Int> currentTiles = new HashSet<Vector2Int>();
         Queue<Vector2Int> lastSafePoints = new Queue<Vector2Int>();
         bool isChecking = true;
         while (isChecking)
@@ -80,6 +81,7 @@ public static class UtilityFunctions
 
     public static void MarkPosition(Vector2 position, Color color, int duration = 5)
     {
+        //draw Cross at given position
         Debug.DrawLine(position-Vector2.up, position-Vector2.down, color, duration);
         Debug.DrawLine(position - Vector2.left, position - Vector2.right, color, duration);
     }

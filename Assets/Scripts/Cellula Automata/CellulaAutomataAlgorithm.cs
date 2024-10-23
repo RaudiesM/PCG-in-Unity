@@ -5,7 +5,7 @@ using UnityEngine;
 
 
 
-public class CellulaAutomataAlgorithm : DungeonAlgorithmBase
+public class CellulaAutomataAlgorithm : DungeonAlgorithmBase 
 {
     [SerializeField] protected int numIterations = 3;
     [SerializeField] protected BoundsInt fieldSize = new BoundsInt(new Vector3Int(0, 0, 0), new Vector3Int(10, 10, 0));
@@ -156,7 +156,7 @@ public class CellulaAutomataAlgorithm : DungeonAlgorithmBase
             HashSet<Vector2Int> currentTiles = new HashSet<Vector2Int>();
             Vector2Int currentPosition = tile;
             
-            currentTiles = UtilityFunctions.GetConnectedTiles(tilesToCheck, currentTiles, ref currentPosition);
+            currentTiles = UtilityFunctions.GetConnectedTiles(tilesToCheck, ref currentPosition);
             checkedTiles.UnionWith(currentTiles);
 
             if (showRedundantSpace)
@@ -212,7 +212,7 @@ public class CellulaAutomataAlgorithm : DungeonAlgorithmBase
             }
         }
     }
-    private void ApplyCellulaAutomata()
+    private void ApplyCellulaAutomata() 
     {
         currentIteration++;
 

@@ -518,7 +518,7 @@ GameObject:
   - component: {fileID: 647128759}
   - component: {fileID: 647128758}
   m_Layer: 0
-  m_Name: collectionVisualizer
+  m_Name: CollectionVisualizer
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

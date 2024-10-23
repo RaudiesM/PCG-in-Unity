@@ -6,7 +6,7 @@ using UnityEngine;
 
 
 
-public class CellulaAutomataAlgorithm_alt : CellulaAutomataAlgorithm
+public class CellulaAutomataAlgorithm_alt : CellulaAutomataAlgorithm 
 {
 
     [SerializeField] private int offset = 2;
@@ -127,7 +127,6 @@ public class CellulaAutomataAlgorithm_alt : CellulaAutomataAlgorithm
             
             if (cellDistribution.ContainsKey(randomPosition))
             {
-                convertedCells++;
                 continue;
             }
 

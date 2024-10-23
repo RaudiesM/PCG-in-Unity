@@ -173,7 +173,7 @@ public class SaveSCript : DungeonAlgorithmBase
 
         HashSet<BoundsInt> newRooms = PlaceRoom();
         newDungeonRooms = UtilityFunctions.ConvertBoundsIntToRooms(newRooms);
-        dungeonTiles.AddRoom(newDungeonRooms);
+        dungeonTiles.AddRooms(newDungeonRooms);
         ConnectRooms(dungeonTiles);
         dungeonTiles.AddCorridor(corridorTiles);
 
@@ -193,7 +193,7 @@ public class SaveSCript : DungeonAlgorithmBase
         }
 
         newDungeonRooms = UtilityFunctions.ConvertBoundsIntToRooms(newRooms);
-        newDungeonTiles.AddRoom(newDungeonRooms);
+        newDungeonTiles.AddRooms(newDungeonRooms);
 
         return newDungeonTiles;
     }
@@ -211,7 +211,7 @@ public class SaveSCript : DungeonAlgorithmBase
 
             newRooms = PlaceRoom();
             newDungeonRooms = UtilityFunctions.ConvertBoundsIntToRooms(newRooms);
-            dungeonTiles.AddRoom(newDungeonRooms);
+            dungeonTiles.AddRooms(newDungeonRooms);
             ConnectRooms(dungeonTiles);
             dungeonTiles.AddCorridor(corridorTiles);
         }
@@ -222,7 +222,7 @@ public class SaveSCript : DungeonAlgorithmBase
                 newRooms.Add(room);
             }
             newDungeonRooms = UtilityFunctions.ConvertBoundsIntToRooms(newRooms);
-            dungeonTiles.AddRoom(newDungeonRooms);
+            dungeonTiles.AddRooms(newDungeonRooms);
         }
 
         return dungeonTiles;
@@ -246,7 +246,7 @@ public class SaveSCript : DungeonAlgorithmBase
         }
 
         HashSet<BoundsInt> newDungeonRooms = PlaceRoomSkeletton(out newCenter);
-        dungeonTiles.AddRoom(UtilityFunctions.ConvertBoundsIntToRooms(newDungeonRooms));
+        dungeonTiles.AddRooms(UtilityFunctions.ConvertBoundsIntToRooms(newDungeonRooms));
 
         ConnectRooms(dungeonTiles);
         dungeonTiles.AddCorridor(corridorTiles);
