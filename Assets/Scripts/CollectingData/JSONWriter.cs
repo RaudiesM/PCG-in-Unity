@@ -5,6 +5,7 @@ using UnityEngine;
 
 public class JSONWriter : MonoBehaviour
 {
+    [SerializeField] private string folderLocation;
     [SerializeField]private string cellulaAutomata_path = "/ca_";
     [SerializeField]private string randomWalker_path = "/rw_";
     [SerializeField]private string binarySpacepartitioning_path = "/bsp_";
@@ -38,31 +39,36 @@ public class JSONWriter : MonoBehaviour
         switch(algorithmType)
         {
             case AlgorithmType.RandomWalker:
-                pathAddition = "/results_rw"+ randomWalker_path + numIterationsRW.ToString("0000");
+                pathAddition = randomWalker_path + numIterationsRW.ToString("0000");
                 numIterationsRW++;
                 break;
 
             case AlgorithmType.CellulaAutomata: 
-                pathAddition = "/results_ca"+ cellulaAutomata_path + numIterationsCA.ToString("0000");
+                pathAddition = cellulaAutomata_path + numIterationsCA.ToString("0000");
                 numIterationsCA++;
                 break;
 
             case AlgorithmType.BinarySpacepartitioning:
-                pathAddition = "/results_bsp" + binarySpacepartitioning_path + numIterationsBSP.ToString("0000");
+                pathAddition = binarySpacepartitioning_path + numIterationsBSP.ToString("0000");
                 numIterationsBSP++;
                 break;
 
             case AlgorithmType.BSP_CA:
-                pathAddition = "/results_bspca" + bspca_path + numIterationsBSPCA.ToString("0000");
+                pathAddition = bspca_path + numIterationsBSPCA.ToString("0000");
                 numIterationsBSPCA++;
                 break;
 
             case AlgorithmType.RW_CA:
-                pathAddition = "/results_rwca" + rwca_path + numIterationsRWCA.ToString("0000");
+                pathAddition = rwca_path + numIterationsRWCA.ToString("0000");
                 numIterationsRWCA++;
                 break;
         }
-        return filePath + pathAddition + ".json";
+        pathAddition += ".json";
+        if(folderLocation == "" || folderLocation == null)
+        {
+            folderLocation = filePath;        
+        }
+        return folderLocation + pathAddition;
     }
     private void SaveIterationNumbers()
     {

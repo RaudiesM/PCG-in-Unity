@@ -40,7 +40,7 @@ public class RandomWalker_Algorithm : DungeonAlgorithmBase
             (
                 fieldSize.size.x * fieldSize.size.y, 
                 Mathf.RoundToInt(fillPercentage * 100), 
-                currentType, 
+                currentType.ToString(), 
                 Mathf.RoundToInt(baseRoomSpawnRate*100), 
                 isCombiningRooms
              );
@@ -65,7 +65,7 @@ public class RandomWalker_Algorithm : DungeonAlgorithmBase
                 {
                     safetyCheck++;
                  
-                    if (safetyCheck >= 100000)
+                    if (safetyCheck >= 1000 * fieldSize.size.x * fieldSize.size.y)
                         break;
                 }
             }
@@ -83,7 +83,7 @@ public class RandomWalker_Algorithm : DungeonAlgorithmBase
                 {
                     safetyCheck++;
 
-                    if(safetyCheck >= 100000)
+                    if(safetyCheck >= 1000 * fieldSize.size.x * fieldSize.size.y)
                         break;
                     
                 }

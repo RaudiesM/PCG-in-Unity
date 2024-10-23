@@ -5,12 +5,12 @@ using UnityEngine;
 public class RW_Evaluation : EvaluationBase
 {
     public int FillPercentage;
-    public DungeonType CurrentDungeonType;
+    public string CurrentDungeonType;
     public int RoomSpawnRate;
     public bool CombiningRooms;
     public float[] GenerationTimes;
     public int[] GeneratedTiles;
-    public RW_Evaluation(int fieldSize, int fillPercentage, DungeonType type, int roomSpawnRate = 0, bool combiningRooms = false)
+    public RW_Evaluation(int fieldSize, int fillPercentage, string type, int roomSpawnRate = 0, bool combiningRooms = false)
     {
         this.AlgorithmName = "Random Walker Algorithm";
         this.FieldSize = fieldSize;

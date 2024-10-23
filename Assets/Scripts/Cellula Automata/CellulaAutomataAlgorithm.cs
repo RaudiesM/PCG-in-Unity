@@ -141,14 +141,13 @@ public class CellulaAutomataAlgorithm : DungeonAlgorithmBase
     }
     protected DungeonTiles ReduceTiles(DungeonTiles tiles)
     {
-        Debug.Log("Reducing!");
+
         DungeonTiles newDungeonTiles = new DungeonTiles(AlgorithmType.CellulaAutomata);
         
         HashSet<Vector2Int> tilesToCheck = new HashSet<Vector2Int>();
         HashSet<Vector2Int> checkedTiles = new HashSet<Vector2Int>();
 
         tiles.TryGetCorridors(out tilesToCheck);
-
         foreach (var tile in tilesToCheck)
         {
             if (checkedTiles.Contains(tile))
@@ -206,7 +205,7 @@ public class CellulaAutomataAlgorithm : DungeonAlgorithmBase
             convertedCells++;
             
             maxCounter++;
-            if(maxCounter == 1000000)
+            if(maxCounter == 1000*fieldSize.size.x * fieldSize.size.y)
             {
                 Debug.LogError("To many iterations during while");
                 break;

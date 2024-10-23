@@ -86,6 +86,7 @@ public class DataCollector : MonoBehaviour
                 float timeAfter = Time.realtimeSinceStartup;
                 //get amount of generated tiles and duration of this process
                 int numTiles = tiles.Count();
+                Debug.Log(numTiles);
                 float generationDuration = timeAfter - timeBefore;
 
                 timeList[j] = generationDuration;

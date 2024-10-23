@@ -135,7 +135,7 @@ public class CellulaAutomataAlgorithm_alt : CellulaAutomataAlgorithm
             convertedCells++;
 
             maxCounter++;
-            if (maxCounter >= 100000)
+            if (maxCounter >= 1000 * fieldSize.size.x * fieldSize.size.y)
             {
                 Debug.LogError("To many iterations during while");
                 break;

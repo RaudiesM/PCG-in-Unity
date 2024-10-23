@@ -43,10 +43,8 @@ public static class UtilityFunctions
     {
         Queue<Vector2Int> lastSafePoints = new Queue<Vector2Int>();
         bool isChecking = true;
-        int safetyCheck = 0;
         while (isChecking)
         {
-            safetyCheck++;
             bool neighbourIsSet = false;
             int possibleNeighbours = 0;
             Vector2Int lastSafePoint = currentPosition;
@@ -76,11 +74,6 @@ public static class UtilityFunctions
             }
 
             currentTiles.Add(currentPosition);
-
-            if (safetyCheck >= 100000)
-            {
-                break;
-            }
         }
         return currentTiles;
     }

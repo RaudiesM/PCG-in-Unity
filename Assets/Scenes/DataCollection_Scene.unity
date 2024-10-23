@@ -133,10 +133,10 @@ GameObject:
   - component: {fileID: 410349375}
   - component: {fileID: 410349374}
   - component: {fileID: 410349373}
-  - component: {fileID: 410349372}
   - component: {fileID: 410349378}
-  - component: {fileID: 410349377}
+  - component: {fileID: 410349372}
   - component: {fileID: 410349379}
+  - component: {fileID: 410349377}
   m_Layer: 0
   m_Name: DataCollector
   m_TagString: Untagged
@@ -156,15 +156,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e25d4c569543b474d88b9788ae6f3581, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  numIterations: 3
+  numIterations: 5
   fieldSize:
     m_Position: {x: 0, y: 0, z: 0}
-    m_Size: {x: 100, y: 100, z: 0}
-  fillPercentage: 0.5
-  currentNeighbour: 0
+    m_Size: {x: 50, y: 50, z: 0}
+  fillPercentage: 0.6
   isReducingTiles: 1
-  showRedundantSpace: 1
-  currentMooreRuleset: {fileID: 11400000, guid: 069a7ae7baaa19342a48732e05f465da, type: 2}
+  showRedundantSpace: 0
+  currentNeighbour: 1
+  currentMooreRuleset: {fileID: 11400000, guid: 136f65f78c32b6a478bfbb36b5188aa0, type: 2}
   currentNeumannRuleset: {fileID: 11400000, guid: 5248f4f36cef3f549b54c0e8773584da, type: 2}
 --- !u!114 &410349373
 MonoBehaviour:
@@ -178,6 +178,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: caac2191fb84d2544b9820a24e28e629, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  folderLocation: C:\Users\maxra\OneDrive\Desktop\BA\Rohdaten\results_ca\NEUMANN\reducing\fs_50
   cellulaAutomata_path: /ca
   randomWalker_path: /rw
   binarySpacepartitioning_path: /bsp
@@ -195,9 +196,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ad1117cca7255e84ab0bb4c0bf653a05, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  algorithmType: 0
-  numFiles: 10
-  numIterations: 2
+  algorithmType: 1
+  numFiles: 1
+  numIterations: 500
 --- !u!4 &410349375
 Transform:
   m_ObjectHideFlags: 0
@@ -229,13 +230,16 @@ MonoBehaviour:
   fieldSize:
     m_Position: {x: 0, y: 0, z: 0}
     m_Size: {x: 100, y: 100, z: 0}
-  numRooms: 10
+  numRooms: 15
+  indexOptions:
+  - A
+  - B
   minSize: 250
-  roomPercentage: 0.653
+  roomPercentage: 0.65
   minYSize: 12
   minXSize: 12
-  boneRoomSize: 4
   offset: 3
+  skelettonRoomSize: 4
 --- !u!114 &410349378
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -251,15 +255,15 @@ MonoBehaviour:
   currentType: 1
   fieldSize:
     m_Position: {x: 0, y: 0, z: 0}
-    m_Size: {x: 100, y: 100, z: 0}
-  fillPercentage: 0.792
-  baseRoomSpawnRate: 0.307
-  increaseSpawnRate: 0.0408
+    m_Size: {x: 150, y: 150, z: 0}
+  fillPercentage: 0.55
+  baseRoomSpawnRate: 0.05
+  increaseSpawnRate: 0.05
   isCombiningRooms: 1
-  roomMin: 1
+  roomMin: 3
   roomMax: 5
   hallwayLengthMin: 9
-  hallwayLengthMax: 18
+  hallwayLengthMax: 15
 --- !u!114 &410349379
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -269,20 +273,20 @@ MonoBehaviour:
   m_GameObject: {fileID: 410349371}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: e1f8ec345b61bf34aa2c92cb2e108875, type: 3}
+  m_Script: {fileID: 11500000, guid: 9d0d5cfadc7b7024eb982bd6c0ce3747, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   numIterations: 3
   fieldSize:
     m_Position: {x: 0, y: 0, z: 0}
-    m_Size: {x: 100, y: 100, z: 0}
-  fillPercentage: 0.254
-  currentNeighbour: 0
-  showWalls: 0
+    m_Size: {x: 10, y: 10, z: 0}
+  fillPercentage: 0.5
   isReducingTiles: 1
   showRedundantSpace: 0
-  currentMooreRuleset: {fileID: 11400000, guid: 136f65f78c32b6a478bfbb36b5188aa0, type: 2}
-  currentNeumannRuleset: {fileID: 11400000, guid: 5248f4f36cef3f549b54c0e8773584da, type: 2}
+  currentNeighbour: 0
+  currentMooreRuleset: {fileID: 0}
+  currentNeumannRuleset: {fileID: 0}
+  offset: 2
 --- !u!1 &519420028
 GameObject:
   m_ObjectHideFlags: 0

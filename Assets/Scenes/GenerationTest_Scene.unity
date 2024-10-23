@@ -620,7 +620,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f85abe2f572432f4a9dfd0145d4036d1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  currentAlgorithmType: 0
+  currentAlgorithmType: 1
   CA_Algorithm: {fileID: 1563801909}
   CA_Algorithm_alt: {fileID: 1563801910}
   BSP_Algorithm: {fileID: 1277086792}
@@ -1061,11 +1061,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e25d4c569543b474d88b9788ae6f3581, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  numIterations: 10
+  numIterations: 3
   fieldSize:
     m_Position: {x: 0, y: 0, z: 0}
     m_Size: {x: 100, y: 100, z: 0}
-  fillPercentage: 0.37
+  fillPercentage: 0.4
   isReducingTiles: 1
   showRedundantSpace: 1
   currentNeighbour: 0
