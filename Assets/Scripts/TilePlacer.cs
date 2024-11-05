@@ -10,8 +10,6 @@ public class TilePlacer : MonoBehaviour
     [SerializeField] private TileBase floorTile;
     [SerializeField] private List<TileBase> roomTiles;
 
-    [SerializeField] private GameObject roomPanel;
-
     [SerializeField] private bool visualizeRooms = false;
 
     #region PlaceTiles
