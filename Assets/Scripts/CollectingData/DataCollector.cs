@@ -189,7 +189,7 @@ public class DataCollector : MonoBehaviour
 
             return currentAlgorithm = ca_algorithm;
         }
-        else if (thisAlgorithmType == AlgorithmType.BinarySpacepartitioning)
+        else if (thisAlgorithmType == AlgorithmType.BinarySpacePartitioning)
         {
             return currentAlgorithm = bsp_algorithm;
         }

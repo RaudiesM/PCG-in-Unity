@@ -45,7 +45,7 @@ public class BinarySpacePartitioning_Algorithm : DungeonAlgorithmBase
     {
         ClearDictionaries();
         corridorTiles.Clear();
-        DungeonTiles dungeonTiles = new DungeonTiles(AlgorithmType.BinarySpacepartitioning);
+        DungeonTiles dungeonTiles = new DungeonTiles(AlgorithmType.BinarySpacePartitioning);
         HashSet<DungeonRoom> newDungeonRooms = new HashSet<DungeonRoom>();
         bool isDoneSplitting = false;
 
@@ -64,7 +64,7 @@ public class BinarySpacePartitioning_Algorithm : DungeonAlgorithmBase
     }
     public override DungeonTiles FirstGeneration()
     {
-        DungeonTiles newDungeonTiles = new DungeonTiles(AlgorithmType.BinarySpacepartitioning);
+        DungeonTiles newDungeonTiles = new DungeonTiles(AlgorithmType.BinarySpacePartitioning);
         ClearDictionaries();
         HashSet<BoundsInt> newRooms = new HashSet<BoundsInt>();
         HashSet<DungeonRoom> newDungeonRooms = new HashSet<DungeonRoom>();
@@ -83,7 +83,7 @@ public class BinarySpacePartitioning_Algorithm : DungeonAlgorithmBase
     public override DungeonTiles ContinueIterating()
     {
         HashSet<BoundsInt> newRooms = new HashSet<BoundsInt>();
-        DungeonTiles dungeonTiles = new DungeonTiles(AlgorithmType.BinarySpacepartitioning);
+        DungeonTiles dungeonTiles = new DungeonTiles(AlgorithmType.BinarySpacePartitioning);
         HashSet<DungeonRoom> newDungeonRooms = new HashSet<DungeonRoom>();
 
         bool isDoneSplitting = IterateOverRooms();
@@ -115,7 +115,7 @@ public class BinarySpacePartitioning_Algorithm : DungeonAlgorithmBase
         ClearDictionaries();
         corridorTiles.Clear();
 
-        DungeonTiles dungeonTiles = new DungeonTiles(AlgorithmType.BinarySpacepartitioning);
+        DungeonTiles dungeonTiles = new DungeonTiles(AlgorithmType.BinarySpacePartitioning);
 
         bool isDoneSplitting = false;
         while (isDoneSplitting == false)

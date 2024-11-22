@@ -48,7 +48,7 @@ public class JSONWriter : MonoBehaviour
                 numIterationsCA++;
                 break;
 
-            case AlgorithmType.BinarySpacepartitioning:
+            case AlgorithmType.BinarySpacePartitioning:
                 pathAddition = binarySpacepartitioning_path + numIterationsBSP.ToString("0000");
                 numIterationsBSP++;
                 break;

@@ -6,7 +6,7 @@ public enum AlgorithmType
 {
     RandomWalker,
     CellulaAutomata,
-    BinarySpacepartitioning,
+    BinarySpacePartitioning,
     RW_CA,
     BSP_CA
 }

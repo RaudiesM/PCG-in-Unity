@@ -259,7 +259,7 @@ Camera:
   m_Enabled: 1
   serializedVersion: 2
   m_ClearFlags: 2
-  m_BackGroundColor: {r: 0, g: 0, b: 0, a: 0}
+  m_BackGroundColor: {r: 1, g: 1, b: 1, a: 0}
   m_projectionMatrixMode: 1
   m_GateFitMode: 2
   m_FOVAxisMode: 0
@@ -439,6 +439,7 @@ GameObject:
   - component: {fileID: 883259473}
   - component: {fileID: 883259475}
   - component: {fileID: 883259474}
+  - component: {fileID: 883259476}
   m_Layer: 0
   m_Name: DungeonSpawner
   m_TagString: Untagged
@@ -502,12 +503,26 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f85abe2f572432f4a9dfd0145d4036d1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  currentAlgorithmType: 3
+  currentAlgorithmType: 2
   CA_Algorithm: {fileID: 1563801909}
   CA_Algorithm_alt: {fileID: 1563801910}
   BSP_Algorithm: {fileID: 1277086792}
   RW_Algorithm: {fileID: 283747623}
   tilePlacer: {fileID: 883259474}
+--- !u!114 &883259476
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 883259472}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: dcaf026108a7eac47ae6695f290133e1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  useSeed: 0
+  currentSeed: 1000
 --- !u!1 &1241287299
 GameObject:
   m_ObjectHideFlags: 0
@@ -903,6 +918,14 @@ PrefabInstance:
     - target: {fileID: 2437778390171000320, guid: f6ae3b3c26336554f80c958b38362af2, type: 3}
       propertyPath: m_Name
       value: FieldBorder
+      objectReference: {fileID: 0}
+    - target: {fileID: 3275057309212133897, guid: f6ae3b3c26336554f80c958b38362af2, type: 3}
+      propertyPath: m_LocalScale.x
+      value: 1.06
+      objectReference: {fileID: 0}
+    - target: {fileID: 3275057309212133897, guid: f6ae3b3c26336554f80c958b38362af2, type: 3}
+      propertyPath: m_LocalScale.y
+      value: 1.06
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []

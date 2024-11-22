@@ -15,9 +15,11 @@ public class DungeonSpawner : MonoBehaviour
 
     [SerializeField] private TilePlacer tilePlacer;
 
+    private RandomnessManager randomnessManager;
     private void Start()
     {
         ConnectToInputs();
+        randomnessManager = FindObjectOfType<RandomnessManager>();
     }
 
     private void ConnectToInputs()
@@ -33,6 +35,7 @@ public class DungeonSpawner : MonoBehaviour
     #region GetDungeonTiles
     private void FirstGeneration()
     {
+        SetupRandomness();
         DungeonTiles dungeonTiles = new DungeonTiles(currentAlgorithmType);
         DungeonAlgorithmBase currentAlgorithm = GetAlgorithm(currentAlgorithmType);
 
@@ -60,6 +63,9 @@ public class DungeonSpawner : MonoBehaviour
 
         PlaceDungeon(dungeonTiles);
     }
+
+
+
     private void IterateMore()
     {
         DungeonTiles dungeonTiles = new DungeonTiles(currentAlgorithmType);
@@ -84,6 +90,7 @@ public class DungeonSpawner : MonoBehaviour
     }
     private void GenerateDungeon()
     {
+        SetupRandomness();
         DungeonTiles dungeonTiles = new DungeonTiles(currentAlgorithmType);
         DungeonAlgorithmBase currentAlgorithm = GetAlgorithm(currentAlgorithmType);
 
@@ -122,7 +129,7 @@ public class DungeonSpawner : MonoBehaviour
         {
             return CA_Algorithm;
         }
-        else if (thisAlgorithmType == AlgorithmType.BinarySpacepartitioning)
+        else if (thisAlgorithmType == AlgorithmType.BinarySpacePartitioning)
         {
             return BSP_Algorithm;
         }
@@ -143,5 +150,10 @@ public class DungeonSpawner : MonoBehaviour
         {
             tilePlacer.PlaceCorridorTiles(corridorTiles);
         }
+    }
+
+    private void SetupRandomness()
+    {
+        randomnessManager.SetSeed();
     }
 }
