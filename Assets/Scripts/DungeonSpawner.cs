@@ -113,7 +113,7 @@ public class DungeonSpawner : MonoBehaviour
         else
         {
             dungeonTiles = currentAlgorithm.GenerateDungeonTiles();
-            Debug.Log(dungeonTiles.Count());
+            //Debug.Log(dungeonTiles.Count());
         }
 
         PlaceDungeon(dungeonTiles);

@@ -178,7 +178,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: caac2191fb84d2544b9820a24e28e629, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  folderLocation: C:\Users\maxra\OneDrive\Desktop\BA\Rohdaten\results_ca\NEUMANN\reducing\fs_50
+  folderLocation: C:\Users\maxra\OneDrive\Desktop\BA\Rohdaten\results_bspca\not_reducing\fs_50
   cellulaAutomata_path: /ca
   randomWalker_path: /rw
   binarySpacepartitioning_path: /bsp
@@ -196,7 +196,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ad1117cca7255e84ab0bb4c0bf653a05, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  algorithmType: 1
+  algorithmType: 4
   numFiles: 1
   numIterations: 500
 --- !u!4 &410349375
@@ -229,7 +229,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   fieldSize:
     m_Position: {x: 0, y: 0, z: 0}
-    m_Size: {x: 100, y: 100, z: 0}
+    m_Size: {x: 50, y: 50, z: 0}
   numRooms: 15
   indexOptions:
   - A
@@ -279,13 +279,13 @@ MonoBehaviour:
   numIterations: 3
   fieldSize:
     m_Position: {x: 0, y: 0, z: 0}
-    m_Size: {x: 10, y: 10, z: 0}
-  fillPercentage: 0.5
-  isReducingTiles: 1
+    m_Size: {x: 50, y: 50, z: 0}
+  fillPercentage: 0.37
+  isReducingTiles: 0
   showRedundantSpace: 0
   currentNeighbour: 0
-  currentMooreRuleset: {fileID: 0}
-  currentNeumannRuleset: {fileID: 0}
+  currentMooreRuleset: {fileID: 11400000, guid: 136f65f78c32b6a478bfbb36b5188aa0, type: 2}
+  currentNeumannRuleset: {fileID: 11400000, guid: 5248f4f36cef3f549b54c0e8773584da, type: 2}
   offset: 2
 --- !u!1 &519420028
 GameObject:

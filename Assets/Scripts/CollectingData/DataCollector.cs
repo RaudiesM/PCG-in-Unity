@@ -67,7 +67,8 @@ public class DataCollector : MonoBehaviour
             return;
         }else if(algorithmType == AlgorithmType.BSP_CA)
         {
-            CollectHybridData_BSPCA(); 
+            Debug.Log("BSPCA");
+            CollectHybridData_BSPCA();
             return;
         }
 
@@ -104,7 +105,7 @@ public class DataCollector : MonoBehaviour
     private void CollectHybridData_BSPCA()
     {
         EvaluationBase bspData = GetAlgorithmInformation(bsp_algorithm);
-        EvaluationBase caData = GetAlgorithmInformation(ca_algorithm);
+        EvaluationBase caData = GetAlgorithmInformation(ca_algorithm_alt);
         //combine bsp & ca data
         EvaluationBase completeData = new BSPCA_Evaluation((CA_Evaluation)caData, (BSP_Evaluation)bspData);
 
